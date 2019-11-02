@@ -3,7 +3,6 @@ import React from "react";
 function ProcessTimelineEvent({ x, width, id, setRef }) {
   return (
     <g>
-      <h1>fart</h1>
       <rect
         ref={setRef}
         id={`rect-${id}`}
