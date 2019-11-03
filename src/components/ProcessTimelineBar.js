@@ -1,55 +1,98 @@
-import React, { Children, cloneElement, useEffect } from "react";
-import { TweenMax, Power2, TimelineLite } from "gsap/TweenMax";
+import React, { Children, cloneElement, useState } from "react";
+import { TimelineLite, Expo } from "gsap/TweenMax";
 
 function ProcessTimeLineBar({ children }) {
-  var events = [];
+  var events = {};
   var bar = null;
   var tl = new TimelineLite({ paused: true });
-  var xFactor = 834 / children.length;
+  var xFactor = 890 / children.length;
   var width = xFactor - 2;
 
-  useEffect(() => {
-    tl.add("raise");
-    tl.to(events[3], 0.2, { height: 300, y: 46 }, "raise");
-    tl.to(
-      [events[1], events[2], events[4], events[5], events[0]],
-      0.15,
-      { height: 36 },
-      "raise"
-    );
-    tl.to(events[3], 0.1, { width: 831, x: -417 });
-    //tl.staggerTo(events, 0.5, { autoAlpha: 1, y: 20 }, 0.1);
-  });
+  var [selectedEvent, setEvent] = useState();
 
-  function playAni() {
+  function animate(newSelectedEvent) {
+    var newSelectedEventTag = events[newSelectedEvent].querySelector(".tag");
+    var newSelectedEventIcon = events[newSelectedEvent].querySelector(".icon");
+    var newSelectedEventTitle = events[newSelectedEvent].querySelector(
+      ".title"
+    );
+    if (selectedEvent) {
+      var selectedEventTag = events[selectedEvent].querySelector(".tag");
+      var selectedEventIcon = events[selectedEvent].querySelector(".icon");
+      var selectedEventTitle = events[selectedEvent].querySelector(".title");
+    }
+
+    var newSelectedX = newSelectedEventTag.getAttribute("x");
+    var selectedWidth = newSelectedEventTag.getAttribute("width");
+    var selectedHeight = newSelectedEventTag.getAttribute("height");
+
+    tl.add("raise");
+
+    if (selectedEventTag) {
+      tl.to(selectedEventTag, 0.2, { x: 0, width: selectedWidth }, "raise");
+      tl.to(selectedEventIcon, 0.2, { x: 0 }, "raise");
+      tl.to(selectedEventTag, 0.1, { height: selectedHeight, y: 0 }, "spread");
+      tl.to(selectedEventIcon, 0.1, { y: 0, scale: 1 }, "spread");
+      tl.to(selectedEventTitle, 0.1, { opacity: 1 }, "spread");
+    }
+
+    tl.to(newSelectedEventTag, 0.2, { height: 300, y: 88 }, "raise");
+    tl.to(newSelectedEventIcon, 0.2, { y: 82 }, "raise");
+    tl.to(newSelectedEventTitle, 0.1, { opacity: 0 }, "raise");
+    tl.to(bar, 0.2, { height: 400 }, "raise");
+
+    tl.add("spread");
+    tl.to(
+      newSelectedEventTag,
+      0.5,
+      {
+        ease: Expo.easeOut,
+        width: 879,
+        x: -newSelectedX + 20
+      },
+      "spread"
+    );
+    tl.to(
+      newSelectedEventIcon,
+      0.5,
+      { ease: Expo.easeOut, x: -newSelectedX + 10.47, scale: 2 },
+      "spread"
+    );
+
+    setEvent(newSelectedEvent);
+  }
+
+  function playAni(e) {
+    animate(e.target.parentNode.getAttribute("id"));
     tl.play();
   }
 
   var processedEvents = children
-    ? Children.map(children, (child, index) =>
-        cloneElement(child, {
+    ? Children.map(children, (child, index) => {
+        let eventName = `event-${index}`;
+        return cloneElement(child, {
           x: index * xFactor,
           width,
           id: index,
-          setRef: div => (events[index] = div)
-        })
-      )
+          setRef: div => (events[eventName] = div)
+        });
+      })
     : [];
-
   return (
-    <svg
-      onClick={playAni}
-      ref={div => (bar = div)}
-      id="Layer_1"
-      data-name="Layer 1"
-      xmlns="http://www.w3.org/2000/svg"
-      width="900"
-      height="600"
-      viewBox="0 0 840.97 77.2"
-    >
-      <title>progTrackBar2</title>
-      {processedEvents}
-    </svg>
+    <div>
+      <svg
+        onClick={playAni}
+        ref={div => (bar = div)}
+        id="Layer_1"
+        data-name="Layer 1"
+        xmlns="http://www.w3.org/2000/svg"
+        width="900"
+        height="80"
+      >
+        <title>progTrackBar2</title>
+        {processedEvents}
+      </svg>
+    </div>
   );
 }
 

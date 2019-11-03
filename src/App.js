@@ -10,7 +10,7 @@ function App() {
       <ProcessTimelineBarEvent title="packed" />
       <ProcessTimelineBarEvent title="shipped" />
       <ProcessTimelineBarEvent title="in transit" />
-      <ProcessTimelineBarEvent title="arrived destination" />
+      <ProcessTimelineBarEvent title="arrived" />
     </ProcessTimelineBar>
   );
 }

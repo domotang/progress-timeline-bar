@@ -1,0 +1,355 @@
+$gr: #777777;
+$m: 20px;
+$blue: #0083b2;
+$ltblue: lighten($blue, 10%);
+$dkblue: darken($blue, 10%);
+
+body {
+  font-family: "Montserrat", sans-serif;
+  width: 100vw;
+  height: 100vh;
+  background: #111;
+  color: white;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.marker-dialog,
+.marker-touch {
+  width: 315px;
+  position: absolute;
+  left: 440px;
+  top: 50px;
+  cursor: pointer;
+}
+
+.boxes {
+  position: absolute;
+  left: 550px;
+  top: 160px;
+  z-index: 500;
+  .co-element {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}
+
+.sent {
+  text-align: center;
+  line-height: 1.6;
+  position: absolute;
+  left: 473px;
+  top: 141px;
+  width: 250px;
+  z-index: 300;
+}
+
+.sent-main {
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+.message {
+  color: #777;
+}
+
+.check {
+  width: 15px;
+  position: absolute;
+  top: -52px;
+  left: 39px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.email-box input {
+  appearance: none;
+  box-shadow: none;
+  border: none;
+  outline: none;
+  background: #777777;
+  color: black;
+  transition: all 0.7s ease;
+  padding: 8px 5px 8px 55px;
+  width: 125px;
+  transition: all 0.5s ease;
+  &:hover {
+    background: #888888;
+    transition: all 0.5s ease;
+  }
+}
+
+.email {
+  position: absolute;
+  top: 9px;
+  left: 68px;
+  color: black;
+}
+
+.submit {
+  padding: 8px 5px;
+  width: 175px;
+  background: $blue;
+  cursor: pointer;
+  color: black;
+  transition: all 0.7s ease;
+  &:hover {
+    background: $ltblue;
+    transition: all 0.7s ease;
+  }
+}
+
+.marker-touch {
+  cursor: pointer;
+  z-index: 5000;
+}
+
+.dialog-text {
+  position: absolute;
+  left: 575px;
+  top: 110px;
+  z-index: 300;
+  .details {
+    margin: $m $m -8px;
+    line-height: 2em;
+    padding: 0;
+    letter-spacing: 0.17em;
+  }
+}
+
+.lg-circ {
+  fill: $dkblue;
+}
+.md-circ {
+  fill: $blue;
+}
+.sm-circ {
+  fill: $ltblue;
+}
+
+.main {
+  font-size: 11px;
+  line-height: 0.5em;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: white;
+}
+
+.gr {
+  color: $gr;
+}
+
+.higher {
+  position: absolute;
+  z-index: 5000;
+}
+
+.contact {
+  position: absolute;
+  z-index: 7000;
+}
+
+.contact-stay {
+  left: 485px;
+  top: 198px;
+  position: absolute;
+  z-index: 550;
+  line-height: 1em !important;
+}
+
+a.button {
+  padding: 8px;
+  border: 1px solid $dkblue;
+  color: $ltblue;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: all 0.7s ease;
+  &:hover {
+    transition: all 0.4s ease;
+    opacity: 1;
+    background: rgba($dkblue, 0.4);
+    color: tint($ltblue, 30%) !important;
+  }
+}
+
+#close {
+  cursor: pointer;
+}
+
+.scale {
+  width: 20px;
+  fill: #ccc;
+}
+
+.map {
+  position: absolute;
+  width: 800px;
+  height: 350px;
+  border: 1px solid $blue;
+  left: 217px;
+  top: 15px;
+  background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/28963/map4-opt.jpg")
+    top left no-repeat;
+  background-size: cover;
+  opacity: 0.85;
+}
+
+#box,
+#corner,
+.dialog-text span,
+#close path,
+.contact,
+#divider,
+.co-element,
+.boxes,
+.check,
+.sent {
+  visibility: hidden;
+}
+
+.hide {
+  transform: scale(0);
+  visibility: hidden;
+  height: 0;
+  width: 0;
+}
+
+/*----resp -----*/
+
+@media (max-width: 900px) {
+  .map {
+    left: 117px !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .map {
+    left: 17px !important;
+  }
+  .marker-dialog,
+  .marker-touch {
+    left: 240px !important;
+  }
+  .boxes {
+    left: 350px !important;
+  }
+  .sent {
+    left: 273px !important;
+  }
+  .dialog-text {
+    left: 375px !important;
+  }
+  .contact-stay {
+    left: 285px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .map {
+    left: -117px !important;
+  }
+  .marker-dialog,
+  .marker-touch {
+    left: 140px !important;
+  }
+  .boxes {
+    left: 250px !important;
+  }
+  .sent {
+    left: 173px !important;
+  }
+  .dialog-text {
+    left: 275px !important;
+  }
+  .contact-stay {
+    left: 185px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .map {
+    left: -217px !important;
+  }
+  .marker-dialog,
+  .marker-touch {
+    left: 40px !important;
+  }
+  .boxes {
+    left: 150px !important;
+  }
+  .sent {
+    left: 73px !important;
+  }
+  .dialog-text {
+    left: 175px !important;
+  }
+  .contact-stay {
+    left: 85px !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .map {
+    left: -217px !important;
+    width: 600px !important;
+  }
+  .marker-dialog,
+  .marker-touch,
+  .boxes,
+  .sent,
+  .dialog-text,
+  .contact-stay {
+    margin-left: 0px;
+  }
+}
+
+//ie hack for everything up to 10
+@media screen\0 {
+  .marker-dialog {
+    position: fixed;
+    margin-top: -200px;
+  }
+
+  .marker-touch {
+    margin-top: 50px;
+  }
+
+  .check {
+    margin-top: -23px;
+  }
+}
+
+//ie hack for 10 and 11
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .marker-dialog {
+    position: fixed;
+    margin-top: -200px;
+  }
+  .marker-touch {
+    margin-top: 50px;
+  }
+  .check {
+    margin-top: -23px;
+  }
+}
+
+//ie hack for edge
+@supports (-ms-accelerator: true) {
+  .marker-dialog {
+    position: fixed;
+    margin-top: -200px;
+  }
+  .marker-touch {
+    margin-top: 50px;
+  }
+  .check {
+    margin-top: -23px;
+  }
+}
