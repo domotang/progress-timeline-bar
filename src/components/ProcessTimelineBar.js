@@ -29,25 +29,43 @@ function ProcessTimeLineBar({ children }) {
     tl.add("raise");
 
     if (selectedEventTag) {
-      tl.to(selectedEventTag, 0.2, { x: 0, width: selectedWidth }, "raise");
+      tl.to(
+        selectedEventTag,
+        0.2,
+        {
+          x: 0,
+          attr: { width: selectedWidth, height: selectedHeight },
+          width: selectedWidth,
+          height: selectedHeight
+        },
+        "raise"
+      );
       tl.to(selectedEventIcon, 0.2, { x: 0 }, "raise");
-      tl.to(selectedEventTag, 0.1, { height: selectedHeight, y: 0 }, "spread");
+      tl.to(selectedEventTag, 0.1, { y: 0 }, "spread");
       tl.to(selectedEventIcon, 0.1, { y: 0, scale: 1 }, "spread");
       tl.to(selectedEventTitle, 0.1, { opacity: 1 }, "spread");
     }
 
-    tl.to(newSelectedEventTag, 0.2, { height: 300, y: 88 }, "raise");
-    tl.to(newSelectedEventIcon, 0.2, { y: 82 }, "raise");
+    tl.to(
+      newSelectedEventTag,
+      0.2,
+      { attr: { width: 110 }, width: 110, x: 20, y: 88 },
+      "raise"
+    );
+    tl.to(newSelectedEventIcon, 0.2, { y: 82, x: 20, scale: 0.8 }, "raise");
     tl.to(newSelectedEventTitle, 0.1, { opacity: 0 }, "raise");
-    tl.to(bar, 0.2, { height: 400 }, "raise");
+    tl.to(bar, 0.2, { attr: { height: 400 }, height: 400 }, "raise");
 
     tl.add("spread");
+
     tl.to(
       newSelectedEventTag,
       0.5,
       {
         ease: Expo.easeOut,
-        width: 879,
+        height: 300,
+        attr: { width: 854, height: 300 },
+        width: 854,
         x: -newSelectedX + 20
       },
       "spread"
