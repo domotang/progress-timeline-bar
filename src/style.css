@@ -3,12 +3,31 @@
   padding: 0;
   box-sizing: border-box;
   border: 1px solid #000;
-}
-
-svg {
-  border: 1px solid red;
+  /* background: red; */
 }
 
 h2 {
   top: 200px;
+}
+
+.parent {
+  /* position: relative; */
+}
+
+.proc-timeline {
+  position: relative;
+  /* z-index: 2; */
+}
+
+.proc-timeline-svg {
+  border: 1px solid red;
+  /* position: relative; */
+  z-index: -1;
+}
+
+.proc-timeline-data {
+  position: absolute;
+  /* z-index: 2; */
+  top: 140px;
+  left: 120px;
 }

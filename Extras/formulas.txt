@@ -1,0 +1,6 @@
+triangle height = h=(sqr3/2)side
+triangle center = (x,y) = (side/2, h/2)
+
+
+
+https://en.wikipedia.org/wiki/Equilateral_triangle
