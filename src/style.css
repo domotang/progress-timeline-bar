@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
   /* background: red; */
 }
 
@@ -20,14 +20,27 @@ h2 {
 }
 
 .proc-timeline-svg {
-  border: 1px solid red;
+  /* border: 1px solid red; */
   /* position: relative; */
   z-index: -1;
 }
 
-.proc-timeline-data {
+/* @keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+} */
+
+.event-details {
   position: absolute;
   /* z-index: 2; */
   top: 140px;
   left: 120px;
+  /* animation-name: fadein;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 1s; */
 }

@@ -150,18 +150,40 @@ function generateAniTimeLines(bar, eventElements) {
   }
 }
 
-function play(eventElements, bar, currentEvent, newSelectedEvent) {
+function play(
+  eventElements,
+  bar,
+  currentEvent,
+  newSelectedEvent,
+  setCurrentEvent,
+  setEventPage
+) {
+  var timeLineClosePromise = () => {
+    return new Promise(resolve => {
+      eventElements[
+        newSelectedEvent
+      ].animations.standard.vars.onComplete = () => {
+        resolve(true);
+      };
+      eventElements[newSelectedEvent].animations.standard.play();
+      if (currentEvent) {
+        eventElements[currentEvent].animations.standard.pause();
+        eventElements[currentEvent].animations.standard.reverse();
+      }
+    });
+  };
+
   TweenLite.to(bar, 0.2, {
     attr: {
       height: parseInt(eventElements[newSelectedEvent].expandedHeight) + 130
     },
     height: parseInt(eventElements[newSelectedEvent].expandedHeight) + 130
   });
-  eventElements[newSelectedEvent].animations.standard.play();
-  if (currentEvent) {
-    eventElements[currentEvent].animations.standard.pause();
-    eventElements[currentEvent].animations.standard.reverse();
-  }
+
+  timeLineClosePromise().then(() => {
+    setCurrentEvent(newSelectedEvent);
+    setEventPage(eventElements[newSelectedEvent].detailPages);
+  });
 }
 
 var controlAnimation = {

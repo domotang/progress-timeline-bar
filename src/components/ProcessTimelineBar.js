@@ -16,25 +16,29 @@ function ProcessTimeLineBar({ children }) {
   var width = xFactor - 15;
   var eventElements = useRef({});
 
-  var [barState, setBarState] = useState("detail");
+  // var [barMode, setBarMode] = useState("detail");
   var [currentEvent, setCurrentEvent] = useState();
   var [eventDomElements] = useState(() => processDomElementComponents());
+  var [eventPage, setEventPage] = useState(null);
 
   useEffect(() => {
     generateAniTimeLines(bar, eventElements.current);
+    console.log(eventElements.current);
   }, []);
 
   function eventClick(e) {
     let newSelectedEvent = e.target.parentNode.getAttribute("id");
 
+    setEventPage(null);
+
     controlAnimation.play(
       eventElements.current,
       bar,
       currentEvent,
-      newSelectedEvent
+      newSelectedEvent,
+      setCurrentEvent,
+      setEventPage
     );
-
-    setCurrentEvent(newSelectedEvent);
   }
 
   function processDomElementComponents() {
@@ -42,8 +46,8 @@ function ProcessTimeLineBar({ children }) {
       ? Children.map(children, (child, index) => {
           let eventName = `event-${index}`;
           eventElements.current[eventName] = {
+            detailPages: child.props.children,
             animations: { loading: {}, standard: {} },
-            api: {},
             expandedHeight: child.props.expandedHeight
           };
           return cloneElement(child, {
@@ -55,6 +59,8 @@ function ProcessTimeLineBar({ children }) {
         })
       : [];
   }
+
+  console.log("render");
 
   return (
     <div className="proc-timeline">
@@ -71,7 +77,7 @@ function ProcessTimeLineBar({ children }) {
         <title>procTrackBar</title>
         {eventDomElements}
       </svg>
-      <div className="proc-timeline-data">hello</div>
+      <div className="event-details">{eventPage}</div>
     </div>
   );
 }

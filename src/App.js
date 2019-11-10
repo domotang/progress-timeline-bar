@@ -1,6 +1,9 @@
 import React from "react";
 import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
+import TimelineEventPage from "./components/TimelineEventPage";
+import MaterialReceipt from "./components/details/MaterialReceipt";
+import ShipmentPackages from "./components/details/ShipmentPackages";
 
 function App() {
   return (
@@ -10,12 +13,16 @@ function App() {
           title="OPENED"
           color="#87a2c7"
           expandedHeight="280"
-        />
+        >
+          <TimelineEventPage title="opened details 1" />
+        </ProcessTimelineBarEvent>
         <ProcessTimelineBarEvent
           title="RECEIVED"
           color="#29abe2"
-          expandedHeight="600"
-        />
+          expandedHeight="300"
+        >
+          <MaterialReceipt />
+        </ProcessTimelineBarEvent>
         <ProcessTimelineBarEvent
           title="PACKED"
           color="#ffcc00"
@@ -34,15 +41,19 @@ function App() {
         <ProcessTimelineBarEvent
           title="ARRIVED"
           color="#64a338"
-          expandedHeight="400"
-        />
+          expandedHeight="270"
+        >
+          <ShipmentPackages />
+        </ProcessTimelineBarEvent>
       </ProcessTimelineBar>
       <ProcessTimelineBar expandedColor="#e3e3e3">
         <ProcessTimelineBarEvent
           title="OPENED"
           color="#87a2c7"
           expandedHeight="280"
-        />
+        >
+          <TimelineEventPage title="opened details 2" />
+        </ProcessTimelineBarEvent>
         <ProcessTimelineBarEvent
           title="RECEIVED"
           color="#29abe2"

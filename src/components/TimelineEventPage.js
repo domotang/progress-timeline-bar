@@ -1,7 +1,11 @@
 import React from "react";
 
-function TimelineEventPage() {
-  return <h1>Event Page</h1>;
+function TimelineEventPage({ title }) {
+  return (
+    <div>
+      <h1>{title}</h1>
+    </div>
+  );
 }
 
 export default TimelineEventPage;
