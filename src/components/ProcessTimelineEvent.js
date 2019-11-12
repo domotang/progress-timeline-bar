@@ -32,6 +32,15 @@ function ProcessTimelineEvent({ x, width, id, setRef, title, color, icon }) {
         stroke="#fff"
         strokeMiterlimit="10"
         strokeWidth="2"
+      ></path>
+
+      <path
+        className="iconSvg"
+        x={x + 151}
+        y="21"
+        fill="white"
+        d={icon}
+        transform={`translate(${x + 148}, 22) scale(.05)`}
       />
 
       {/* <path

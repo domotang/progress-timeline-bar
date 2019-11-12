@@ -143,6 +143,17 @@ function generateAniTimeLines(bar, eventElements) {
       },
       "spread"
     );
+    tl.to(
+      newSelectedEventIconSvg,
+      0.3,
+      {
+        ease: Expo.easeOut,
+        x: 16,
+        y: 108,
+        scale: 0.1
+      },
+      "spread"
+    );
     tl.to(eventElement.element, 0.3, { x: 0, y: 0, scale: 1 }, "spread");
 
     return tl;
@@ -196,3 +207,5 @@ var controlAnimation = {
 };
 
 export { generateAniTimeLines, controlAnimation };
+
+//test
