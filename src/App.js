@@ -54,7 +54,7 @@ function App() {
           title="SHIPPED"
           color="#9c2919"
           expandedHeight="800"
-          icon={iconCogs}
+          icon={FaRegCalendarCheck}
         />
         <ProcessTimelineBarEvent
           title="IN TRANSIT"

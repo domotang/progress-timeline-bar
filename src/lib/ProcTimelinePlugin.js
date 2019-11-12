@@ -132,25 +132,16 @@ function generateAniTimeLines(bar, eventElements) {
     }),
       "spread";
     tl.to(
-      newSelectedEventIcon,
-      0.3,
-      {
-        ease: Expo.easeOut,
-        x: 0,
-        y: 86,
-        scale: 2,
-        transformOrigin: "left-top"
-      },
-      "spread"
-    );
-    tl.to(
       newSelectedEventIconSvg,
       0.3,
       {
-        ease: Expo.easeOut,
-        x: 16,
-        y: 108,
-        scale: 0.1
+        attr: {
+          ease: Expo.easeOut,
+          x: 0,
+          y: 86,
+          scale: 2,
+          transformOrigin: "left-top"
+        }
       },
       "spread"
     );
@@ -182,7 +173,7 @@ function play(
       ].animations.standard.vars.onComplete = () => {
         resolve(true);
       };
-      eventElements[newSelectedEvent].animations.standard.timeScale(1);
+      eventElements[newSelectedEvent].animations.standard.timeScale(0.3);
       eventElements[newSelectedEvent].animations.standard.play();
       if (currentEvent) {
         eventElements[currentEvent].animations.standard.pause();
@@ -207,5 +198,3 @@ var controlAnimation = {
 };
 
 export { generateAniTimeLines, controlAnimation };
-
-//test

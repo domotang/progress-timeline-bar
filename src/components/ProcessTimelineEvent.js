@@ -2,7 +2,15 @@ import React from "react";
 
 import { MdAlarm } from "react-icons/md";
 
-function ProcessTimelineEvent({ x, width, id, setRef, title, color, icon }) {
+function ProcessTimelineEvent({
+  x,
+  width,
+  id,
+  setRef,
+  title,
+  color,
+  icon: Icon
+}) {
   return (
     <g id={`event-${id}`} ref={setRef} cursor="pointer">
       <path
@@ -23,34 +31,20 @@ function ProcessTimelineEvent({ x, width, id, setRef, title, color, icon }) {
       >
         {title}
       </text>
-      <path
-        className="icon"
-        id={`cir-${id}`}
-        d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
-        transform={`translate(${x + 140}, 10)`}
-        fill={color}
-        stroke="#fff"
-        strokeMiterlimit="10"
-        strokeWidth="2"
-      ></path>
 
-      <path
-        className="iconSvg"
-        x={x + 151}
-        y="21"
-        fill="white"
-        d={icon}
-        transform={`translate(${x + 148}, 22) scale(.05)`}
-      />
-
-      {/* <path
-        className="iconSvg"
-        fill="white"
-        x={x + 151}
-        y="21"
-        d={icon}
-        transform="scale(.05) translate(340, 10)"
-      /> */}
+      <svg className="iconSvg" x={x + 140} y="10">
+        <path
+          className="icon"
+          id={`cir-${id}`}
+          d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
+          // transform={`translate(${x + 140}, 10)`}
+          fill={color}
+          stroke="#fff"
+          strokeMiterlimit="10"
+          strokeWidth="2"
+        ></path>
+        <Icon fill="white" x="10" y="10" fontSize="30" />
+      </svg>
     </g>
   );
 }
