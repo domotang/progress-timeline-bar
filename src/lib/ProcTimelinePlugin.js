@@ -99,11 +99,7 @@ function generateAniTimeLines(bar, eventElements) {
     var newSelectedEventTag = eventElement.element.querySelector(".tag");
     var newSelectedEventTitle = eventElement.element.querySelector(".title");
     var newSelectedEventIcon = eventElement.element.querySelector(".icon");
-    var newSelectedEventIconSvg = eventElement.element.querySelector(
-      ".iconSvg"
-    );
-
-    console.log(newSelectedEventIconSvg);
+    var newSelectedEventIconGroup = eventElement.element.querySelector(".fart");
 
     let tl = new TimelineLite({ paused: true });
     // animate event
@@ -119,7 +115,7 @@ function generateAniTimeLines(bar, eventElements) {
     tl.to(
       eventElement.element,
       0.1,
-      { x: "+=10", y: "+=88", ease: Power0.easeOut },
+      { x: "+=6", y: "+=48", ease: Power0.easeOut },
       "drop"
     );
     tl.add("spread");
@@ -132,16 +128,29 @@ function generateAniTimeLines(bar, eventElements) {
     }),
       "spread";
     tl.to(
-      newSelectedEventIconSvg,
+      newSelectedEventIconGroup,
       0.3,
       {
         attr: {
-          ease: Expo.easeOut,
+          scale: 2
+        },
+        ease: Expo.easeOut,
+        scale: 2,
+        transformOrigin: "left-top"
+      },
+      "spread"
+    );
+    tl.to(
+      newSelectedEventIcon,
+      0.3,
+      {
+        attr: {
           x: 0,
-          y: 86,
+          y: 80,
           scale: 2,
           transformOrigin: "left-top"
-        }
+        },
+        ease: Expo.easeOut
       },
       "spread"
     );
@@ -173,7 +182,7 @@ function play(
       ].animations.standard.vars.onComplete = () => {
         resolve(true);
       };
-      eventElements[newSelectedEvent].animations.standard.timeScale(0.3);
+      eventElements[newSelectedEvent].animations.standard.timeScale(1);
       eventElements[newSelectedEvent].animations.standard.play();
       if (currentEvent) {
         eventElements[currentEvent].animations.standard.pause();

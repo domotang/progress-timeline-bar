@@ -32,18 +32,20 @@ function ProcessTimelineEvent({
         {title}
       </text>
 
-      <svg className="iconSvg" x={x + 140} y="10">
-        <path
-          className="icon"
-          id={`cir-${id}`}
-          d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
-          // transform={`translate(${x + 140}, 10)`}
-          fill={color}
-          stroke="#fff"
-          strokeMiterlimit="10"
-          strokeWidth="2"
-        ></path>
-        <Icon fill="white" x="10" y="10" fontSize="30" />
+      <svg className="icon" x={x + 138} y="8">
+        <g className="fart">
+          <path
+            className="iconShape"
+            id={`cir-${id}`}
+            d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
+            transform="translate(2,2)"
+            fill={color}
+            stroke="#fff"
+            strokeMiterlimit="10"
+            strokeWidth="2"
+          ></path>
+          <Icon className="iconSvg" fill="white" x="13" y="13" fontSize="28" />
+        </g>
       </svg>
     </g>
   );
