@@ -75,7 +75,7 @@ function generateAniTimeLines(bar, eventElements) {
       x: 20,
       y: 88,
       fill: "#e3e3e3",
-      morphSVG: `M10,10 h840 a6,6,0,0,1,6,6 v${eventElement.expandedHeight} a6,6,0,0,1,-6,6 h-840 a6,6,0,0,1,-6,-6 v-${eventElement.expandedHeight} a6,6,0,0,1,6,-6`,
+      morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${eventElement.expandedHeight} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${eventElement.expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
     }),
       "spread";
@@ -99,12 +99,18 @@ function generateAniTimeLines(bar, eventElements) {
     var newSelectedEventTag = eventElement.element.querySelector(".tag");
     var newSelectedEventTitle = eventElement.element.querySelector(".title");
     var newSelectedEventIcon = eventElement.element.querySelector(".icon");
+    var newSelectedEventIconSvg = eventElement.element.querySelector(
+      ".iconSvg"
+    );
+
+    console.log(newSelectedEventIconSvg);
+
     let tl = new TimelineLite({ paused: true });
-    //animate event
+    // animate event
     tl.add("shrink");
     tl.to(newSelectedEventTitle, 0.1, { opacity: 0 }, "shrink");
-    tl.to(eventElement.element, 0.3, {
-      x: "+=18",
+    tl.to(eventElement.element, 0.1, {
+      x: "+=20",
       y: "+=18",
       scale: 0.7
     }),
@@ -112,7 +118,7 @@ function generateAniTimeLines(bar, eventElements) {
     tl.add("drop");
     tl.to(
       eventElement.element,
-      0.3,
+      0.1,
       { x: "+=10", y: "+=88", ease: Power0.easeOut },
       "drop"
     );
@@ -121,7 +127,7 @@ function generateAniTimeLines(bar, eventElements) {
       x: 20,
       y: 88,
       fill: "#e3e3e3",
-      morphSVG: `M10,10 h840 a6,6,0,0,1,6,6 v${eventElement.expandedHeight} a6,6,0,0,1,-6,6 h-840 a6,6,0,0,1,-6,-6 v-${eventElement.expandedHeight} a6,6,0,0,1,6,-6`,
+      morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${eventElement.expandedHeight} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${eventElement.expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
     }),
       "spread";
@@ -165,6 +171,7 @@ function play(
       ].animations.standard.vars.onComplete = () => {
         resolve(true);
       };
+      eventElements[newSelectedEvent].animations.standard.timeScale(1);
       eventElements[newSelectedEvent].animations.standard.play();
       if (currentEvent) {
         eventElements[currentEvent].animations.standard.pause();
@@ -172,16 +179,14 @@ function play(
       }
     });
   };
-
-  TweenLite.to(bar, 0.2, {
+  TweenLite.to(bar, 0.3, {
     attr: {
       height: parseInt(eventElements[newSelectedEvent].expandedHeight) + 130
     },
     height: parseInt(eventElements[newSelectedEvent].expandedHeight) + 130
   });
-
+  setCurrentEvent(newSelectedEvent);
   timeLineClosePromise().then(() => {
-    setCurrentEvent(newSelectedEvent);
     setEventPage(eventElements[newSelectedEvent].detailPages);
   });
 }
