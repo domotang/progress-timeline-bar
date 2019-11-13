@@ -99,7 +99,9 @@ function generateAniTimeLines(bar, eventElements) {
     var newSelectedEventTag = eventElement.element.querySelector(".tag");
     var newSelectedEventTitle = eventElement.element.querySelector(".title");
     var newSelectedEventIcon = eventElement.element.querySelector(".icon");
-    var newSelectedEventIconGroup = eventElement.element.querySelector(".fart");
+    var newSelectedEventIconGroup = eventElement.element.querySelector(
+      ".icon-group"
+    );
 
     let tl = new TimelineLite({ paused: true });
     // animate event

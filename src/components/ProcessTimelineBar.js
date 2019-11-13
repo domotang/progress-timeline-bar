@@ -28,7 +28,10 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
   }, []);
 
   function eventClick(e) {
-    let newSelectedEvent = e.target.parentNode.getAttribute("id");
+    // let newSelectedEvent = e.currentTarget.getAttribute("id");
+    let newSelectedEvent = e.target
+      .closest(".top-element-node")
+      .getAttribute("id");
 
     setEventPage(null);
 
@@ -61,7 +64,7 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
       : [];
   }
 
-  console.log("render");
+  // console.log("render");
 
   return (
     <div className="proc-timeline">
@@ -124,3 +127,5 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
 }
 
 export default ProcessTimeLineBar;
+
+farty fart fart fart

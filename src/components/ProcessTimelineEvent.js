@@ -12,7 +12,12 @@ function ProcessTimelineEvent({
   icon: Icon
 }) {
   return (
-    <g id={`event-${id}`} ref={setRef} cursor="pointer">
+    <g
+      className="top-element-node"
+      id={`event-${id}`}
+      ref={setRef}
+      cursor="pointer"
+    >
       <path
         className="tag"
         id={`rect-${id}`}
@@ -33,7 +38,7 @@ function ProcessTimelineEvent({
       </text>
 
       <svg className="icon" x={x + 138} y="8">
-        <g className="fart">
+        <g className="icon-group">
           <path
             className="iconShape"
             id={`cir-${id}`}
