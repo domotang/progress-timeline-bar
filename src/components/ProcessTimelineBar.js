@@ -127,5 +127,3 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
 }
 
 export default ProcessTimeLineBar;
-
-farty fart fart fart
