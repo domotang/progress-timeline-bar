@@ -1,3 +1,4 @@
+"use strict";
 import React, {
   Children,
   cloneElement,
@@ -5,73 +6,64 @@ import React, {
   useEffect,
   useRef
 } from "react";
-import {
-  generateAniTimeLines,
-  controlAnimation
-} from "../lib/ProcTimelinePlugin";
+import { ProcessTimelineBarBuilder } from "../lib/ProcessTimelineBarFact";
 
 function ProcessTimeLineBar({ children, title, detail, status }) {
-  var bar = null;
   var xFactor = 880 / children.length;
   var width = xFactor - 15;
   var timelineBarWidth = status > 0 ? xFactor * status + 48 : 196;
-  var eventElements = useRef({});
 
-  // var [barMode, setBarMode] = useState("detail");
   var [currentEvent, setCurrentEvent] = useState();
   var [eventDomElements] = useState(() => processDomElementComponents());
+  var [procTimelineBar] = useState(() => ProcessTimelineBarBuilder());
   var [eventPage, setEventPage] = useState(null);
 
   useEffect(() => {
-    generateAniTimeLines(bar, eventElements.current);
-    console.log(eventElements.current);
+    console.log(procTimelineBar.getTimeline());
   }, []);
 
   function eventClick(e) {
-    // let newSelectedEvent = e.currentTarget.getAttribute("id");
     let newSelectedEvent = e.target
       .closest(".top-element-node")
       .getAttribute("id");
 
     setEventPage(null);
 
-    controlAnimation.play(
-      eventElements.current,
-      bar,
-      currentEvent,
-      newSelectedEvent,
-      setCurrentEvent,
-      setEventPage
-    );
+    procTimelineBar.eventClick(newSelectedEvent, currentEvent).then(() => {
+      setEventPage(procTimelineBar.getEvent(newSelectedEvent).detailPages);
+    });
+
+    setCurrentEvent(newSelectedEvent);
   }
 
   function processDomElementComponents() {
     return children
       ? Children.map(children, (child, index) => {
           let eventName = `event-${index}`;
-          eventElements.current[eventName] = {
+          let eventAttributes = {
+            eventName,
             detailPages: child.props.children,
-            animations: { loading: {}, standard: {} },
             expandedHeight: child.props.expandedHeight
           };
           return cloneElement(child, {
             x: index * xFactor,
             width,
             id: index,
-            setRef: div => (eventElements.current[eventName].element = div)
+            setRef: div =>
+              procTimelineBar.addEvent({ ...eventAttributes, element: div })
           });
         })
       : [];
   }
 
-  // console.log("render");
+  console.log("render");
 
   return (
     <div className="proc-timeline">
       <svg
         className="proc-timeline-svg"
         onClick={eventClick}
-        ref={div => (bar = div)}
+        ref={div => procTimelineBar.addBar(div)}
         id="tool-bar"
         data-name="proc-timeline-svg"
         xmlns="http://www.w3.org/2000/svg"
@@ -87,12 +79,6 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
             transform={`translate(6, 0)`}
             fill="#4E63C2"
           />
-          {/* <path
-            className="timeline-marker"
-            d={`M0,0 h50 a6,6,0,0,1,6,5 l3, 8 a6,6,0,0,1,-6,5 h-50 a6,6,0,0,1,-6,-5 l-3, -8 a6,6,0,0,1,6,-5`}
-            transform={`translate(${timelineBarWidth + 20}, 0)`}
-            fill="red"
-          /> */}
           {status > 0 ? (
             <circle cx={timelineBarWidth + 36} cy="9" r="9" fill="red" />
           ) : null}
