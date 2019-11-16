@@ -1,12 +1,6 @@
 "use strict";
-import React, {
-  Children,
-  cloneElement,
-  useState,
-  useEffect,
-  useRef
-} from "react";
-import { ProcessTimelineBarBuilder } from "../lib/ProcessTimelineBarFact";
+import React, { Children, cloneElement, useState } from "react";
+import { PTBBuilder } from "../lib/ProcessTimelineBarFact";
 
 function ProcessTimeLineBar({ children, title, detail, status }) {
   var xFactor = 880 / children.length;
@@ -15,12 +9,8 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
 
   var [currentEvent, setCurrentEvent] = useState();
   var [eventDomElements] = useState(() => processDomElementComponents());
-  var [procTimelineBar] = useState(() => ProcessTimelineBarBuilder());
+  var [procTimelineBar] = useState(() => PTBBuilder());
   var [eventPage, setEventPage] = useState(null);
-
-  useEffect(() => {
-    console.log(procTimelineBar.getTimeline());
-  }, []);
 
   function eventClick(e) {
     let newSelectedEvent = e.target
@@ -30,7 +20,7 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
     setEventPage(null);
 
     procTimelineBar.eventClick(newSelectedEvent, currentEvent).then(() => {
-      setEventPage(procTimelineBar.getEvent(newSelectedEvent).detailPages);
+      setEventPage(procTimelineBar.getDetailPages(newSelectedEvent));
     });
 
     setCurrentEvent(newSelectedEvent);
@@ -39,9 +29,8 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
   function processDomElementComponents() {
     return children
       ? Children.map(children, (child, index) => {
-          let eventName = `event-${index}`;
           let eventAttributes = {
-            eventName,
+            eventId: `event-${index}`,
             detailPages: child.props.children,
             expandedHeight: child.props.expandedHeight
           };
@@ -63,7 +52,7 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
       <svg
         className="proc-timeline-svg"
         onClick={eventClick}
-        ref={div => procTimelineBar.addBar(div)}
+        ref={div => procTimelineBar.addBar({ barId: "procBar", element: div })}
         id="tool-bar"
         data-name="proc-timeline-svg"
         xmlns="http://www.w3.org/2000/svg"

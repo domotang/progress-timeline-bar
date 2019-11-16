@@ -3,12 +3,13 @@ import { TimelineLite, TweenLite, Expo, Power0 } from "gsap/TweenMax";
 import { morphSVG } from "../lib/MorphSVGPlugin";
 
 function GeneratePTBEventAnimations(event) {
-  var eventAnimations = {};
-
   let loading = generateEventLoadingAniTimeline(event);
   let standard = generateEventStandardAniTimeline(event);
 
-  eventAnimations = { loading, standard };
+  var eventAnimations = [
+    { id: "loading", animation: loading },
+    { id: "standard", animation: standard }
+  ];
 
   return eventAnimations;
 }
@@ -104,7 +105,7 @@ function generateEventStandardAniTimeline(event) {
   let tl = new TimelineLite({ paused: true });
   // animate event
   tl.add("shrink");
-  tl.to(newSelectedEventTitle, 0.1, { opacity: 0 }, "shrink");
+  tl.to(newSelectedEventTitle, 0.1, { opacity: 0 }, "shrink", "start");
   tl.to(event.element, 0.1, {
     x: "+=20",
     y: "+=18",
@@ -185,4 +186,22 @@ function eventClickedAnimate(animationParams) {
   });
 }
 
-export { GeneratePTBEventAnimations, eventClickedAnimate };
+function animate(animation, onResolve) {
+  animation.vars.onComplete = () => {
+    onResolve.resolve();
+  };
+  animation.timeScale(1);
+  // animation.time(animation.totalDuration());
+  animation.play();
+}
+
+function animateBar(bar, expandedHeight) {
+  TweenLite.to(bar, 0.3, {
+    attr: {
+      height: expandedHeight + 130
+    },
+    height: expandedHeight + 130
+  });
+}
+
+export { GeneratePTBEventAnimations, animate, animateBar };
