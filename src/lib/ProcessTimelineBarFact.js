@@ -1,8 +1,10 @@
 "use strict";
 import {
   GeneratePTBEventAnimations,
+  generateBarAniTimeline,
   animate,
-  animateBar
+  animateBar,
+  animateState
 } from "./processTimelineBarPlugin";
 
 function PTBEvent(eventData) {
@@ -53,15 +55,24 @@ function PTBEvent(eventData) {
 
 function PTBBar(barData) {
   var barId = barData.barId,
-    element = barData.element;
+    element = barData.element,
+    animations = generateBarAniTimeline(barData);
 
   var publicAPI = {
-    clickEvent
+    setState,
+    clickEvent,
+    getAnimation
   };
   return publicAPI;
 
+  function setState() {}
+
   function clickEvent(expandedHeight) {
     animateBar(element, expandedHeight);
+  }
+
+  function getAnimation() {
+    return animations;
   }
 }
 
@@ -115,7 +126,7 @@ function PTBBuilder() {
   function setMode(mode) {
     switch (mode) {
       case "detail-header":
-        // animate(findAnimationById("standard"), "open", onResolve);
+        // animateState(bar.getAnimation(), "detail-header");
         break;
       case "detail":
         // animate(findAnimationById("standard"), "open", onResolve);

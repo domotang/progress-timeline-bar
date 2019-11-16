@@ -161,16 +161,18 @@ function generateEventStandardAniTimeline(event) {
 }
 
 function generateBarAniTimeline(bar) {
-  var barTag = bar.element.querySelector(".header-bar");
+  console.log("generating");
+  // console.log(bar.element.querySelector(".header-bar"));
+  // var barTag = bar.element.querySelector(".header-bar");
 
-  let tl = new TimelineLite({ paused: true });
-  tl.to(barTag, 0.3, {
-    morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -
-      157} a7,7,0,0,0,-7,7 l-20, 57 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`,
-    ease: Expo.easeOut
-  });
+  // let tl = new TimelineLite({ paused: true });
+  // tl.to(barTag, 0.3, {
+  //   morphSVG: `M0,0 h700 a6,6,0,0,1,6,5 l5, 13 h-${700 -
+  //     157} a7,7,0,0,0,-7,7 l-20, 57 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`,
+  //   ease: Expo.easeOut
+  // });
 
-  return tl;
+  // return tl;
 }
 
 function animate(animation, toState, onResolve) {
@@ -200,4 +202,28 @@ function animateBar(bar, expandedHeight) {
   });
 }
 
-export { GeneratePTBEventAnimations, animate, animateBar };
+function animateState(animation, toState, onResolve) {
+  // if (onResolve) {
+  //   animation.vars.onComplete = () => {
+  //     onResolve.resolve();
+  //   };
+  // }
+  animation.timeScale(1);
+
+  switch (toState) {
+    case "detail-header":
+      animation.play();
+      break;
+    case "detail":
+      animation.reverse();
+      break;
+  }
+}
+
+export {
+  GeneratePTBEventAnimations,
+  generateBarAniTimeline,
+  animate,
+  animateBar,
+  animateState
+};

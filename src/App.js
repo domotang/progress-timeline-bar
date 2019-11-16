@@ -20,7 +20,7 @@ function App() {
     <div className="parent">
       <div className="controls">
         <select
-          value="detail"
+          value={mode}
           onChange={e => setMode(e.target.value)}
           onBlur={e => setMode(e.target.value)}
         >

@@ -1,5 +1,5 @@
 "use strict";
-import React, { Children, cloneElement, useState } from "react";
+import React, { Children, cloneElement, useState, useEffect } from "react";
 import { PTBBuilder } from "../lib/ProcessTimelineBarFact";
 
 function ProcessTimeLineBar({
@@ -19,11 +19,20 @@ function ProcessTimeLineBar({
   var [procTimelineBar] = useState(() => PTBBuilder());
   var [eventPage, setEventPage] = useState(null);
 
+  useEffect(() => {
+    setMode(initMode);
+    procTimelineBar.setMode(initMode);
+  }, [initMode]);
+
   function eventClick(e) {
     let newSelectedEvent = e.target
       .closest(".top-element-node")
       .getAttribute("id");
-    console.log(newSelectedEvent);
+
+    if (newSelectedEvent === "bar") {
+      procTimelineBar.setMode("detail-header");
+      return;
+    }
 
     setEventPage(null);
 
@@ -46,6 +55,7 @@ function ProcessTimeLineBar({
             x: index * xFactor,
             width,
             id: index,
+            eventClick,
             setRef: div =>
               procTimelineBar.addEvent({ ...eventAttributes, element: div })
           });
@@ -59,7 +69,6 @@ function ProcessTimeLineBar({
     <div className="proc-timeline">
       <svg
         className="proc-timeline-svg"
-        onClick={eventClick}
         ref={div => procTimelineBar.addBar({ barId: "procBar", element: div })}
         id="tool-bar"
         data-name="proc-timeline-svg"
@@ -67,8 +76,9 @@ function ProcessTimeLineBar({
         width="1040"
         height="90"
       >
-        <g>
+        <g className="top-element-node" id={`bar`}>
           <path
+            onClick={eventClick}
             className="header-bar"
             id={`rect-`}
             d={`M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -

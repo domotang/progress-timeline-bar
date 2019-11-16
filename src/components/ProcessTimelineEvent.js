@@ -10,10 +10,12 @@ function ProcessTimelineEvent({
   setRef,
   title,
   color,
-  icon: Icon
+  icon: Icon,
+  eventClick
 }) {
   return (
     <g
+      onClick={eventClick}
       className="top-element-node"
       id={`event-${id}`}
       ref={setRef}
