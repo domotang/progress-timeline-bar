@@ -13,7 +13,7 @@ function PTBEvent(eventData) {
     detailPages = [eventData.detailPages];
 
   var publicAPI = {
-    setClickState,
+    setState,
     getExpandedHeight,
     getDetailPages,
     getEventId
@@ -36,15 +36,16 @@ function PTBEvent(eventData) {
     for (let i = 0; i < animations.length; i++) {
       if (animationId == animations[i].id) return animations[i].animation;
     }
+    return null;
   }
 
-  function setClickState(toState, onResolve) {
+  function setState(toState, onResolve) {
     switch (toState) {
       case "open":
-        animate(findAnimationById("standard"), onResolve);
+        animate(findAnimationById("standard"), "open", onResolve);
         break;
       case "close":
-        animate(findAnimationById("standard"), onResolve);
+        animate(findAnimationById("standard"), "close");
         break;
     }
   }
@@ -68,14 +69,15 @@ function PTBBuilder() {
   var bar = null,
     events = [],
     currentEvent = null,
-    mode = "detail";
+    currentMode = "detail";
 
   var publicAPI = {
     getDetailPages,
     addBar,
     addEvent,
     getTimeline,
-    eventClick
+    setEvent,
+    setMode
   };
   return publicAPI;
 
@@ -83,6 +85,7 @@ function PTBBuilder() {
     for (let i = 0; i < events.length; i++) {
       if (eventId == events[i].getEventId()) return events[i];
     }
+    return null;
   }
 
   function addBar(barData) {
@@ -98,14 +101,33 @@ function PTBBuilder() {
     return findEventById(eventId).getDetailPages();
   }
 
-  function eventClick(eventId) {
+  function setEvent(eventId) {
     return new Promise(resolve => {
       var event = findEventById(eventId);
       let onResolve = { resolve, currentEvent };
-      event.setClickState("open", onResolve);
+      if (currentEvent) currentEvent.setState("close");
+      event.setState("open", onResolve);
       bar.clickEvent(event.getExpandedHeight());
-      currentEvent = eventId;
+      currentEvent = event;
     });
+  }
+
+  function setMode(mode) {
+    switch (mode) {
+      case "detail-header":
+        // animate(findAnimationById("standard"), "open", onResolve);
+        break;
+      case "detail":
+        // animate(findAnimationById("standard"), "open", onResolve);
+        break;
+      case "large":
+        // animate(findAnimationById("standard"), "close");
+        break;
+      case "small":
+        // animate(findAnimationById("standard"), "close");
+        break;
+    }
+    currentMode = mode;
   }
 
   function getTimeline() {

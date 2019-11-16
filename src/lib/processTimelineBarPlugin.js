@@ -161,38 +161,34 @@ function generateEventStandardAniTimeline(event) {
 }
 
 function generateBarAniTimeline(bar) {
+  var barTag = bar.element.querySelector(".header-bar");
+
   let tl = new TimelineLite({ paused: true });
-  tl.to(bar, 0.2, { attr: { height: 400 }, height: 400 });
+  tl.to(barTag, 0.3, {
+    morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -
+      157} a7,7,0,0,0,-7,7 l-20, 57 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`,
+    ease: Expo.easeOut
+  });
 
   return tl;
 }
 
-function eventClickedAnimate(animationParams) {
-  animationParams.selectedEvent.vars.onComplete = () => {
-    animationParams.resolve(true);
-  };
-  animationParams.selectedEvent.timeScale(1);
-  animationParams.selectedEvent.play();
-  if (animationParams.currentEvent) {
-    animationParams.currentEvent.pause();
-    animationParams.currentEvent.reverse();
+function animate(animation, toState, onResolve) {
+  if (onResolve) {
+    animation.vars.onComplete = () => {
+      onResolve.resolve();
+    };
   }
-
-  TweenLite.to(animationParams.bar, 0.3, {
-    attr: {
-      height: animationParams.expandedHeight + 130
-    },
-    height: animationParams.expandedHeight + 130
-  });
-}
-
-function animate(animation, onResolve) {
-  animation.vars.onComplete = () => {
-    onResolve.resolve();
-  };
   animation.timeScale(1);
   // animation.time(animation.totalDuration());
-  animation.play();
+  switch (toState) {
+    case "open":
+      animation.play();
+      break;
+    case "close":
+      animation.reverse();
+      break;
+  }
 }
 
 function animateBar(bar, expandedHeight) {

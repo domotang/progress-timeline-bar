@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
 import TimelineEventPage from "./components/TimelineEventPage";
@@ -14,12 +14,27 @@ import {
 import { MdAlarm } from "react-icons/md";
 
 function App() {
+  var [mode, setMode] = useState("detail");
+
   return (
     <div className="parent">
+      <div className="controls">
+        <select
+          value="detail"
+          onChange={e => setMode(e.target.value)}
+          onBlur={e => setMode(e.target.value)}
+        >
+          <option value="detail-header">Detail Header</option>
+          <option value="detail">Detail</option>
+          <option value="large">Large</option>
+          <option value="small">Small</option>
+        </select>
+      </div>
       <ProcessTimelineBar
         title="SHIPMENT"
         detail="HOU1-40264"
         expandedColor="#e3e3e3"
+        mode={mode}
         status="3"
       >
         <ProcessTimelineBarEvent
@@ -69,6 +84,7 @@ function App() {
         title="SHIPMENT"
         detail="HOU1-40265"
         expandedColor="#e3e3e3"
+        mode="detail"
         status="6"
       >
         <ProcessTimelineBarEvent
@@ -118,6 +134,7 @@ function App() {
         title="SHIPMENT"
         detail="HOU1-40267"
         expandedColor="#e3e3e3"
+        mode="detail"
         status="4"
       >
         <ProcessTimelineBarEvent
@@ -167,6 +184,7 @@ function App() {
         title="SHIPMENT"
         detail="HOU1-40267"
         expandedColor="#e3e3e3"
+        mode="detail"
         status="4"
       >
         <ProcessTimelineBarEvent

@@ -2,11 +2,18 @@
 import React, { Children, cloneElement, useState } from "react";
 import { PTBBuilder } from "../lib/ProcessTimelineBarFact";
 
-function ProcessTimeLineBar({ children, title, detail, status }) {
+function ProcessTimeLineBar({
+  children,
+  title,
+  detail,
+  status,
+  mode: initMode
+}) {
   var xFactor = 880 / children.length;
   var width = xFactor - 15;
   var timelineBarWidth = status > 0 ? xFactor * status + 48 : 196;
 
+  var [mode, setMode] = useState(initMode);
   var [currentEvent, setCurrentEvent] = useState();
   var [eventDomElements] = useState(() => processDomElementComponents());
   var [procTimelineBar] = useState(() => PTBBuilder());
@@ -16,10 +23,11 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
     let newSelectedEvent = e.target
       .closest(".top-element-node")
       .getAttribute("id");
+    console.log(newSelectedEvent);
 
     setEventPage(null);
 
-    procTimelineBar.eventClick(newSelectedEvent, currentEvent).then(() => {
+    procTimelineBar.setEvent(newSelectedEvent, currentEvent).then(() => {
       setEventPage(procTimelineBar.getDetailPages(newSelectedEvent));
     });
 
@@ -61,7 +69,7 @@ function ProcessTimeLineBar({ children, title, detail, status }) {
       >
         <g>
           <path
-            className="timeline-header"
+            className="header-bar"
             id={`rect-`}
             d={`M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -
               157} a7,7,0,0,0,-7,7 l-20, 57 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
