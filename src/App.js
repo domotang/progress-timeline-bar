@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PTBMaterialTracker from "./lib/PTBmaterialTracker";
 import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
 import TimelineEventPage from "./components/TimelineEventPage";
@@ -31,6 +32,8 @@ function App() {
         </select>
       </div>
       <ProcessTimelineBar
+        template={PTBMaterialTracker}
+        barWidth={{ large: 1040, small: 400 }}
         title="SHIPMENT"
         detail="HOU1-40264"
         expandedColor="#e3e3e3"
@@ -81,6 +84,8 @@ function App() {
         </ProcessTimelineBarEvent>
       </ProcessTimelineBar>
       <ProcessTimelineBar
+        template={PTBMaterialTracker}
+        barWidth={{ large: 1040, small: 400 }}
         title="SHIPMENT"
         detail="HOU1-40265"
         expandedColor="#e3e3e3"
@@ -131,6 +136,8 @@ function App() {
         </ProcessTimelineBarEvent>
       </ProcessTimelineBar>
       <ProcessTimelineBar
+        template={PTBMaterialTracker}
+        barWidth={{ large: 1040, small: 400 }}
         title="SHIPMENT"
         detail="HOU1-40267"
         expandedColor="#e3e3e3"
@@ -181,6 +188,8 @@ function App() {
         </ProcessTimelineBarEvent>
       </ProcessTimelineBar>
       <ProcessTimelineBar
+        template={PTBMaterialTracker}
+        barWidth={{ large: 1040, small: 400 }}
         title="SHIPMENT"
         detail="HOU1-40267"
         expandedColor="#e3e3e3"

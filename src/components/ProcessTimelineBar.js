@@ -3,6 +3,8 @@ import React, { Children, cloneElement, useState, useEffect } from "react";
 import { PTBBuilder } from "../lib/ProcessTimelineBarFact";
 
 function ProcessTimeLineBar({
+  template,
+  barWidth,
   children,
   title,
   detail,
@@ -13,6 +15,7 @@ function ProcessTimeLineBar({
   var width = xFactor - 15;
   var timelineBarWidth = status > 0 ? xFactor * status + 48 : 196;
 
+  var [templateAPI] = useState(() => template(barWidth));
   var [mode, setMode] = useState(initMode);
   var [currentEvent, setCurrentEvent] = useState();
   var [eventDomElements] = useState(() => processDomElementComponents());

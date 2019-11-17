@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 import {
   GeneratePTBEventAnimations,
   generateBarAniTimeline,
   animate,
   animateBar,
   animateState
-} from "./processTimelineBarPlugin";
+} from './processTimelineBarPlugin';
 
 function PTBEvent(eventData) {
   var eventId = eventData.eventId,
@@ -48,11 +48,11 @@ function PTBEvent(eventData) {
 
   function setState(toState, onResolve) {
     switch (toState) {
-      case "open":
-        animate(findAnimationById("standard"), "open", onResolve);
+      case 'open':
+        animate(findAnimationById('standard'), 'open', onResolve);
         break;
-      case "close":
-        animate(findAnimationById("standard"), "close");
+      case 'close':
+        animate(findAnimationById('standard'), 'close');
         break;
     }
   }
@@ -85,7 +85,7 @@ function PTBBuilder() {
   var bar = null,
     events = [],
     currentEvent = null,
-    currentMode = "detail",
+    currentMode = 'detail',
     animations = null;
 
   var publicAPI = {
@@ -131,8 +131,8 @@ function PTBBuilder() {
     return new Promise(resolve => {
       var event = findEventById(eventId);
       let onResolve = { resolve, currentEvent };
-      if (currentEvent) currentEvent.setState("close");
-      event.setState("open", onResolve);
+      if (currentEvent) currentEvent.setState('close');
+      event.setState('open', onResolve);
       bar.clickEvent(event.getExpandedHeight());
       currentEvent = event;
     });
@@ -140,16 +140,16 @@ function PTBBuilder() {
 
   function setMode(mode) {
     switch (mode) {
-      case "detail-header":
-        animateState(animations, "detail-header");
+      case 'detail-header':
+        animateState(animations, 'detail-header');
         break;
-      case "detail":
+      case 'detail':
         // animate(findAnimationById("standard"), "open", onResolve);
         break;
-      case "large":
+      case 'large':
         // animate(findAnimationById("standard"), "close");
         break;
-      case "small":
+      case 'small':
         // animate(findAnimationById("standard"), "close");
         break;
     }
