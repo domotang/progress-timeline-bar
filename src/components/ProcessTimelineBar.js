@@ -24,6 +24,10 @@ function ProcessTimeLineBar({
     procTimelineBar.setMode(initMode);
   }, [initMode]);
 
+  useEffect(() => {
+    procTimelineBar.generateAnimations();
+  }, []);
+
   function eventClick(e) {
     let newSelectedEvent = e.target
       .closest(".top-element-node")

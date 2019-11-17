@@ -160,19 +160,27 @@ function generateEventStandardAniTimeline(event) {
   return tl;
 }
 
-function generateBarAniTimeline(bar) {
-  console.log("generating");
-  // console.log(bar.element.querySelector(".header-bar"));
-  // var barTag = bar.element.querySelector(".header-bar");
+function generateBarAniTimeline(bar, events) {
+  var barTag = bar.querySelector(".header-bar");
 
-  // let tl = new TimelineLite({ paused: true });
-  // tl.to(barTag, 0.3, {
-  //   morphSVG: `M0,0 h700 a6,6,0,0,1,6,5 l5, 13 h-${700 -
-  //     157} a7,7,0,0,0,-7,7 l-20, 57 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`,
-  //   ease: Expo.easeOut
-  // });
+  let tl = new TimelineLite({ paused: true });
 
-  // return tl;
+  tl.add("grow");
+  tl.to(
+    barTag,
+    0.3,
+    {
+      morphSVG: `M0,0 h1000 a6,6,0,0,1,6,5 v${100 + 13} h-${1000 -
+        162} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
+        76} a6,6,0,0,1,6,-6`,
+      ease: Expo.easeOut
+    },
+    "grow"
+  );
+  tl.to(bar, 0.3, { height: 190, ease: Expo.easeOut }, "grow");
+  tl.to(events, 0.3, { y: 100, ease: Expo.easeOut }, "grow");
+
+  return tl;
 }
 
 function animate(animation, toState, onResolve) {
@@ -203,11 +211,11 @@ function animateBar(bar, expandedHeight) {
 }
 
 function animateState(animation, toState, onResolve) {
-  // if (onResolve) {
-  //   animation.vars.onComplete = () => {
-  //     onResolve.resolve();
-  //   };
-  // }
+  if (onResolve) {
+    animation.vars.onComplete = () => {
+      onResolve.resolve();
+    };
+  }
   animation.timeScale(1);
 
   switch (toState) {

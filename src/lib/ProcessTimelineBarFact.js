@@ -18,7 +18,8 @@ function PTBEvent(eventData) {
     setState,
     getExpandedHeight,
     getDetailPages,
-    getEventId
+    getEventId,
+    getElement
   };
   return publicAPI;
 
@@ -32,6 +33,10 @@ function PTBEvent(eventData) {
 
   function getEventId() {
     return eventId;
+  }
+
+  function getElement() {
+    return element;
   }
 
   function findAnimationById(animationId) {
@@ -56,12 +61,12 @@ function PTBEvent(eventData) {
 function PTBBar(barData) {
   var barId = barData.barId,
     element = barData.element,
-    animations = generateBarAniTimeline(barData);
+    animations = null;
 
   var publicAPI = {
     setState,
     clickEvent,
-    getAnimation
+    getElement
   };
   return publicAPI;
 
@@ -71,8 +76,8 @@ function PTBBar(barData) {
     animateBar(element, expandedHeight);
   }
 
-  function getAnimation() {
-    return animations;
+  function getElement() {
+    return element;
   }
 }
 
@@ -80,7 +85,8 @@ function PTBBuilder() {
   var bar = null,
     events = [],
     currentEvent = null,
-    currentMode = "detail";
+    currentMode = "detail",
+    animations = null;
 
   var publicAPI = {
     getDetailPages,
@@ -88,7 +94,8 @@ function PTBBuilder() {
     addEvent,
     getTimeline,
     setEvent,
-    setMode
+    setMode,
+    generateAnimations
   };
   return publicAPI;
 
@@ -100,7 +107,7 @@ function PTBBuilder() {
   }
 
   function addBar(barData) {
-    bar = PTBBar(barData);
+    if (!bar) bar = PTBBar(barData);
   }
 
   function addEvent(eventData) {
@@ -110,6 +117,14 @@ function PTBBuilder() {
 
   function getDetailPages(eventId) {
     return findEventById(eventId).getDetailPages();
+  }
+
+  function generateAnimations() {
+    var eventElements = events.map(event => {
+      return event.getElement();
+    });
+    console.log(eventElements);
+    animations = generateBarAniTimeline(bar.getElement(), eventElements);
   }
 
   function setEvent(eventId) {
@@ -126,7 +141,7 @@ function PTBBuilder() {
   function setMode(mode) {
     switch (mode) {
       case "detail-header":
-        // animateState(bar.getAnimation(), "detail-header");
+        animateState(animations, "detail-header");
         break;
       case "detail":
         // animate(findAnimationById("standard"), "open", onResolve);
