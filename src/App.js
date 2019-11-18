@@ -194,7 +194,7 @@ function App() {
         detail="HOU1-40267"
         expandedColor="#e3e3e3"
         mode="detail"
-        status="4"
+        status="5"
       >
         <ProcessTimelineBarEvent
           title="OPENED"
