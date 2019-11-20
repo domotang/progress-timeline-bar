@@ -12,7 +12,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   var animations = {};
   var openedEvent = null;
   var currentState = "detail";
-  var xHeight = 200;
+  var yHeight = 0;
   var eventDetailTop = 140;
 
   //*************component templates*****************
@@ -64,7 +64,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
             >
               {props.detail}
             </text>
-            {props.eventDomElements}
+            <g className="events">{props.eventDomElements}</g>
           </g>
         </svg>
       );
@@ -130,7 +130,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
 
   //*************component animations*****************
 
-  function generateEventLoadingAniTimeline({ tag, title, icon }) {
+  function generateEventLoadingAniTimeline(controleNodes, expandedHeight) {
+    let { tag, title, icon } = controleNodes;
     let tl = new TimelineLite({ paused: true });
     //animate event
     tl.add("shrink");
@@ -179,7 +180,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       x: 20,
       y: 88,
       fill: "#e3e3e3",
-      morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${600} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${600} a6,6,0,0,1,6,-6`,
+      morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
     }),
       "spread";
@@ -199,13 +200,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     return tl;
   }
 
-  function generateEventStandardAniTimeline({
-    event,
-    tag,
-    title,
-    icon,
-    iconGroup
-  }) {
+  function generateEventStandardAniTlOpen(controleNodes, expandedHeight) {
+    let { event, tag, title, icon, iconGroup } = controleNodes;
     let tl = new TimelineLite({ paused: true });
     // animate event
     tl.add("shrink");
@@ -221,7 +217,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     tl.add("spread");
     tl.to(tag, 0.3, {
       x: 20,
-      y: 88,
+      y: "+=65",
       fill: "#e3e3e3",
       morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
@@ -254,14 +250,13 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       },
       "spread"
     );
-    tl.to(event, 0.3, { x: 0, y: 0, scale: 1 }, "spread");
+    tl.to(event, 0.3, { x: "-=26", y: "-=66", scale: 1 }, "spread");
 
     return tl;
   }
 
   function generateBarDetailAniTimeline() {
-    var { barElement, tag: barTag } = bar.getNodes();
-    var events = getEventsNodes();
+    var { barElement, tag: barTag, events } = bar.getNodes();
 
     let tl = new TimelineLite({ paused: true });
 
@@ -277,7 +272,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       },
       "grow"
     );
-    tl.to(barElement, 0.6, { height: 190, ease: Expo.easeOut }, "grow");
+    // tl.to(barElement, 0.6, { height: 190, ease: Expo.easeOut }, "grow");
     tl.to(events, 0.6, { y: 100, ease: Expo.easeOut }, "grow");
 
     return tl;
@@ -288,7 +283,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   function regBar(barElement) {
     var controlNodes = {
       barElement,
-      tag: barElement.querySelector(".header-bar")
+      tag: barElement.querySelector(".header-bar"),
+      events: barElement.querySelector(".events")
     };
 
     var internalBarAPI = {
@@ -302,7 +298,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     }
   }
 
-  function regEvent(event) {
+  function regEvent(event, type) {
+    var currentExpandedHeight = 0;
     var controlNodes = {
       event,
       tag: event.querySelector(".tag"),
@@ -311,33 +308,30 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       iconGroup: event.querySelector(".icon-group")
     };
 
-    var animations = [
-      {
-        id: "loading",
-        animation: generateEventLoadingAniTimeline(controlNodes)
-      },
-      {
-        id: "standard",
-        animation: generateEventStandardAniTimeline(controlNodes)
-      }
-    ];
-
-    var internalEventAPI = { getNodes, getAnimations, close };
+    var internalEventAPI = {
+      getNodes,
+      close,
+      getExpandedHeight
+    };
 
     events.push(internalEventAPI);
+
+    var animation = null;
 
     var eventAPI = {
       open
     };
     return eventAPI;
 
-    function open(type, onResolve) {
+    function open(expandedHeight, onResolve) {
+      updateBarHeight(expandedHeight + 130 + yHeight);
+      currentExpandedHeight = expandedHeight;
       if (openedEvent) openedEvent.close();
-      var animation =
+      animation =
         type === "loading"
-          ? animations[0].animation
+          ? generateEventLoadingAniTimeline(controlNodes)
           : type === "standard"
-          ? animations[1].animation
+          ? generateEventStandardAniTlOpen(controlNodes, expandedHeight)
           : null;
       if (onResolve) {
         animation.vars.onComplete = () => {
@@ -351,18 +345,17 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     }
 
     function close() {
-      animations[1].animation.reverse();
+      animation.reverse();
     }
 
     function getNodes() {
       return controlNodes;
     }
 
-    function getAnimations() {
-      return animations;
+    function getExpandedHeight() {
+      return currentExpandedHeight;
     }
   }
-
   //*************public methods*****************
 
   function setState(state) {
@@ -375,7 +368,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   }
 
   function getEventDetailTop() {
-    return eventDetailTop;
+    return yHeight + 100;
   }
 
   function generateAnimations() {
@@ -385,12 +378,24 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   //*************local methods*****************
 
   function setHeaderState() {
-    xHeight = 100;
+    yHeight = 100;
+    updateBarHeight(
+      (openedEvent ? openedEvent.getExpandedHeight() : 0) + 130 + yHeight
+    );
     animations.play();
   }
 
-  function getEventsNodes() {
-    return events.map(event => event.getNodes().event);
+  // function getEventsNodes() {
+  //   return events.map(event => event.getNodes().event);
+  // }
+
+  function updateBarHeight(height) {
+    TweenLite.to(bar.getNodes().barElement, 0.3, {
+      attr: {
+        height: height
+      },
+      height: height
+    });
   }
 
   var publicAPI = {

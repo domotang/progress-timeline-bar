@@ -1,18 +1,19 @@
 "use strict";
-import { animateBar, animateState } from "./processTimelineBarPlugin";
 
 function PTBEvent(eventData, templateAPI) {
   var { open } = templateAPI.regEvent(
     eventData.element,
-    parseInt(eventData.expandedHeight)
+    eventData.type ? eventData.type : "standard"
   );
   var eventId = eventData.eventId,
-    detailPages = [eventData.detailPages];
+    detailPages = [eventData.detailPages],
+    expandedHeight = parseInt(eventData.expandedHeight);
 
   var publicAPI = {
     setState,
     getDetailPages,
-    getEventId
+    getEventId,
+    getExpandedHeight
   };
   return publicAPI;
 
@@ -24,10 +25,14 @@ function PTBEvent(eventData, templateAPI) {
     return eventId;
   }
 
+  function getExpandedHeight() {
+    return expandedHeight;
+  }
+
   function setState(toState, onResolve) {
     switch (toState) {
       case "open":
-        open("standard", onResolve);
+        open(expandedHeight, onResolve);
         break;
     }
   }
@@ -41,16 +46,11 @@ function PTBBar(barData, templateAPI) {
 
   var publicAPI = {
     setState,
-    clickEvent,
     getElement
   };
   return publicAPI;
 
   function setState() {}
-
-  function clickEvent() {
-    animateBar(element);
-  }
 
   function getElement() {
     return element;
@@ -61,8 +61,7 @@ function PTBBuilder(templateAPI) {
   var bar = null,
     events = [],
     currentEvent = null,
-    currentMode = "detail",
-    animations = null;
+    currentMode = "detail";
 
   var publicAPI = {
     getDetailPages,
@@ -103,7 +102,6 @@ function PTBBuilder(templateAPI) {
       var event = findEventById(eventId);
       let onResolve = { resolve, currentEvent };
       event.setState("open", onResolve);
-      bar.clickEvent(event.getExpandedHeight());
       currentEvent = event;
     });
   }
