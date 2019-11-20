@@ -13,6 +13,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   var openedEvent = null;
   var currentState = "detail";
   var xHeight = 200;
+  var eventDetailTop = 140;
 
   //*************component templates*****************
 
@@ -222,7 +223,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       x: 20,
       y: 88,
       fill: "#e3e3e3",
-      morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${600} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${600} a6,6,0,0,1,6,-6`,
+      morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
     }),
       "spread";
@@ -373,6 +374,10 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     currentState = state;
   }
 
+  function getEventDetailTop() {
+    return eventDetailTop;
+  }
+
   function generateAnimations() {
     animations = generateBarDetailAniTimeline();
   }
@@ -394,7 +399,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     regBar,
     regEvent,
     setState,
-    generateAnimations
+    generateAnimations,
+    getEventDetailTop
   };
   return publicAPI;
 }

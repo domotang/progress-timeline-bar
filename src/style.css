@@ -42,8 +42,8 @@ h2 {
 .event-details {
   position: absolute;
   /* z-index: 2; */
-  top: 140px;
-  left: 120px;
+  /* top: 140px; */
+  left: 220px;
   /* animation-name: fadein;
   animation-iteration-count: 1;
   animation-timing-function: ease-in;

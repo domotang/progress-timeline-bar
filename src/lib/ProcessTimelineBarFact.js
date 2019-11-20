@@ -1,15 +1,16 @@
-'use strict';
-import { animateBar, animateState } from './processTimelineBarPlugin';
+"use strict";
+import { animateBar, animateState } from "./processTimelineBarPlugin";
 
 function PTBEvent(eventData, templateAPI) {
-  var { open } = templateAPI.regEvent(eventData.element);
+  var { open } = templateAPI.regEvent(
+    eventData.element,
+    parseInt(eventData.expandedHeight)
+  );
   var eventId = eventData.eventId,
-    expandedHeight = parseInt(eventData.expandedHeight),
     detailPages = [eventData.detailPages];
 
   var publicAPI = {
     setState,
-    getExpandedHeight,
     getDetailPages,
     getEventId
   };
@@ -19,18 +20,14 @@ function PTBEvent(eventData, templateAPI) {
     return detailPages;
   }
 
-  function getExpandedHeight() {
-    return expandedHeight;
-  }
-
   function getEventId() {
     return eventId;
   }
 
   function setState(toState, onResolve) {
     switch (toState) {
-      case 'open':
-        open('standard', onResolve);
+      case "open":
+        open("standard", onResolve);
         break;
     }
   }
@@ -51,8 +48,8 @@ function PTBBar(barData, templateAPI) {
 
   function setState() {}
 
-  function clickEvent(expandedHeight) {
-    animateBar(element, expandedHeight);
+  function clickEvent() {
+    animateBar(element);
   }
 
   function getElement() {
@@ -64,7 +61,7 @@ function PTBBuilder(templateAPI) {
   var bar = null,
     events = [],
     currentEvent = null,
-    currentMode = 'detail',
+    currentMode = "detail",
     animations = null;
 
   var publicAPI = {
@@ -72,8 +69,8 @@ function PTBBuilder(templateAPI) {
     addBar,
     addEvent,
     setEvent,
-    setMode
-    // generateAnimations
+    setMode,
+    getEventDetailTop
   };
   return publicAPI;
 
@@ -97,18 +94,15 @@ function PTBBuilder(templateAPI) {
     return findEventById(eventId).getDetailPages();
   }
 
-  // function generateAnimations() {
-  //   var eventElements = events.map(event => {
-  //     return event.getElement();
-  //   });
-  //   animations = generateBarAniTimeline(bar.getElement(), eventElements);
-  // }
+  function getEventDetailTop() {
+    return templateAPI.getEventDetailTop();
+  }
 
   function setEvent(eventId) {
     return new Promise(resolve => {
       var event = findEventById(eventId);
       let onResolve = { resolve, currentEvent };
-      event.setState('open', onResolve);
+      event.setState("open", onResolve);
       bar.clickEvent(event.getExpandedHeight());
       currentEvent = event;
     });
@@ -116,16 +110,16 @@ function PTBBuilder(templateAPI) {
 
   function setMode(mode) {
     switch (mode) {
-      case 'detail-header':
-        templateAPI.setState('detail-header');
+      case "detail-header":
+        templateAPI.setState("detail-header");
         break;
-      case 'detail':
+      case "detail":
         // animate(findAnimationById("standard"), "open", onResolve);
         break;
-      case 'large':
+      case "large":
         // animate(findAnimationById("standard"), "close");
         break;
-      case 'small':
+      case "small":
         // animate(findAnimationById("standard"), "close");
         break;
     }
