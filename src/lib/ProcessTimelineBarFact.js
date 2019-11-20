@@ -1,16 +1,9 @@
-"use strict";
-import {
-  GeneratePTBEventAnimations,
-  generateBarAniTimeline,
-  animate,
-  animateBar,
-  animateState
-} from "./processTimelineBarPlugin";
+'use strict';
+import { animateBar, animateState } from './processTimelineBarPlugin';
 
-function PTBEvent(eventData) {
+function PTBEvent(eventData, templateAPI) {
+  var { open } = templateAPI.regEvent(eventData.element);
   var eventId = eventData.eventId,
-    element = eventData.element,
-    animations = GeneratePTBEventAnimations(eventData),
     expandedHeight = parseInt(eventData.expandedHeight),
     detailPages = [eventData.detailPages];
 
@@ -18,8 +11,7 @@ function PTBEvent(eventData) {
     setState,
     getExpandedHeight,
     getDetailPages,
-    getEventId,
-    getElement
+    getEventId
   };
   return publicAPI;
 
@@ -35,30 +27,17 @@ function PTBEvent(eventData) {
     return eventId;
   }
 
-  function getElement() {
-    return element;
-  }
-
-  function findAnimationById(animationId) {
-    for (let i = 0; i < animations.length; i++) {
-      if (animationId == animations[i].id) return animations[i].animation;
-    }
-    return null;
-  }
-
   function setState(toState, onResolve) {
     switch (toState) {
-      case "open":
-        animate(findAnimationById("standard"), "open", onResolve);
-        break;
-      case "close":
-        animate(findAnimationById("standard"), "close");
+      case 'open':
+        open('standard', onResolve);
         break;
     }
   }
 }
 
-function PTBBar(barData) {
+function PTBBar(barData, templateAPI) {
+  templateAPI.regBar(barData.element);
   var barId = barData.barId,
     element = barData.element,
     animations = null;
@@ -85,17 +64,16 @@ function PTBBuilder(templateAPI) {
   var bar = null,
     events = [],
     currentEvent = null,
-    currentMode = "detail",
+    currentMode = 'detail',
     animations = null;
 
   var publicAPI = {
     getDetailPages,
     addBar,
     addEvent,
-    getTimeline,
     setEvent,
-    setMode,
-    generateAnimations
+    setMode
+    // generateAnimations
   };
   return publicAPI;
 
@@ -107,11 +85,11 @@ function PTBBuilder(templateAPI) {
   }
 
   function addBar(barData) {
-    if (!bar) bar = PTBBar(barData);
+    if (!bar) bar = PTBBar(barData, templateAPI);
   }
 
   function addEvent(eventData) {
-    var newEvent = PTBEvent(eventData);
+    var newEvent = PTBEvent(eventData, templateAPI);
     events.push(newEvent);
   }
 
@@ -119,20 +97,18 @@ function PTBBuilder(templateAPI) {
     return findEventById(eventId).getDetailPages();
   }
 
-  function generateAnimations() {
-    var eventElements = events.map(event => {
-      return event.getElement();
-    });
-    console.log(eventElements);
-    animations = generateBarAniTimeline(bar.getElement(), eventElements);
-  }
+  // function generateAnimations() {
+  //   var eventElements = events.map(event => {
+  //     return event.getElement();
+  //   });
+  //   animations = generateBarAniTimeline(bar.getElement(), eventElements);
+  // }
 
   function setEvent(eventId) {
     return new Promise(resolve => {
       var event = findEventById(eventId);
       let onResolve = { resolve, currentEvent };
-      if (currentEvent) currentEvent.setState("close");
-      event.setState("open", onResolve);
+      event.setState('open', onResolve);
       bar.clickEvent(event.getExpandedHeight());
       currentEvent = event;
     });
@@ -140,24 +116,20 @@ function PTBBuilder(templateAPI) {
 
   function setMode(mode) {
     switch (mode) {
-      case "detail-header":
-        animateState(animations, "detail-header");
+      case 'detail-header':
+        templateAPI.setState('detail-header');
         break;
-      case "detail":
+      case 'detail':
         // animate(findAnimationById("standard"), "open", onResolve);
         break;
-      case "large":
+      case 'large':
         // animate(findAnimationById("standard"), "close");
         break;
-      case "small":
+      case 'small':
         // animate(findAnimationById("standard"), "close");
         break;
     }
     currentMode = mode;
-  }
-
-  function getTimeline() {
-    return [bar, events];
   }
 }
 

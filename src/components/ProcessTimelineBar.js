@@ -1,6 +1,6 @@
-"use strict";
-import React, { Children, cloneElement, useState, useEffect } from "react";
-import { PTBBuilder } from "../lib/ProcessTimelineBarFact";
+'use strict';
+import React, { Children, cloneElement, useState, useEffect } from 'react';
+import { PTBBuilder } from '../lib/ProcessTimelineBarFact';
 
 function ProcessTimeLineBar({
   template,
@@ -28,16 +28,16 @@ function ProcessTimeLineBar({
   }, [initMode]);
 
   useEffect(() => {
-    procTimelineBar.generateAnimations();
+    templateAPI.generateAnimations();
   }, []);
 
   function eventClick(e) {
     let newSelectedEvent = e.target
-      .closest(".top-element-node")
-      .getAttribute("id");
+      .closest('.top-element-node')
+      .getAttribute('id');
 
-    if (newSelectedEvent === "bar") {
-      procTimelineBar.setMode("detail-header");
+    if (newSelectedEvent === 'bar') {
+      procTimelineBar.setMode('detail-header');
       return;
     }
 
@@ -69,7 +69,7 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  console.log("render");
+  console.log('render');
 
   return (
     <div className="proc-timeline">

@@ -1,48 +1,56 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+var debug = process.env.NODE_ENV !== 'production';
+const path = require('path');
+var Visualizer = require('webpack-visualizer-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const htmlWebpackPlugin = new HtmlWebpackPlugin({
-  template: path.join(__dirname, "src/index.html")
+  template: path.join(__dirname, 'src/index.html')
 });
-
+console.log(process.env.NODE_ENV);
 module.exports = {
-  entry: path.join(__dirname, "src/index.js"),
+  // performance: {
+  //   hints: false,
+  //   maxEntrypointSize: 512000,
+  //   maxAssetSize: 512000
+  // },
+  entry: path.join(__dirname, 'src/index.js'),
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "bundle.js"
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js'
   },
-  devtool: "eval-source-map",
+  devtool: debug ? 'inline-source-map' : false,
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        use: "babel-loader",
+        use: 'babel-loader',
         exclude: /node_modules/
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg|jpg)(\?v=\d+\.\d+\.\d+)?$/,
         use: [
           {
-            loader: "file-loader",
+            loader: 'file-loader',
             options: {
-              name: "[name].[ext]",
-              outputPath: "fonts/"
+              name: '[name].[ext]',
+              outputPath: 'fonts/'
             }
           }
         ]
       }
     ]
   },
+  // plugins: [htmlWebpackPlugin, new Visualizer()],
   plugins: [htmlWebpackPlugin],
   resolve: {
-    extensions: [".js", ".jsx"]
+    extensions: ['.js', '.jsx']
   },
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
+    contentBase: path.join(__dirname, 'dist'),
     writeToDisk: false
   }
 };

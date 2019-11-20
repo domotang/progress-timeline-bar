@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import PTBMaterialTracker from "./lib/PTBmaterialTracker";
-import ProcessTimelineBar from "./components/ProcessTimelineBar";
-import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
-import TimelineEventPage from "./components/TimelineEventPage";
-import MaterialReceipt from "./components/details/MaterialReceipt";
-import ShipmentPackages from "./components/details/ShipmentPackages";
+import React, { useState } from 'react';
+import PTBMaterialTracker from './lib/PTBmaterialTracker';
+import ProcessTimelineBar from './components/ProcessTimelineBar';
+import ProcessTimelineBarEvent from './components/ProcessTimelineEvent';
+import TimelineEventPage from './components/TimelineEventPage';
+import MaterialReceipt from './components/details/MaterialReceipt';
+import ShipmentPackages from './components/details/ShipmentPackages';
 import {
   FaCogs,
   FaPaperPlane,
   FaRegCalendarCheck,
   FaRegCheckCircle,
   FaRegFileAlt
-} from "react-icons/fa";
-import { MdAlarm } from "react-icons/md";
+} from 'react-icons/fa';
+import { MdAlarm } from 'react-icons/md';
 
 function App() {
-  var [mode, setMode] = useState("detail");
+  var [mode, setMode] = useState('detail');
 
   return (
     <div className="parent">
@@ -34,7 +34,7 @@ function App() {
       <ProcessTimelineBar
         template={PTBMaterialTracker}
         barWidth={{ large: 1040, small: 400 }}
-        title="SHIPMENT"
+        title="SHIPMENTS"
         detail="HOU1-40264"
         expandedColor="#e3e3e3"
         mode={mode}
