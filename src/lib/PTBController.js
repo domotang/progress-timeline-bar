@@ -64,8 +64,7 @@ function PTBController(templateAPI) {
     addBar,
     addEvent,
     setEvent,
-    setMode,
-    getEventDetailTop
+    setMode
   };
   return publicAPI;
 
@@ -91,10 +90,6 @@ function PTBController(templateAPI) {
 
   function getDetailPages(eventId) {
     return findEventById(eventId).getDetailPages();
-  }
-
-  function getEventDetailTop() {
-    return templateAPI.getEventDetailTop();
   }
 
   function setEvent(eventId) {

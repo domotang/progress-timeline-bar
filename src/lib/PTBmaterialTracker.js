@@ -26,7 +26,6 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       return (
         <svg
           className="proc-timeline-svg"
-          ref={div => props.addBar({ barId: "procBar", status, element: div })}
           id="tool-bar"
           xmlns="http://www.w3.org/2000/svg"
           width={barWidth.large}
@@ -56,9 +55,9 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
             <text
               className="detail"
               x="14"
-              y="39"
+              y="36"
               fontFamily="Verdana"
-              fontSize="14"
+              fontSize="15"
               fontWeight="bold"
               fill="white"
             >
@@ -269,7 +268,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   }
 
   function generateBarDetailAniTimeline() {
-    var { barElement, tag: barTag, events } = bar.getNodes();
+    var { barElement, tag: barTag, events, eventDetails } = bar.getNodes();
 
     let tl = new TimelineLite({ paused: true });
 
@@ -287,7 +286,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       "grow"
     );
     // tl.to(barElement, 0.6, { height: 190, ease: Expo.easeOut }, "grow");
-    tl.to(events, 0.6, { y: 100, ease: Expo.easeOut }, "grow");
+    tl.to([events, eventDetails], 0.6, { y: 100, ease: Expo.easeOut }, "grow");
 
     return tl;
   }
@@ -308,10 +307,10 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       "shrink"
     );
     tl.to(title, 0.3, { opacity: 0 }, "shrink");
-    tl.to(detail, 0.4, { y: "-=15" }, "shrink");
+    tl.to(detail, 0.6, { y: "-=15" }, "shrink");
     tl.to(
       barTag,
-      0.4,
+      0.6,
       {
         morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 h-${timelineBarWidth -
           147} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-24 a6,6,0,0,1,6,-6`,
@@ -322,7 +321,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     tl.to(eventNodes.tag.slice(status), 0.3, { fill: "#bdbdbd" }, "shrink");
     tl.to(
       eventNodes.tag,
-      0.4,
+      0.6,
       {
         morphSVG: `M6,0 h${eventWidth +
           4} a6,6,0,0,1,6,6 l-5, 12 a6,6,0,0,1,-6,6 h-${eventWidth +
@@ -331,11 +330,11 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       },
       "shrink"
     );
-    tl.to(eventNodes.event, 0.4, { x: "+=4", y: "-=13" }, "shrink");
+    tl.to(eventNodes.event, 0.6, { x: "+=4", y: "-=13" }, "shrink");
     tl.to(eventNodes.title, 0.2, { opacity: 0 }, "shrink");
     tl.to(
       eventNodes.date,
-      0.4,
+      0.6,
       { x: "-=26", y: "-=13", fontSize: 12 },
       "shrink"
     );
@@ -348,11 +347,12 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   function regBar({ element, status }) {
     barStatus = status;
     var controlNodes = {
-      barElement: element,
+      barElement: element.querySelector(".proc-timeline-svg"),
       tag: element.querySelector(".header-bar"),
       events: element.querySelector(".events"),
       title: element.querySelector(".title"),
-      detail: element.querySelector(".detail")
+      detail: element.querySelector(".detail"),
+      eventDetails: element.querySelector(".event-details")
     };
 
     var internalBarAPI = {
@@ -413,7 +413,12 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       openedEvent = internalEventAPI;
     }
 
-    function close() {
+    function close(onResolve) {
+      if (onResolve) {
+        animation.vars.onReverseComplete = () => {
+          onResolve();
+        };
+      }
       animation.reverse();
     }
 
@@ -439,10 +444,6 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     currentState = state;
   }
 
-  function getEventDetailTop() {
-    return yHeight + 100;
-  }
-
   function init() {
     barModeAnimations = generateBarAniTimeline();
   }
@@ -459,9 +460,24 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   }
 
   function _setMode() {
-    yHeight = 0;
-    _updateBarHeight(38);
-    barModeAnimations.play();
+    if (openedEvent) {
+      closeEvent().then(changeMode);
+      return;
+    }
+
+    changeMode();
+
+    function changeMode() {
+      yHeight = 0;
+      _updateBarHeight(38);
+      barModeAnimations.play();
+    }
+
+    function closeEvent() {
+      return new Promise(resolve => {
+        openedEvent.close(resolve);
+      });
+    }
   }
 
   function _getEventsNodesByType() {
@@ -498,8 +514,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     getEventTmplt,
     regBar,
     regEvent,
-    setState,
-    getEventDetailTop
+    setState
   };
   return publicAPI;
 }

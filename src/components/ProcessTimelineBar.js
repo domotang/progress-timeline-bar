@@ -73,18 +73,19 @@ function ProcessTimeLineBar({
   console.log("render");
 
   return (
-    <div className="proc-timeline">
+    <div
+      className="proc-timeline"
+      ref={div =>
+        pTBController.addBar({ barId: "procBar", status, element: div })
+      }
+    >
       <PTBar
-        addBar={pTBController.addBar}
         eventDomElements={eventDomElements}
         eventClick={eventClick}
         title={title}
         detail={detail}
       />
-      <div
-        style={{ top: pTBController.getEventDetailTop() }}
-        className="event-details"
-      >
+      <div style={{ top: 100 }} className="event-details">
         {eventPage}
       </div>
     </div>
