@@ -16,6 +16,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   var currentState = "detail";
   var yHeight = 0;
   var eventDetailTop = 140;
+  var barStatus = 0;
 
   //*************component templates*****************
 
@@ -25,7 +26,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       return (
         <svg
           className="proc-timeline-svg"
-          ref={div => props.addBar({ barId: "procBar", element: div })}
+          ref={div => props.addBar({ barId: "procBar", status, element: div })}
           id="tool-bar"
           xmlns="http://www.w3.org/2000/svg"
           width={barWidth.large}
@@ -92,7 +93,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           />
           <text
             className="title"
-            x={x + 198}
+            x={x + 190}
             y="33"
             fontFamily="Verdana"
             fontSize="12"
@@ -100,6 +101,17 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
             fill="white"
           >
             {props.title}
+          </text>
+          <text
+            className="date"
+            x={x + 190}
+            y="47"
+            fontFamily="Verdana"
+            fontSize="9"
+            fontWeight="bold"
+            fill="white"
+          >
+            {props.date}
           </text>
           <svg className="icon" x={x + 132} y="8">
             <g className="icon-group">
@@ -200,11 +212,11 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   }
 
   function generateEventStandardAniTlOpen(controleNodes, expandedHeight) {
-    let { event, tag, title, icon, iconGroup } = controleNodes;
+    let { event, tag, title, date, icon, iconGroup } = controleNodes;
     let tl = new TimelineLite({ paused: true });
     // animate event
     tl.add("shrink");
-    tl.to(title, 0.1, { opacity: 0 }, "shrink", "start");
+    tl.to([title, date], 0.1, { opacity: 0 }, "shrink", "start");
     tl.to(event, 0.1, {
       x: "+=20",
       y: "+=18",
@@ -301,12 +313,13 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       barTag,
       0.4,
       {
-        morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l2, 6 h-${timelineBarWidth -
-          147} a8,8,0,0,0,-7,7 l-5, 13 a8,8,0,0,1,-6,6 h-131 a6,6,0,0,1,-6,-6 v-26 a6,6,0,0,1,6,-6`,
+        morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 h-${timelineBarWidth -
+          147} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-24 a6,6,0,0,1,6,-6`,
         ease: Expo.easeOut
       },
       "shrink"
     );
+    tl.to(eventNodes.tag.slice(status), 0.3, { fill: "#bdbdbd" }, "shrink");
     tl.to(
       eventNodes.tag,
       0.4,
@@ -318,21 +331,28 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       },
       "shrink"
     );
-    tl.to(eventNodes.event, 0.4, { x: "+=6", y: "-=7" }, "shrink");
-    tl.to(eventNodes.title, 0.4, { x: "-=26" }, "shrink");
+    tl.to(eventNodes.event, 0.4, { x: "+=4", y: "-=13" }, "shrink");
+    tl.to(eventNodes.title, 0.2, { opacity: 0 }, "shrink");
+    tl.to(
+      eventNodes.date,
+      0.4,
+      { x: "-=26", y: "-=13", fontSize: 12 },
+      "shrink"
+    );
 
     return tl;
   }
 
   //*************component registrations*****************
 
-  function regBar(barElement) {
+  function regBar({ element, status }) {
+    barStatus = status;
     var controlNodes = {
-      barElement,
-      tag: barElement.querySelector(".header-bar"),
-      events: barElement.querySelector(".events"),
-      title: barElement.querySelector(".title"),
-      detail: barElement.querySelector(".detail")
+      barElement: element,
+      tag: element.querySelector(".header-bar"),
+      events: element.querySelector(".events"),
+      title: element.querySelector(".title"),
+      detail: element.querySelector(".detail")
     };
 
     var internalBarAPI = {
@@ -352,6 +372,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       event,
       tag: event.querySelector(".tag"),
       title: event.querySelector(".title"),
+      date: event.querySelector(".date"),
       icon: event.querySelector(".icon"),
       iconGroup: event.querySelector(".icon-group")
     };
@@ -448,6 +469,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       event: [],
       tag: [],
       title: [],
+      date: [],
       icon: [],
       iconGroup: []
     };

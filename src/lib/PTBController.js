@@ -39,7 +39,7 @@ function PTBEvent(eventData, templateAPI) {
 }
 
 function PTBBar(barData, templateAPI) {
-  templateAPI.regBar(barData.element);
+  templateAPI.regBar(barData);
   var barId = barData.barId;
 
   var publicAPI = {
