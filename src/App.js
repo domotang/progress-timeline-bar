@@ -42,15 +42,15 @@ function App() {
       >
         <ProcessTimelineBarEvent
           title="OPENED"
-          color="#87a2c7"
+          color="#7699c2"
           expandedHeight="280"
           icon={FaRegFileAlt}
         >
-          <TimelineEventPage title="opened details fart" />
+          <TimelineEventPage title="File open details" />
         </ProcessTimelineBarEvent>
         <ProcessTimelineBarEvent
           title="RECEIVED"
-          color="#29abe2"
+          color="#6583a6"
           expandedHeight="300"
           icon={FaRegCalendarCheck}
         >
@@ -58,25 +58,25 @@ function App() {
         </ProcessTimelineBarEvent>
         <ProcessTimelineBarEvent
           title="PACKED"
-          color="#ffcc00"
+          color="#4a75a1"
           expandedHeight="400"
           icon={MdAlarm}
         />
         <ProcessTimelineBarEvent
           title="SHIPPED"
-          color="#9c2919"
+          color="#3f658a"
           expandedHeight="800"
           icon={FaRegCalendarCheck}
         />
         <ProcessTimelineBarEvent
           title="IN TRANSIT"
-          color="#3865a3"
+          color="#325373"
           expandedHeight="200"
           icon={FaPaperPlane}
         />
         <ProcessTimelineBarEvent
           title="ARRIVED"
-          color="#64a338"
+          color="#1e4566"
           expandedHeight="270"
           icon={FaRegCheckCircle}
         >
@@ -89,116 +89,12 @@ function App() {
         title="SHIPMENT"
         detail="HOU1-40265"
         expandedColor="#e3e3e3"
-        mode="detail"
-        status="6"
-      >
-        <ProcessTimelineBarEvent
-          title="OPENED"
-          color="#87a2c7"
-          expandedHeight="280"
-          icon={FaRegFileAlt}
-        >
-          <TimelineEventPage title="opened details 1" />
-        </ProcessTimelineBarEvent>
-        <ProcessTimelineBarEvent
-          title="RECEIVED"
-          color="#29abe2"
-          expandedHeight="300"
-          icon={FaRegCalendarCheck}
-        >
-          <MaterialReceipt />
-        </ProcessTimelineBarEvent>
-        <ProcessTimelineBarEvent
-          title="PACKED"
-          color="#ffcc00"
-          expandedHeight="400"
-          icon={MdAlarm}
-        />
-        <ProcessTimelineBarEvent
-          title="SHIPPED"
-          color="#9c2919"
-          expandedHeight="800"
-          icon={MdAlarm}
-        />
-        <ProcessTimelineBarEvent
-          title="IN TRANSIT"
-          color="#3865a3"
-          expandedHeight="200"
-          icon={FaPaperPlane}
-        />
-        <ProcessTimelineBarEvent
-          title="ARRIVED"
-          color="#64a338"
-          expandedHeight="270"
-          icon={FaRegCheckCircle}
-        >
-          <ShipmentPackages />
-        </ProcessTimelineBarEvent>
-      </ProcessTimelineBar>
-      <ProcessTimelineBar
-        template={PTBMaterialTracker}
-        barWidth={{ large: 1040, small: 400 }}
-        title="SHIPMENT"
-        detail="HOU1-40267"
-        expandedColor="#e3e3e3"
-        mode="detail"
-        status="4"
-      >
-        <ProcessTimelineBarEvent
-          title="OPENED"
-          color="#87a2c7"
-          expandedHeight="280"
-          icon={FaRegFileAlt}
-        >
-          <TimelineEventPage title="opened details 1" />
-        </ProcessTimelineBarEvent>
-        <ProcessTimelineBarEvent
-          title="RECEIVED"
-          color="#29abe2"
-          expandedHeight="300"
-          icon={FaRegCalendarCheck}
-        >
-          <MaterialReceipt />
-        </ProcessTimelineBarEvent>
-        <ProcessTimelineBarEvent
-          title="PACKED"
-          color="#ffcc00"
-          expandedHeight="400"
-          icon={MdAlarm}
-        />
-        <ProcessTimelineBarEvent
-          title="SHIPPED"
-          color="#9c2919"
-          expandedHeight="800"
-          icon={MdAlarm}
-        />
-        <ProcessTimelineBarEvent
-          title="IN TRANSIT"
-          color="#3865a3"
-          expandedHeight="200"
-          icon={FaPaperPlane}
-        />
-        <ProcessTimelineBarEvent
-          title="ARRIVED"
-          color="#64a338"
-          expandedHeight="270"
-          icon={FaRegCheckCircle}
-        >
-          <ShipmentPackages />
-        </ProcessTimelineBarEvent>
-      </ProcessTimelineBar>
-      <ProcessTimelineBar
-        template={PTBMaterialTracker}
-        barWidth={{ large: 1040, small: 400 }}
-        title="SHIPMENT"
-        detail="HOU1-40267"
-        expandedColor="#e3e3e3"
-        mode="detail"
+        mode={mode}
         status="5"
       >
         <ProcessTimelineBarEvent
           title="OPENED"
-          color="#87a2c7"
+          color="#7699c2"
           expandedHeight="280"
           icon={FaRegFileAlt}
         >
@@ -206,7 +102,7 @@ function App() {
         </ProcessTimelineBarEvent>
         <ProcessTimelineBarEvent
           title="RECEIVED"
-          color="#29abe2"
+          color="#6583a6"
           expandedHeight="300"
           icon={FaRegCalendarCheck}
         >
@@ -214,25 +110,129 @@ function App() {
         </ProcessTimelineBarEvent>
         <ProcessTimelineBarEvent
           title="PACKED"
-          color="#ffcc00"
+          color="#4a75a1"
           expandedHeight="400"
           icon={MdAlarm}
         />
         <ProcessTimelineBarEvent
           title="SHIPPED"
-          color="#9c2919"
+          color="#3f658a"
           expandedHeight="800"
           icon={MdAlarm}
         />
         <ProcessTimelineBarEvent
           title="IN TRANSIT"
-          color="#3865a3"
+          color="#325373"
           expandedHeight="200"
           icon={FaPaperPlane}
         />
         <ProcessTimelineBarEvent
           title="ARRIVED"
-          color="#64a338"
+          color="#1e4566"
+          expandedHeight="270"
+          icon={FaRegCheckCircle}
+        >
+          <ShipmentPackages />
+        </ProcessTimelineBarEvent>
+      </ProcessTimelineBar>
+      <ProcessTimelineBar
+        template={PTBMaterialTracker}
+        barWidth={{ large: 1040, small: 400 }}
+        title="SHIPMENT"
+        detail="HOU1-40267"
+        expandedColor="#e3e3e3"
+        mode={mode}
+        status="2"
+      >
+        <ProcessTimelineBarEvent
+          title="OPENED"
+          color="#7699c2"
+          expandedHeight="280"
+          icon={FaRegFileAlt}
+        >
+          <TimelineEventPage title="opened details 1" />
+        </ProcessTimelineBarEvent>
+        <ProcessTimelineBarEvent
+          title="RECEIVED"
+          color="#6583a6"
+          expandedHeight="300"
+          icon={FaRegCalendarCheck}
+        >
+          <MaterialReceipt />
+        </ProcessTimelineBarEvent>
+        <ProcessTimelineBarEvent
+          title="PACKED"
+          color="#4a75a1"
+          expandedHeight="400"
+          icon={MdAlarm}
+        />
+        <ProcessTimelineBarEvent
+          title="SHIPPED"
+          color="#3f658a"
+          expandedHeight="800"
+          icon={MdAlarm}
+        />
+        <ProcessTimelineBarEvent
+          title="IN TRANSIT"
+          color="#325373"
+          expandedHeight="200"
+          icon={FaPaperPlane}
+        />
+        <ProcessTimelineBarEvent
+          title="ARRIVED"
+          color="#1e4566"
+          expandedHeight="270"
+          icon={FaRegCheckCircle}
+        >
+          <ShipmentPackages />
+        </ProcessTimelineBarEvent>
+      </ProcessTimelineBar>
+      <ProcessTimelineBar
+        template={PTBMaterialTracker}
+        barWidth={{ large: 1040, small: 400 }}
+        title="SHIPMENT"
+        detail="HOU1-40267"
+        expandedColor="#e3e3e3"
+        mode={mode}
+        status="6"
+      >
+        <ProcessTimelineBarEvent
+          title="OPENED"
+          color="#7699c2"
+          expandedHeight="280"
+          icon={FaRegFileAlt}
+        >
+          <TimelineEventPage title="opened details 1" />
+        </ProcessTimelineBarEvent>
+        <ProcessTimelineBarEvent
+          title="RECEIVED"
+          color="#6583a6"
+          expandedHeight="300"
+          icon={FaRegCalendarCheck}
+        >
+          <MaterialReceipt />
+        </ProcessTimelineBarEvent>
+        <ProcessTimelineBarEvent
+          title="PACKED"
+          color="#4a75a1"
+          expandedHeight="400"
+          icon={MdAlarm}
+        />
+        <ProcessTimelineBarEvent
+          title="SHIPPED"
+          color="#3f658a"
+          expandedHeight="800"
+          icon={MdAlarm}
+        />
+        <ProcessTimelineBarEvent
+          title="IN TRANSIT"
+          color="#325373"
+          expandedHeight="200"
+          icon={FaPaperPlane}
+        />
+        <ProcessTimelineBarEvent
+          title="ARRIVED"
+          color="#1e4566"
           expandedHeight="270"
           icon={FaRegCheckCircle}
         >

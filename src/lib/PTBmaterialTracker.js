@@ -4,12 +4,14 @@ import { TimelineLite, TweenLite, Expo, Power0 } from "gsap/TweenMax";
 import { morphSVG } from "../lib/MorphSVGPlugin";
 
 function PTBMaterialTracker(barWidth, elementCount, status) {
-  var xFactor = 880 / elementCount;
+  var xFactor = Math.round(
+    (barWidth.large - (154 + (elementCount - 1) * 0.1)) / elementCount
+  );
   var eventWidth = xFactor - 15;
-  var timelineBarWidth = status > 0 ? xFactor * status + 48 : 196;
+  var timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164;
   var bar = {};
   var events = [];
-  var animations = {};
+  var barModeAnimations = null;
   var openedEvent = null;
   var currentState = "detail";
   var yHeight = 0;
@@ -26,7 +28,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           ref={div => props.addBar({ barId: "procBar", element: div })}
           id="tool-bar"
           xmlns="http://www.w3.org/2000/svg"
-          width="1040"
+          width={barWidth.large}
           height="90"
         >
           <g className="top-element-node" id={`bar`}>
@@ -35,13 +37,10 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
               className="header-bar"
               id={`rect-`}
               d={`M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -
-                157} a7,7,0,0,0,-7,7 l-20, 57 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
-              transform={`translate(6, 0)`}
-              fill="#4E63C2"
+                157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
+              transform={`translate(0, 0)`}
+              fill="#477578"
             />
-            {status > 0 ? (
-              <circle cx={timelineBarWidth + 36} cy="9" r="9" fill="red" />
-            ) : null}
             <text
               className="title"
               x="14"
@@ -87,8 +86,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           <path
             className="tag"
             id={`rect-${props.id}`}
-            d={`M0,0 h${eventWidth} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidth} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
-            transform={`translate(${x + 156}, 20)`}
+            d={`M6,0 h${eventWidth} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidth} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
+            transform={`translate(${x + 144}, 20)`}
             fill={props.color}
           />
           <text
@@ -102,14 +101,14 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           >
             {props.title}
           </text>
-          <svg className="icon" x={x + 138} y="8">
+          <svg className="icon" x={x + 132} y="8">
             <g className="icon-group">
               <path
                 className="iconShape"
                 id={`cir-${props.id}`}
                 d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
                 transform="translate(2,2)"
-                fill={props.color}
+                fill={props.isOnStatus ? "#7d2828" : props.color}
                 stroke="#fff"
                 strokeMiterlimit="10"
                 strokeWidth="2"
@@ -219,7 +218,9 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       x: 20,
       y: "+=65",
       fill: "#e3e3e3",
-      morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
+      morphSVG: `M10,10 h${barWidth.large -
+        50} a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${barWidth.large -
+        50} a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
     }),
       "spread";
@@ -265,8 +266,9 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       barTag,
       0.6,
       {
-        morphSVG: `M0,0 h1000 a6,6,0,0,1,6,5 v${100 + 13} h-${1000 -
-          162} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
+        morphSVG: `M0,0 h${barWidth.large - 40} a6,6,0,0,1,6,5 v${100 +
+          13} h-${barWidth.large -
+          202} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
           76} a6,6,0,0,1,6,-6`,
         ease: Expo.easeOut
       },
@@ -278,13 +280,59 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     return tl;
   }
 
+  function generateBarAniTimeline() {
+    var { barElement, tag: barTag, events, title, detail } = bar.getNodes();
+    var eventNodes = _getEventsNodesByType();
+
+    //   event, tag, title, icon, iconGroup
+
+    let tl = new TimelineLite({ paused: true });
+
+    tl.add("shrink");
+    tl.to(
+      eventNodes.iconGroup,
+      0.3,
+      { opacity: 0, ease: Expo.easeOut },
+      "shrink"
+    );
+    tl.to(title, 0.3, { opacity: 0 }, "shrink");
+    tl.to(detail, 0.4, { y: "-=15" }, "shrink");
+    tl.to(
+      barTag,
+      0.4,
+      {
+        morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l2, 6 h-${timelineBarWidth -
+          147} a8,8,0,0,0,-7,7 l-5, 13 a8,8,0,0,1,-6,6 h-131 a6,6,0,0,1,-6,-6 v-26 a6,6,0,0,1,6,-6`,
+        ease: Expo.easeOut
+      },
+      "shrink"
+    );
+    tl.to(
+      eventNodes.tag,
+      0.4,
+      {
+        morphSVG: `M6,0 h${eventWidth +
+          4} a6,6,0,0,1,6,6 l-5, 12 a6,6,0,0,1,-6,6 h-${eventWidth +
+          4} a6,6,0,0,1,-6,-6 l5, -12 a6,6,0,0,1,6,-6`,
+        ease: Expo.easeOut
+      },
+      "shrink"
+    );
+    tl.to(eventNodes.event, 0.4, { x: "+=6", y: "-=7" }, "shrink");
+    tl.to(eventNodes.title, 0.4, { x: "-=26" }, "shrink");
+
+    return tl;
+  }
+
   //*************component registrations*****************
 
   function regBar(barElement) {
     var controlNodes = {
       barElement,
       tag: barElement.querySelector(".header-bar"),
-      events: barElement.querySelector(".events")
+      events: barElement.querySelector(".events"),
+      title: barElement.querySelector(".title"),
+      detail: barElement.querySelector(".detail")
     };
 
     var internalBarAPI = {
@@ -324,7 +372,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     return eventAPI;
 
     function open(expandedHeight, onResolve) {
-      updateBarHeight(expandedHeight + 130 + yHeight);
+      _updateBarHeight(expandedHeight + 130 + yHeight);
       currentExpandedHeight = expandedHeight;
       if (openedEvent) openedEvent.close();
       animation =
@@ -361,7 +409,10 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   function setState(state) {
     switch (state) {
       case "detail-header":
-        setHeaderState();
+        _setHeaderState();
+        break;
+      case "large":
+        _setMode();
         break;
     }
     currentState = state;
@@ -371,25 +422,46 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     return yHeight + 100;
   }
 
-  function generateAnimations() {
-    animations = generateBarDetailAniTimeline();
+  function init() {
+    barModeAnimations = generateBarAniTimeline();
   }
 
   //*************local methods*****************
 
-  function setHeaderState() {
+  function _setHeaderState() {
     yHeight = 100;
-    updateBarHeight(
+    var animation = generateBarDetailAniTimeline();
+    _updateBarHeight(
       (openedEvent ? openedEvent.getExpandedHeight() : 0) + 130 + yHeight
     );
-    animations.play();
+    animation.play();
   }
 
-  // function getEventsNodes() {
-  //   return events.map(event => event.getNodes().event);
-  // }
+  function _setMode() {
+    yHeight = 0;
+    _updateBarHeight(38);
+    barModeAnimations.play();
+  }
 
-  function updateBarHeight(height) {
+  function _getEventsNodesByType() {
+    var allNodesByType = {
+      event: [],
+      tag: [],
+      title: [],
+      icon: [],
+      iconGroup: []
+    };
+
+    for (var i = 0; i < events.length; i++) {
+      let currentEventNodes = events[i].getNodes();
+      for (let node in currentEventNodes) {
+        allNodesByType[node].push(currentEventNodes[node]);
+      }
+    }
+    return allNodesByType;
+  }
+
+  function _updateBarHeight(height) {
     TweenLite.to(bar.getNodes().barElement, 0.3, {
       attr: {
         height: height
@@ -399,12 +471,12 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
   }
 
   var publicAPI = {
+    init,
     getBarTmplt,
     getEventTmplt,
     regBar,
     regEvent,
     setState,
-    generateAnimations,
     getEventDetailTop
   };
   return publicAPI;

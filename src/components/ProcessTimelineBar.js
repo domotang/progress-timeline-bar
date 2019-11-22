@@ -1,6 +1,6 @@
 "use strict";
 import React, { Children, cloneElement, useState, useEffect } from "react";
-import { PTBBuilder } from "../lib/ProcessTimelineBarFact";
+import { PTBController } from "../lib/PTBController";
 
 function ProcessTimeLineBar({
   template,
@@ -19,17 +19,17 @@ function ProcessTimeLineBar({
   var [mode, setMode] = useState(initMode);
   var [currentEvent, setCurrentEvent] = useState();
   var [eventDomElements] = useState(() => processDomEventComponents());
-  var [procTimelineBar] = useState(() => PTBBuilder(templateAPI));
+  var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
 
   useEffect(() => {
     setMode(initMode);
-    procTimelineBar.setMode(initMode);
+    pTBController.setMode(initMode);
   }, [initMode]);
 
   useEffect(() => {
-    templateAPI.generateAnimations();
-  }, []);
+    pTBController.init();
+  });
 
   function eventClick(e) {
     let newSelectedEvent = e.target
@@ -37,14 +37,14 @@ function ProcessTimeLineBar({
       .getAttribute("id");
 
     if (newSelectedEvent === "bar") {
-      procTimelineBar.setMode("detail-header");
+      pTBController.setMode("detail-header");
       return;
     }
 
     setEventPage(null);
 
-    procTimelineBar.setEvent(newSelectedEvent, currentEvent).then(() => {
-      setEventPage(procTimelineBar.getDetailPages(newSelectedEvent));
+    pTBController.setEvent(newSelectedEvent, currentEvent).then(() => {
+      setEventPage(pTBController.getDetailPages(newSelectedEvent));
     });
 
     setCurrentEvent(newSelectedEvent);
@@ -62,8 +62,9 @@ function ProcessTimeLineBar({
             PTBEvent,
             id: index,
             eventClick,
+            isOnStatus: status == index + 1 ? true : false,
             setRef: div =>
-              procTimelineBar.addEvent({ ...eventAttributes, element: div })
+              pTBController.addEvent({ ...eventAttributes, element: div })
           });
         })
       : [];
@@ -74,14 +75,14 @@ function ProcessTimeLineBar({
   return (
     <div className="proc-timeline">
       <PTBar
-        addBar={procTimelineBar.addBar}
+        addBar={pTBController.addBar}
         eventDomElements={eventDomElements}
         eventClick={eventClick}
         title={title}
         detail={detail}
       />
       <div
-        style={{ top: procTimelineBar.getEventDetailTop() }}
+        style={{ top: pTBController.getEventDetailTop() }}
         className="event-details"
       >
         {eventPage}

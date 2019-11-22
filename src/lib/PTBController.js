@@ -12,7 +12,7 @@ function PTBEvent(eventData, templateAPI) {
   var publicAPI = {
     setState,
     getDetailPages,
-    getEventId,
+    getId,
     getExpandedHeight
   };
   return publicAPI;
@@ -21,7 +21,7 @@ function PTBEvent(eventData, templateAPI) {
     return detailPages;
   }
 
-  function getEventId() {
+  function getId() {
     return eventId;
   }
 
@@ -40,30 +40,26 @@ function PTBEvent(eventData, templateAPI) {
 
 function PTBBar(barData, templateAPI) {
   templateAPI.regBar(barData.element);
-  var barId = barData.barId,
-    element = barData.element,
-    animations = null;
+  var barId = barData.barId;
 
   var publicAPI = {
-    setState,
-    getElement
+    getId
   };
   return publicAPI;
 
-  function setState() {}
-
-  function getElement() {
-    return element;
+  function getId() {
+    return barId;
   }
 }
 
-function PTBBuilder(templateAPI) {
+function PTBController(templateAPI) {
   var bar = null,
     events = [],
     currentEvent = null,
     currentMode = "detail";
 
   var publicAPI = {
+    init,
     getDetailPages,
     addBar,
     addEvent,
@@ -73,9 +69,13 @@ function PTBBuilder(templateAPI) {
   };
   return publicAPI;
 
+  function init() {
+    templateAPI.init();
+  }
+
   function findEventById(eventId) {
     for (let i = 0; i < events.length; i++) {
-      if (eventId == events[i].getEventId()) return events[i];
+      if (eventId == events[i].getId()) return events[i];
     }
     return null;
   }
@@ -112,17 +112,17 @@ function PTBBuilder(templateAPI) {
         templateAPI.setState("detail-header");
         break;
       case "detail":
-        // animate(findAnimationById("standard"), "open", onResolve);
+        templateAPI.setState("detail");
         break;
       case "large":
-        // animate(findAnimationById("standard"), "close");
+        templateAPI.setState("large");
         break;
       case "small":
-        // animate(findAnimationById("standard"), "close");
+        templateAPI.setState("small");
         break;
     }
     currentMode = mode;
   }
 }
 
-export { PTBBuilder };
+export { PTBController };
