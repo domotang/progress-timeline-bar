@@ -9,45 +9,60 @@ function ProcessTimeLineBar({
   title,
   detail,
   status,
-  mode: initMode
+  mode: initMode,
+  firstInList,
+  id,
+  setSelectedBar
 }) {
   var [templateAPI] = useState(() =>
     template(barWidth, children.length, status)
   );
   var [PTBar] = useState(() => templateAPI.getBarTmplt());
   var [PTBEvent] = useState(() => templateAPI.getEventTmplt());
-  var [mode, setMode] = useState(initMode);
+  var [mode, setMode] = useState(firstInList ? "detail" : initMode);
   var [currentEvent, setCurrentEvent] = useState();
   var [eventDomElements] = useState(() => processDomEventComponents());
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
 
-  useEffect(() => {
-    setMode(initMode);
-    pTBController.setMode(initMode);
-  }, [initMode]);
+  var tempMode = initMode;
 
   useEffect(() => {
-    pTBController.init();
-  });
+    pTBController.init(mode);
+    tempMode = mode;
+  }, []);
+
+  useEffect(() => {
+    setEventPage(null);
+    setMode(tempMode);
+    pTBController.setMode(tempMode);
+  }, [tempMode]);
 
   function eventClick(e) {
-    let newSelectedEvent = e.target
-      .closest(".top-element-node")
-      .getAttribute("id");
+    if (mode === "detail") {
+      let newSelectedEvent = e.target
+        .closest(".top-element-node")
+        .getAttribute("id");
 
-    if (newSelectedEvent === "bar") {
-      pTBController.setMode("detail-header");
-      return;
+      if (newSelectedEvent === "bar") {
+        pTBController.setHeader("detail");
+        return;
+      }
+      setEventPage(null);
+
+      pTBController.setEvent(newSelectedEvent, currentEvent).then(() => {
+        setEventPage(pTBController.getDetailPages(newSelectedEvent));
+      });
+
+      setCurrentEvent(newSelectedEvent);
     }
 
-    setEventPage(null);
-
-    pTBController.setEvent(newSelectedEvent, currentEvent).then(() => {
-      setEventPage(pTBController.getDetailPages(newSelectedEvent));
-    });
-
-    setCurrentEvent(newSelectedEvent);
+    if (mode === "large") {
+      setSelectedBar(id);
+      let newSelectedBar = e.target.closest(".proc-timeline-svg");
+      pTBController.setMode("detail");
+      setMode("detail");
+    }
   }
 
   function processDomEventComponents() {
@@ -61,7 +76,6 @@ function ProcessTimeLineBar({
           return cloneElement(child, {
             PTBEvent,
             id: index,
-            eventClick,
             isOnStatus: status == index + 1 ? true : false,
             setRef: div =>
               pTBController.addEvent({ ...eventAttributes, element: div })
@@ -70,14 +84,12 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  console.log("render");
+  console.log("render", mode);
 
   return (
     <div
       className="proc-timeline"
-      ref={div =>
-        pTBController.addBar({ barId: "procBar", status, element: div })
-      }
+      ref={div => pTBController.addBar({ barId: "procBar", element: div })}
     >
       <PTBar
         eventDomElements={eventDomElements}

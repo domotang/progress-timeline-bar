@@ -39,11 +39,13 @@ function PTBEvent(eventData, templateAPI) {
 }
 
 function PTBBar(barData, templateAPI) {
-  templateAPI.regBar(barData);
+  var { open, close } = templateAPI.regBar(barData);
   var barId = barData.barId;
 
   var publicAPI = {
-    getId
+    getId,
+    open,
+    close
   };
   return publicAPI;
 
@@ -64,12 +66,13 @@ function PTBController(templateAPI) {
     addBar,
     addEvent,
     setEvent,
-    setMode
+    setMode,
+    setHeader
   };
   return publicAPI;
 
-  function init() {
-    templateAPI.init();
+  function init(mode) {
+    templateAPI.init(mode);
   }
 
   function findEventById(eventId) {
@@ -101,19 +104,26 @@ function PTBController(templateAPI) {
     });
   }
 
+  function setHeader(state) {
+    switch (state) {
+      case "detail":
+        bar.open();
+        break;
+      case "close":
+        bar.close();
+    }
+  }
+
   function setMode(mode) {
     switch (mode) {
-      case "detail-header":
-        templateAPI.setState("detail-header");
-        break;
       case "detail":
-        templateAPI.setState("detail");
+        templateAPI.setMode("detail");
         break;
       case "large":
-        templateAPI.setState("large");
+        templateAPI.setMode("large");
         break;
       case "small":
-        templateAPI.setState("small");
+        templateAPI.setMode("small");
         break;
     }
     currentMode = mode;
