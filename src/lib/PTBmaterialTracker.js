@@ -252,7 +252,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           height="90"
           visibility="hidden"
         >
-          <g className="top-element-node" id={`bar`} onClick={props.eventClick}>
+          <g className="top-element-node" id={`bar`}>
             <path
               className="header-bar"
               id={`rect-`}

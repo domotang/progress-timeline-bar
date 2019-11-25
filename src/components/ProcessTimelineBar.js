@@ -89,6 +89,7 @@ function ProcessTimeLineBar({
   return (
     <div
       className="proc-timeline"
+      onClick={eventClick}
       ref={div => pTBController.addBar({ barId: "procBar", element: div })}
     >
       <PTBar

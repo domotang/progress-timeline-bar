@@ -12,7 +12,8 @@ h2 {
 
 .controls {
   padding: 20px;
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
+  width: 1080px;
 }
 
 .parent {
