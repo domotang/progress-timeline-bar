@@ -1,7 +1,8 @@
 "use strict";
-import React from "react";
+import React, { useEffect } from "react";
 import { TimelineLite, TweenLite, Expo, Power0, Power3 } from "gsap/TweenMax";
 import { morphSVG } from "../lib/MorphSVGPlugin";
+import { shape } from "prop-types";
 
 function PTBMaterialTracker(barWidth, elementCount, status) {
   var xFactor = Math.round(
@@ -62,8 +63,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       animation = generateBarDetailAniTimeline();
       _updateBarHeight(
         (openedElements.event ? openedElements.event.getExpandedHeight() : 0) +
-          130 +
-          yHeight
+        90 +
+        yHeight
       );
       animation.play();
       openedElements.header = internalBarAPI;
@@ -92,7 +93,9 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       title: event.querySelector(".title"),
       date: event.querySelector(".date"),
       icon: event.querySelector(".icon"),
-      iconGroup: event.querySelector(".icon-group")
+      iconGroup: event.querySelector(".icon-group"),
+      iconShape: event.querySelector(".icon-shape"),
+      iconSvg: event.querySelector(".icon-svg")
     };
 
     var internalEventAPI = {
@@ -118,8 +121,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
         type === "loading"
           ? generateEventLoadingAniTimeline(controlNodes)
           : type === "standard"
-          ? generateEventStandardAniTlOpen(controlNodes, expandedHeight)
-          : null;
+            ? generateEventStandardAniTlOpen(controlNodes, expandedHeight)
+            : null;
       if (onResolve) {
         animation.vars.onComplete = () => {
           onResolve.resolve();
@@ -213,7 +216,9 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       title: [],
       date: [],
       icon: [],
-      iconGroup: []
+      iconGroup: [],
+      iconShape: [],
+      iconSvg: []
     };
 
     for (var i = 0; i < events.length; i++) {
@@ -252,9 +257,11 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           height="90"
           visibility="hidden"
         >
-          <g className="top-element-node" id={`bar`} onClick={props.eventClick}>
+          <g className="top-element-node" id={`bar`}>
             <path
               className="header-bar"
+              cursor="pointer"
+              onClick={props.mode === "detail" ? props.barClick : null}
               id={`rect-`}
               d={`M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -
                 157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
@@ -295,12 +302,20 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     return props => {
       let x = props.id * xFactor;
       let Icon = props.icon;
+
+      console.log("render another");
       return (
         <g
           className="top-element-node"
           id={`event-${props.id}`}
           ref={props.setRef}
           cursor="pointer"
+          onClick={() => {
+            if (props.barf.current === "detail") {
+              props.eventClick(props.id);
+            }
+            console.log("detail hello", props.barf.current);
+          }}
         >
           <path
             className="tag"
@@ -334,17 +349,17 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           <svg className="icon" x={x + 132} y="8">
             <g className="icon-group">
               <path
-                className="iconShape"
+                className="icon-shape"
                 id={`cir-${props.id}`}
                 d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
                 transform="translate(2,2)"
-                fill={props.isOnStatus ? "#7d2828" : props.color}
-                stroke="#fff"
+                fill={props.isOnStatus ? "#7d2828" : props.isCompleted ? "#541919" : props.color}
+                stroke={props.backgroundColor}
                 strokeMiterlimit="10"
                 strokeWidth="2"
               ></path>
               <Icon
-                className="iconSvg"
+                className="icon-svg"
                 fill="white"
                 x="13"
                 y="13"
@@ -514,8 +529,6 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     var { barElement, tag: barTag, events, title, detail } = bar.getNodes();
     var eventNodes = _getEventsNodesByType();
 
-    //   event, tag, title, icon, iconGroup
-
     let tl = new TimelineLite({ paused: true });
 
     tl.add("detail");
@@ -524,9 +537,11 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     tl.to(
       eventNodes.iconGroup,
       0.3,
-      { scale: 0, ease: Power3.inOut },
+      { scale: .3, x: "+=17", y: "+=14", ease: Power3.inOut },
       "shrink"
     );
+    tl.to(eventNodes.iconShape, 0.3, { fill: "#ddeced", strokeWidth: 0 }, "shrink");
+    tl.to(eventNodes.iconSvg, 0.3, { opacity: 0 }, "shrink");
     tl.to(title, 0.3, { opacity: 0 }, "shrink");
     tl.to(detail, 0.3, { y: "-=15" }, "shrink");
     tl.to(
@@ -556,7 +571,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     tl.to(
       eventNodes.date,
       0.3,
-      { x: "-=26", y: "-=13", fontSize: 12 },
+      { x: "-=10", y: "-=13", fontSize: 12 },
       "shrink"
     );
     tl.to(eventNodes.date, 0.02, { opacity: 1 });
