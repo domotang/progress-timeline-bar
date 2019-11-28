@@ -29,6 +29,7 @@ function App() {
           key={index}
           id={index}
           template={PTBMaterialTracker}
+          backgroundColor="#c3dde0"
           barWidth={{ large: 1040, small: 400 }}
           title="SHIPMENTS"
           detail={shipment.shipment}
