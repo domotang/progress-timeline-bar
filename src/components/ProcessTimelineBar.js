@@ -9,8 +9,8 @@ import React, {
 import { PTBController } from "../lib/PTBController";
 
 function ProcessTimeLineBar({
+  styleOptions,
   template,
-  barWidth,
   children,
   title,
   detail,
@@ -18,17 +18,17 @@ function ProcessTimeLineBar({
   mode: initMode,
   firstInList,
   id,
-  setSelectedBar,
-  backgroundColor
+  setSelectedBar
 }) {
   var barf = useRef(initMode);
   var [templateAPI] = useState(() =>
-    template(barWidth, children.length, status)
+    template(styleOptions, children.length, status)
   );
   var [PTBar] = useState(() => templateAPI.getBarTmplt());
   var [PTBEvent] = useState(() => templateAPI.getEventTmplt());
   var [mode, setMode] = useState(firstInList ? "detail" : initMode);
-  var [currentEvent, setCurrentEvent] = useState();
+  // var [currentEvent, setCurrentEvent] = useState();
+  // var [headerMode, setHeaderMode] = useState("closed");
   var [eventDomElements] = useState(() => processDomEventComponents());
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
@@ -48,23 +48,27 @@ function ProcessTimeLineBar({
   }, [tempMode]);
 
   function eventClick(eventId) {
-    console.log("event");
-    setEventPage(null);
+    var currentEvent = pTBController.getCurrentEvent()
+      ? pTBController.getCurrentEvent().getId()
+      : null;
+    if (eventId != currentEvent) {
+      setEventPage(null);
 
-    pTBController.setEvent(eventId, currentEvent).then(() => {
-      setEventPage(pTBController.getDetailPages(eventId));
-    });
+      pTBController.setEvent(eventId, currentEvent).then(() => {
+        setEventPage(pTBController.getDetailPages(eventId));
+      });
 
-    setCurrentEvent(eventId);
+      // setCurrentEvent(eventId);
+    }
   }
 
   function barClick() {
-    console.log("bar");
-    pTBController.setHeader("detail");
+    if (pTBController.getCurrentHeaderMode() === "closed") {
+      pTBController.setHeader("detail");
+    }
   }
 
   function pTLBClick() {
-    console.log("ptb");
     if (mode === "large") {
       setSelectedBar(id);
       pTBController.setMode("detail");
@@ -76,36 +80,38 @@ function ProcessTimeLineBar({
   function processDomEventComponents() {
     return children
       ? Children.map(children, (child, index) => {
-        let eventAttributes = {
-          detailPages: child.props.children,
-          expandedHeight: child.props.expandedHeight
-        };
-        return cloneElement(child, {
-          PTBEvent,
-          eventClick,
-          id: index,
-          initMode,
-          barf,
-          backgroundColor,
-          isOnStatus: status == index + 1 ? true : false,
-          isCompleted: status > index + 1 ? true : false,
-          setRef: div =>
-            pTBController.addEvent({
-              ...eventAttributes,
-              eventId: index,
-              element: div
-            })
-        });
-      })
+          let eventAttributes = {
+            detailPages: child.props.children,
+            expandedHeight: child.props.expandedHeight
+          };
+          return cloneElement(child, {
+            PTBEvent,
+            eventClick,
+            id: index,
+            initMode,
+            barf,
+            isOnStatus: status == index + 1 ? true : false,
+            isCompleted: status > index + 1 ? true : false,
+            setRef: div =>
+              pTBController.addEvent({
+                ...eventAttributes,
+                eventId: index,
+                element: div
+              })
+          });
+        })
       : [];
   }
   // processDomEventComponents();
-  console.log("render", mode);
+  console.log("render bar");
 
   return (
     <div
       className="proc-timeline"
-      style={{ backgroundColor: backgroundColor }}
+      style={{
+        backgroundColor: styleOptions.backgroundColor,
+        width: styleOptions.barWidth.large
+      }}
       onClick={mode != "detail" ? pTLBClick : null}
       // onFocus={mode != "detail" ? pTLBClick : null}
       cursor={mode != "detail" ? "default" : "pointer"}

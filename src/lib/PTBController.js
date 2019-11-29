@@ -58,7 +58,8 @@ function PTBController(templateAPI) {
   var bar = null,
     events = [],
     currentEvent = null,
-    currentMode = "detail";
+    currentMode = "detail",
+    currentHeaderMode = "closed";
 
   var publicAPI = {
     init,
@@ -67,7 +68,9 @@ function PTBController(templateAPI) {
     addEvent,
     setEvent,
     setMode,
-    setHeader
+    setHeader,
+    getCurrentEvent,
+    getCurrentHeaderMode
   };
   return publicAPI;
 
@@ -108,9 +111,11 @@ function PTBController(templateAPI) {
     switch (state) {
       case "detail":
         bar.open();
+        currentHeaderMode = "detail";
         break;
-      case "close":
+      case "closed":
         bar.close();
+        currentHeaderMode = "closed";
     }
   }
 
@@ -121,12 +126,21 @@ function PTBController(templateAPI) {
         break;
       case "large":
         templateAPI.setMode("large");
+        currentEvent = null;
         break;
       case "small":
         templateAPI.setMode("small");
+        currentEvent = null;
         break;
     }
     currentMode = mode;
+  }
+
+  function getCurrentEvent() {
+    return currentEvent;
+  }
+  function getCurrentHeaderMode() {
+    return currentHeaderMode;
   }
 }
 

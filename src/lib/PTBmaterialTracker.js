@@ -4,9 +4,10 @@ import { TimelineLite, TweenLite, Expo, Power0, Power3 } from "gsap/TweenMax";
 import { morphSVG } from "../lib/MorphSVGPlugin";
 import { shape } from "prop-types";
 
-function PTBMaterialTracker(barWidth, elementCount, status) {
+function PTBMaterialTracker(styleOptions, elementCount, status) {
   var xFactor = Math.round(
-    (barWidth.large - (154 + (elementCount - 1) * 0.1)) / elementCount
+    (styleOptions.barWidth.large - 10 - (154 + (elementCount - 1) * 0.1)) /
+      elementCount
   );
   var eventWidth = xFactor - 15;
   var timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164;
@@ -63,8 +64,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       animation = generateBarDetailAniTimeline();
       _updateBarHeight(
         (openedElements.event ? openedElements.event.getExpandedHeight() : 0) +
-        90 +
-        yHeight
+          90 +
+          yHeight
       );
       animation.play();
       openedElements.header = internalBarAPI;
@@ -121,8 +122,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
         type === "loading"
           ? generateEventLoadingAniTimeline(controlNodes)
           : type === "standard"
-            ? generateEventStandardAniTlOpen(controlNodes, expandedHeight)
-            : null;
+          ? generateEventStandardAniTlOpen(controlNodes, expandedHeight)
+          : null;
       if (onResolve) {
         animation.vars.onComplete = () => {
           onResolve.resolve();
@@ -161,6 +162,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           _setMode();
           break;
         case "detail":
+          barModeAnimations.timeScale(1);
           barModeAnimations.reverse();
           _updateBarHeight(modes["detail"].barHeight);
           break;
@@ -253,15 +255,18 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
           className="proc-timeline-svg"
           id="tool-bar"
           xmlns="http://www.w3.org/2000/svg"
-          width={barWidth.large}
+          width={styleOptions.barWidth.large}
           height="90"
           visibility="hidden"
         >
-          <g className="top-element-node" id={`bar`}>
+          <g
+            className="top-element-node"
+            id={`bar`}
+            onClick={props.mode === "detail" ? props.barClick : null}
+          >
             <path
               className="header-bar"
               cursor="pointer"
-              onClick={props.mode === "detail" ? props.barClick : null}
               id={`rect-`}
               d={`M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -
                 157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
@@ -275,7 +280,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
               fontFamily="Verdana"
               fontSize="12"
               fontWeight="bold"
-              fill="white"
+              fill={styleOptions.fontColor}
             >
               {props.title}
             </text>
@@ -286,12 +291,12 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
               fontFamily="Verdana"
               fontSize="15"
               fontWeight="bold"
-              fill="white"
+              fill={styleOptions.fontColor}
             >
               {props.detail}
             </text>
-            <g className="events">{props.eventDomElements}</g>
           </g>
+          <g className="events">{props.eventDomElements}</g>
         </svg>
       );
     };
@@ -303,7 +308,6 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       let x = props.id * xFactor;
       let Icon = props.icon;
 
-      console.log("render another");
       return (
         <g
           className="top-element-node"
@@ -314,7 +318,6 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
             if (props.barf.current === "detail") {
               props.eventClick(props.id);
             }
-            console.log("detail hello", props.barf.current);
           }}
         >
           <path
@@ -331,7 +334,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
             fontFamily="Verdana"
             fontSize="12"
             fontWeight="bold"
-            fill="white"
+            fill={styleOptions.fontColor}
           >
             {props.title}
           </text>
@@ -342,7 +345,7 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
             fontFamily="Verdana"
             fontSize="9"
             fontWeight="bold"
-            fill="white"
+            fill={styleOptions.fontColor}
           >
             {props.date}
           </text>
@@ -353,14 +356,20 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
                 id={`cir-${props.id}`}
                 d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
                 transform="translate(2,2)"
-                fill={props.isOnStatus ? "#7d2828" : props.isCompleted ? "#541919" : props.color}
-                stroke={props.backgroundColor}
+                fill={
+                  props.isOnStatus
+                    ? styleOptions.eventOnStatusColor
+                    : props.isCompleted
+                    ? styleOptions.eventCompletedColor
+                    : props.color
+                }
+                stroke={styleOptions.backgroundColor}
                 strokeMiterlimit="10"
                 strokeWidth="2"
               ></path>
               <Icon
                 className="icon-svg"
-                fill="white"
+                fill={styleOptions.fontColor}
                 x="13"
                 y="13"
                 fontSize="28"
@@ -463,8 +472,9 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       x: 20,
       y: "+=65",
       fill: "#ddeced",
-      morphSVG: `M10,10 h${barWidth.large -
-        50} a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${barWidth.large -
+      morphSVG: `M10,10 h${styleOptions.barWidth.large -
+        50} a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${styleOptions
+        .barWidth.large -
         50} a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
     }),
@@ -511,8 +521,8 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       barTag,
       0.6,
       {
-        morphSVG: `M0,0 h${barWidth.large - 40} a6,6,0,0,1,6,5 v${100 +
-          13} h-${barWidth.large -
+        morphSVG: `M0,0 h${styleOptions.barWidth.large -
+          40} a6,6,0,0,1,6,5 v${100 + 13} h-${styleOptions.barWidth.large -
           202} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
           76} a6,6,0,0,1,6,-6`,
         ease: Expo.easeOut
@@ -537,10 +547,15 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
     tl.to(
       eventNodes.iconGroup,
       0.3,
-      { scale: .3, x: "+=17", y: "+=14", ease: Power3.inOut },
+      { scale: 0.3, x: "+=17", y: "+=14", ease: Power3.inOut },
       "shrink"
     );
-    tl.to(eventNodes.iconShape, 0.3, { fill: "#ddeced", strokeWidth: 0 }, "shrink");
+    tl.to(
+      eventNodes.iconShape,
+      0.3,
+      { fill: styleOptions.placeholderColor, strokeWidth: 0 },
+      "shrink"
+    );
     tl.to(eventNodes.iconSvg, 0.3, { opacity: 0 }, "shrink");
     tl.to(title, 0.3, { opacity: 0 }, "shrink");
     tl.to(detail, 0.3, { y: "-=15" }, "shrink");
@@ -554,14 +569,46 @@ function PTBMaterialTracker(barWidth, elementCount, status) {
       },
       "shrink"
     );
-    tl.to(eventNodes.tag.slice(status), 0.3, { fill: "#ddeced" }, "shrink");
     tl.to(
-      eventNodes.tag,
+      eventNodes.tag.slice(status),
+      0.3,
+      { fill: styleOptions.placeholderColor },
+      "shrink"
+    );
+    tl.to(
+      eventNodes.tag[0],
       0.3,
       {
-        morphSVG: `M6,0 h${eventWidth +
-          4} a6,6,0,0,1,6,6 l-5, 12 a6,6,0,0,1,-6,6 h-${eventWidth +
-          4} a6,6,0,0,1,-6,-6 l5, -12 a6,6,0,0,1,6,-6`,
+        morphSVG: {
+          shape: `M11,0 h${eventWidth + 5} l-10, 24 h-${eventWidth +
+            5} a6,6,0,0,1,-6,-6 l5, -12 a6,6,0,0,1,6,-6`,
+          shapeIndex: 1,
+          map: "position"
+        },
+        ease: Power3.inOut
+      },
+      "shrink"
+    );
+    tl.to(
+      eventNodes.tag.slice(1, eventNodes.tag.length - 1),
+      0.3,
+      {
+        morphSVG: `M4,0 h${eventWidth + 12} l-10, 24 h-${eventWidth +
+          12} l10, -24`,
+        ease: Power3.inOut
+      },
+      "shrink"
+    );
+    tl.to(
+      eventNodes.tag[eventNodes.tag.length - 1],
+      0.3,
+      {
+        morphSVG: {
+          shape: `M-1,0 h${eventWidth +
+            5} a6,6,0,0,1,6,6 l-5, 12 a6,6,0,0,1,-6,6 h-${eventWidth +
+            5}  l10, -24`,
+          shapeIndex: 9
+        },
         ease: Power3.inOut
       },
       "shrink"

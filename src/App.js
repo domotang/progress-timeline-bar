@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PTBMaterialTracker from "./lib/PTBmaterialTracker";
 import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
-import TimelineEventPage from "./components/TimelineEventPage";
 import MaterialReceipt from "./components/details/MaterialReceipt";
 import ShipmentPackages from "./components/details/ShipmentPackages";
 import {
@@ -16,6 +15,15 @@ import { MdAlarm } from "react-icons/md";
 import { shippingData } from "./lib/testData";
 
 function App() {
+  var barStyleOptions = {
+    backgroundColor: "#c3dde0",
+    placeholderColor: "#ddeced",
+    eventCompletedColor: "#541919",
+    eventOnStatusColor: "#7d2828",
+    expandedColor: "#e3e3e3",
+    fontColor: "white",
+    barWidth: { large: 1040, small: 400 }
+  }
   var [selectedBar, setSelectedBar] = useState(0);
 
   return (
@@ -26,14 +34,12 @@ function App() {
 
       {shippingData.map((shipment, index) => (
         <ProcessTimelineBar
+          styleOptions={barStyleOptions}
           key={index}
           id={index}
           template={PTBMaterialTracker}
-          backgroundColor="#c3dde0"
-          barWidth={{ large: 1040, small: 400 }}
           title="SHIPMENTS"
           detail={shipment.shipment}
-          expandedColor="#e3e3e3"
           mode={selectedBar === index ? "detail" : "large"}
           status={shipment.status}
           firstInList={!index ? true : false}
@@ -69,7 +75,7 @@ function App() {
             date={shipment.statusDates.shipped}
             color="#3f658a"
             expandedHeight="160"
-            icon={FaRegCalendarCheck}
+            icon={FaCogs}
           />
           <ProcessTimelineBarEvent
             title="IN TRANSIT"
