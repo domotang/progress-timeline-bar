@@ -15,37 +15,33 @@ function ProcessTimeLineBar({
   title,
   detail,
   status,
-  mode: initMode,
-  firstInList,
+  mode,
   id,
   setSelectedBar
 }) {
-  var barf = useRef(initMode);
+  var barf = useRef(mode);
   var [templateAPI] = useState(() =>
     template(styleOptions, children.length, status)
   );
   var [PTBar] = useState(() => templateAPI.getBarTmplt());
   var [PTBEvent] = useState(() => templateAPI.getEventTmplt());
-  var [mode, setMode] = useState(firstInList ? "detail" : initMode);
+  var [currentMode, setCurrentMode] = useState(mode);
   // var [currentEvent, setCurrentEvent] = useState();
   // var [headerMode, setHeaderMode] = useState("closed");
   var [eventDomElements] = useState(() => processDomEventComponents());
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
 
-  var tempMode = initMode;
-
   useEffect(() => {
-    pTBController.init(mode);
-    tempMode = mode;
+    pTBController.init(currentMode);
   }, []);
 
   useEffect(() => {
     setEventPage(null);
-    setMode(tempMode);
-    barf.current = tempMode;
-    pTBController.setMode(tempMode);
-  }, [tempMode]);
+    setCurrentMode(mode);
+    barf.current = mode;
+    pTBController.setMode(mode);
+  }, [mode]);
 
   function eventClick(eventId) {
     var currentEvent = pTBController.getCurrentEvent()
@@ -72,7 +68,7 @@ function ProcessTimeLineBar({
     if (mode === "large") {
       setSelectedBar(id);
       pTBController.setMode("detail");
-      setMode("detail");
+      setCurrentMode("detail");
       barf.current = "detail";
     }
   }
@@ -88,7 +84,7 @@ function ProcessTimeLineBar({
             PTBEvent,
             eventClick,
             id: index,
-            initMode,
+            mode,
             barf,
             isOnStatus: status == index + 1 ? true : false,
             isCompleted: status > index + 1 ? true : false,

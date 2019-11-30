@@ -23,7 +23,7 @@ function App() {
     expandedColor: "#e3e3e3",
     fontColor: "white",
     barWidth: { large: 1040, small: 400 }
-  }
+  };
   var [selectedBar, setSelectedBar] = useState(0);
 
   return (
@@ -42,7 +42,6 @@ function App() {
           detail={shipment.shipment}
           mode={selectedBar === index ? "detail" : "large"}
           status={shipment.status}
-          firstInList={!index ? true : false}
           setSelectedBar={setSelectedBar}
         >
           <ProcessTimelineBarEvent

@@ -250,6 +250,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function getBarTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
+      console.log("render bar itself");
       return (
         <svg
           className="proc-timeline-svg"
@@ -307,6 +308,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     return props => {
       let x = props.id * xFactor;
       let Icon = props.icon;
+
+      console.log("render event bottom");
 
       return (
         <g
