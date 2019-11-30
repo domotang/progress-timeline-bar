@@ -70,7 +70,8 @@ function PTBController(templateAPI) {
     setMode,
     setHeader,
     getCurrentEvent,
-    getCurrentHeaderMode
+    getCurrentHeaderMode,
+    reset
   };
   return publicAPI;
 
@@ -90,6 +91,7 @@ function PTBController(templateAPI) {
   }
 
   function addEvent(eventData) {
+    console.log("adding event", eventData);
     var newEvent = PTBEvent(eventData, templateAPI);
     events.push(newEvent);
   }
@@ -141,6 +143,10 @@ function PTBController(templateAPI) {
   }
   function getCurrentHeaderMode() {
     return currentHeaderMode;
+  }
+
+  function reset() {
+    events = [];
   }
 }
 

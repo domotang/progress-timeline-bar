@@ -20,6 +20,7 @@ function ProcessTimeLineBar({
   setSelectedBar
 }) {
   var barf = useRef(mode);
+  // var reRenderEvents = useRef([]);
   var [templateAPI] = useState(() =>
     template(styleOptions, children.length, status)
   );
@@ -28,9 +29,15 @@ function ProcessTimeLineBar({
   var [currentMode, setCurrentMode] = useState(mode);
   // var [currentEvent, setCurrentEvent] = useState();
   // var [headerMode, setHeaderMode] = useState("closed");
-  var [eventDomElements] = useState(() => processDomEventComponents());
+  // var [eventDomElements] = useState(() =>
+  //   processDomEventComponents()
+  // );
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
+
+  pTBController.reset();
+  var eventDomElements = processDomEventComponents();
+  console.log(eventDomElements);
 
   useEffect(() => {
     pTBController.init(currentMode);
@@ -70,6 +77,7 @@ function ProcessTimeLineBar({
       pTBController.setMode("detail");
       setCurrentMode("detail");
       barf.current = "detail";
+      // reRenderEvents.current[1]("detail");
     }
   }
 
@@ -86,19 +94,24 @@ function ProcessTimeLineBar({
             id: index,
             mode,
             barf,
+            // reRenderEvents,
             isOnStatus: status == index + 1 ? true : false,
             isCompleted: status > index + 1 ? true : false,
-            setRef: div =>
-              pTBController.addEvent({
-                ...eventAttributes,
-                eventId: index,
-                element: div
-              })
+            setRef: div => {
+              if (div) {
+                pTBController.addEvent({
+                  ...eventAttributes,
+                  eventId: index,
+                  element: div,
+                  id
+                });
+              }
+            }
           });
         })
       : [];
   }
-  // processDomEventComponents();
+
   console.log("render bar");
 
   return (
