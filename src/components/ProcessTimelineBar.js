@@ -37,6 +37,7 @@ function ProcessTimeLineBar({
     setCurrentMode(mode);
     pTBController.setMode(mode);
     setHeaderMode("closed");
+    setCurrentEvent(null);
   }, [mode]);
 
   function eventClick(eventId) {
