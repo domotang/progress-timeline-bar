@@ -110,7 +110,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     var animation = null;
 
     var eventAPI = {
-      open
+      open,
+      deregister
     };
     return eventAPI;
 
@@ -152,6 +153,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     function getExpandedHeight() {
       return currentExpandedHeight;
     }
+    function deregister(eventId) {}
   }
   //*************public methods*****************
 
@@ -250,7 +252,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function getBarTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
-      // console.log("render bar itself");
+      console.log("render bar itself");
       return (
         <svg
           className="proc-timeline-svg"
@@ -316,9 +318,9 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           className="top-element-node"
           id={`event-${props.id}`}
           ref={props.setRef}
-          cursor="pointer"
+          cursor={props.mode === "detail" ? "pointer" : null}
           onClick={() => {
-            if (props.barf.current === "detail") {
+            if (props.mode === "detail") {
               props.eventClick(props.id);
             }
           }}

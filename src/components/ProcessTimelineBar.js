@@ -1,11 +1,5 @@
 "use strict";
-import React, {
-  Children,
-  cloneElement,
-  useState,
-  useEffect,
-  useRef
-} from "react";
+import React, { Children, cloneElement, useState, useEffect } from "react";
 import { PTBController } from "../lib/PTBController";
 
 function ProcessTimeLineBar({
@@ -19,8 +13,6 @@ function ProcessTimeLineBar({
   id,
   setSelectedBar
 }) {
-  var barf = useRef(mode);
-  // var reRenderEvents = useRef([]);
   var [templateAPI] = useState(() =>
     template(styleOptions, children.length, status)
   );
@@ -29,24 +21,23 @@ function ProcessTimeLineBar({
   var [currentMode, setCurrentMode] = useState(mode);
   // var [currentEvent, setCurrentEvent] = useState();
   // var [headerMode, setHeaderMode] = useState("closed");
-  // var [eventDomElements] = useState(() =>
-  //   processDomEventComponents()
-  // );
+  // var [eventDomElements] = useState(processDomEventComponents());
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
 
-  pTBController.reset();
+  // pTBController.reset();
   var eventDomElements = processDomEventComponents();
   console.log(eventDomElements);
 
   useEffect(() => {
+    console.log("Bar mounted", id);
     pTBController.init(currentMode);
+    return () => console.log("Bar unmounted", id);
   }, []);
 
   useEffect(() => {
     setEventPage(null);
     setCurrentMode(mode);
-    barf.current = mode;
     pTBController.setMode(mode);
   }, [mode]);
 
@@ -76,7 +67,6 @@ function ProcessTimeLineBar({
       setSelectedBar(id);
       pTBController.setMode("detail");
       setCurrentMode("detail");
-      barf.current = "detail";
       // reRenderEvents.current[1]("detail");
     }
   }
@@ -93,26 +83,25 @@ function ProcessTimeLineBar({
             eventClick,
             id: index,
             mode,
-            barf,
-            // reRenderEvents,
             isOnStatus: status == index + 1 ? true : false,
             isCompleted: status > index + 1 ? true : false,
             setRef: div => {
-              if (div) {
-                pTBController.addEvent({
-                  ...eventAttributes,
-                  eventId: index,
-                  element: div,
-                  id
-                });
-              }
+              // if (div) {
+              //   console.log("NOMOUNT", div);
+              pTBController.addEvent({
+                ...eventAttributes,
+                eventId: index,
+                element: div,
+                id
+              });
+              // }
             }
           });
         })
       : [];
   }
 
-  console.log("render bar");
+  console.log("render bar", id);
 
   return (
     <div

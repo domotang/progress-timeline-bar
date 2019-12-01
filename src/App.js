@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PTBMaterialTracker from "./lib/PTBmaterialTracker";
 import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
@@ -25,6 +25,11 @@ function App() {
     barWidth: { large: 1040, small: 400 }
   };
   var [selectedBar, setSelectedBar] = useState(0);
+
+  useEffect(() => {
+    console.log("app mounted");
+    return () => console.log("app unmounted");
+  }, []);
 
   return (
     <div className="parent">

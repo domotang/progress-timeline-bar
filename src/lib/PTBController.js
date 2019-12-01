@@ -91,9 +91,12 @@ function PTBController(templateAPI) {
   }
 
   function addEvent(eventData) {
-    console.log("adding event", eventData);
-    var newEvent = PTBEvent(eventData, templateAPI);
-    events.push(newEvent);
+    console.log("adding event", eventData, events);
+    if (eventData.element) {
+      var newEvent = PTBEvent(eventData, templateAPI);
+      return events.push(newEvent);
+    }
+    events = events.filter(event => event.getId() != eventData.eventId);
   }
 
   function getDetailPages(eventId) {

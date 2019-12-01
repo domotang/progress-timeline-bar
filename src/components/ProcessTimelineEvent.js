@@ -4,16 +4,17 @@ import React, { useState, useEffect } from "react";
 function ProcessTimelineEvent(props) {
   var [mode, setMode] = useState(props.mode);
 
-  // useEffect(() => {
-  //   props.reRenderEvents.current[props.id] = setMode;
-  // });
+  useEffect(() => {
+    console.log("mounted");
+    return () => console.log("unmounted");
+  }, []);
 
   useEffect(() => {
-    setMode(props.barf.current);
-    // console.log("help");
-  }, [props.barf.current]);
+    setMode(mode);
+    console.log("help");
+  }, [mode]);
 
-  // console.log("render event top", props.barf.current);
+  console.log("render event top", props.id);
   return <props.PTBEvent {...props} />;
 }
 export default ProcessTimelineEvent;
