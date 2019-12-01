@@ -27,9 +27,12 @@ function App() {
   var [selectedBar, setSelectedBar] = useState(0);
 
   useEffect(() => {
-    console.log("app mounted");
-    return () => console.log("app unmounted");
-  }, []);
+    var myDiv = document.getElementById(`proc-timeline-${selectedBar}`);
+    myDiv.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }, [selectedBar]);
 
   return (
     <div className="parent">

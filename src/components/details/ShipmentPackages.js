@@ -29,7 +29,7 @@ function createData(name, calories, fat, carbs, protein) {
 const rows = [
   createData("1 Carton", 53497, 1256, "53 X 43 X 30", "PACKED"),
   createData("1 Skid", 53510, 512, "45 X 44 X 32", "PACKED"),
-  createData("1 Skid", 53512, 472, "47 X 46 X 42", "PACKED"),
+  createData("1 Skids", 53512, 472, "47 X 46 X 42", "PACKED"),
   createData("1 Box", 53522, 74, "13 X 13 X 10", "PACKED"),
   createData("2 Cartons", 53562, 1042, "52 X 47 X 40", "PACKED")
 ];

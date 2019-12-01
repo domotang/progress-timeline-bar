@@ -1,9 +1,26 @@
 "use strict";
 
+function PTBBar(barData, templateAPI) {
+  var { open, close } = templateAPI.regBar(barData);
+  var barId = barData.barId;
+
+  var publicAPI = {
+    getId,
+    open,
+    close
+  };
+  return publicAPI;
+
+  function getId() {
+    return barId;
+  }
+}
+
 function PTBEvent(eventData, templateAPI) {
-  var { open } = templateAPI.regEvent(
+  var { open, deregister } = templateAPI.regEvent(
     eventData.element,
-    eventData.type ? eventData.type : "standard"
+    eventData.type ? eventData.type : "standard",
+    eventData.eventId
   );
   var eventId = eventData.eventId,
     detailPages = [eventData.detailPages],
@@ -13,7 +30,8 @@ function PTBEvent(eventData, templateAPI) {
     setState,
     getDetailPages,
     getId,
-    getExpandedHeight
+    getExpandedHeight,
+    deregister
   };
   return publicAPI;
 
@@ -38,28 +56,9 @@ function PTBEvent(eventData, templateAPI) {
   }
 }
 
-function PTBBar(barData, templateAPI) {
-  var { open, close } = templateAPI.regBar(barData);
-  var barId = barData.barId;
-
-  var publicAPI = {
-    getId,
-    open,
-    close
-  };
-  return publicAPI;
-
-  function getId() {
-    return barId;
-  }
-}
-
 function PTBController(templateAPI) {
   var bar = null,
-    events = [],
-    currentEvent = null,
-    currentMode = "detail",
-    currentHeaderMode = "closed";
+    events = [];
 
   var publicAPI = {
     init,
@@ -68,10 +67,7 @@ function PTBController(templateAPI) {
     addEvent,
     setEvent,
     setMode,
-    setHeader,
-    getCurrentEvent,
-    getCurrentHeaderMode,
-    reset
+    setHeader
   };
   return publicAPI;
 
@@ -91,12 +87,14 @@ function PTBController(templateAPI) {
   }
 
   function addEvent(eventData) {
-    console.log("adding event", eventData, events);
+    var eventId = eventData.eventId;
     if (eventData.element) {
       var newEvent = PTBEvent(eventData, templateAPI);
       return events.push(newEvent);
     }
-    events = events.filter(event => event.getId() != eventData.eventId);
+
+    findEventById(eventId).deregister();
+    events = events.filter(event => event.getId() != eventId);
   }
 
   function getDetailPages(eventId) {
@@ -106,9 +104,7 @@ function PTBController(templateAPI) {
   function setEvent(eventId) {
     return new Promise(resolve => {
       var event = findEventById(eventId);
-      let onResolve = { resolve, currentEvent };
-      event.setState("open", onResolve);
-      currentEvent = event;
+      event.setState("open", resolve);
     });
   }
 
@@ -116,11 +112,9 @@ function PTBController(templateAPI) {
     switch (state) {
       case "detail":
         bar.open();
-        currentHeaderMode = "detail";
         break;
       case "closed":
         bar.close();
-        currentHeaderMode = "closed";
     }
   }
 
@@ -131,25 +125,11 @@ function PTBController(templateAPI) {
         break;
       case "large":
         templateAPI.setMode("large");
-        currentEvent = null;
         break;
       case "small":
         templateAPI.setMode("small");
-        currentEvent = null;
         break;
     }
-    currentMode = mode;
-  }
-
-  function getCurrentEvent() {
-    return currentEvent;
-  }
-  function getCurrentHeaderMode() {
-    return currentHeaderMode;
-  }
-
-  function reset() {
-    events = [];
   }
 }
 

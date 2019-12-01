@@ -1,27 +1,25 @@
 "use strict";
-import React, { useEffect } from "react";
+import React from "react";
 import { TimelineLite, TweenLite, Expo, Power0, Power3 } from "gsap/TweenMax";
 import { morphSVG } from "../lib/MorphSVGPlugin";
-import { shape } from "prop-types";
 
 function PTBMaterialTracker(styleOptions, elementCount, status) {
   var xFactor = Math.round(
     (styleOptions.barWidth.large - 10 - (154 + (elementCount - 1) * 0.1)) /
       elementCount
   );
-  var eventWidth = xFactor - 15;
-  var timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164;
-  var modes = {
-    small: { barHeight: 38 },
-    large: { barHeight: 38 },
-    detail: { barHeight: 90 }
-  };
-  var bar = {};
-  var events = [];
-  var barModeAnimations = null;
-  var openedElements = { event: null, header: null };
-  var currentMode = "detail";
-  var yHeight = 0;
+  var eventWidth = xFactor - 15,
+    timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164,
+    modes = {
+      small: { barHeight: 38 },
+      large: { barHeight: 38 },
+      detail: { barHeight: 90 }
+    },
+    bar = {},
+    events = [],
+    barModeAnimations = null,
+    openedElements = { event: null, header: null },
+    yHeight = 0;
 
   var publicAPI = {
     init,
@@ -86,7 +84,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     }
   }
 
-  function regEvent(event, type) {
+  function regEvent(event, type, id) {
     var currentExpandedHeight = 0;
     var controlNodes = {
       event,
@@ -102,7 +100,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     var internalEventAPI = {
       getNodes,
       close,
-      getExpandedHeight
+      getExpandedHeight,
+      id
     };
 
     events.push(internalEventAPI);
@@ -127,7 +126,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           : null;
       if (onResolve) {
         animation.vars.onComplete = () => {
-          onResolve.resolve();
+          onResolve();
         };
       }
       animation.timeScale(1);
@@ -153,28 +152,26 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     function getExpandedHeight() {
       return currentExpandedHeight;
     }
-    function deregister(eventId) {}
+    function deregister() {
+      events = events.filter(event => event.id != id);
+    }
   }
   //*************public methods*****************
 
   function setMode(mode) {
-    if (mode != currentMode) {
-      switch (mode) {
-        case "large":
-          _setMode();
-          break;
-        case "detail":
-          barModeAnimations.timeScale(1);
-          barModeAnimations.reverse();
-          _updateBarHeight(modes["detail"].barHeight);
-          break;
-      }
-      currentMode = mode;
+    switch (mode) {
+      case "large":
+        _setMode();
+        break;
+      case "detail":
+        barModeAnimations.timeScale(1);
+        barModeAnimations.reverse();
+        _updateBarHeight(modes["detail"].barHeight);
+        break;
     }
   }
 
   function init(mode) {
-    currentMode = mode;
     barModeAnimations = generateBarAniTimeline();
     barModeAnimations.seek(mode);
     _updateBarHeight(modes[mode].barHeight, 0);
@@ -252,7 +249,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function getBarTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
-      console.log("render bar itself");
       return (
         <svg
           className="proc-timeline-svg"
@@ -265,11 +261,19 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           <g
             className="top-element-node"
             id={`bar`}
-            onClick={props.mode === "detail" ? props.barClick : null}
+            onClick={
+              props.currentMode === "detail" && props.headerMode === "closed"
+                ? props.barClick
+                : null
+            }
+            cursor={
+              props.currentMode === "detail" && props.headerMode === "closed"
+                ? "pointer"
+                : "default"
+            }
           >
             <path
               className="header-bar"
-              cursor="pointer"
               id={`rect-`}
               d={`M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidth -
                 157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
@@ -311,16 +315,18 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       let x = props.id * xFactor;
       let Icon = props.icon;
 
-      console.log("render event bottom");
-
       return (
         <g
           className="top-element-node"
           id={`event-${props.id}`}
           ref={props.setRef}
-          cursor={props.mode === "detail" ? "pointer" : null}
+          cursor={
+            props.currentMode === "detail" && !props.opened
+              ? "pointer"
+              : "default"
+          }
           onClick={() => {
-            if (props.mode === "detail") {
+            if (props.currentMode === "detail" && !props.opened) {
               props.eventClick(props.id);
             }
           }}
@@ -534,7 +540,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       },
       "grow"
     );
-    // tl.to(barElement, 0.6, { height: 190, ease: Expo.easeOut }, "grow");
     tl.to([events, eventDetails], 0.6, { y: 100, ease: Expo.easeOut }, "grow");
 
     return tl;

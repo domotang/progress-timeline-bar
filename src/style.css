@@ -6,6 +6,11 @@
   /* background: red; */
 }
 
+html {
+  overflow: auto;
+  height: 100%;
+}
+
 h2 {
   top: 200px;
 }
