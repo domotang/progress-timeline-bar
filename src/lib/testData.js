@@ -84,7 +84,7 @@ export var shippingData = [
     }
   },
   {
-    shipment: "HOU1-40279",
+    shipment: "HOU1-40282",
     status: 5,
     statusDates: {
       opened: "10/25/2019",
