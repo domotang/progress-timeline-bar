@@ -1,5 +1,5 @@
 # progress-timeline-bar
-Highly customizable animated progress timeline bar which emphasizes due proccess
+Highly customizable animated progress timeline bar for React which emphasizes due proccess
 
 ![screen cap of demo](https://raw.githubusercontent.com/domotang/progress-timeline-bar/master/ptb.jpg)
 
