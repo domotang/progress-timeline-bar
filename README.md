@@ -1,6 +1,8 @@
 # progress-timeline-bar
 Highly customizable progress timeline bar which emphasizes due proccess\
 
+![screen cap of demo](https://raw.githubusercontent.com/domotang/progress-timeline-bar/master/ptb.jpg)
+
 current demo
 http://domosavant.com/
 
