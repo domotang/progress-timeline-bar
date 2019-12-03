@@ -6,6 +6,7 @@ function PTBBar(barData, templateAPI) {
 
   var publicAPI = {
     getId,
+    getElement,
     open,
     close
   };
@@ -13,6 +14,10 @@ function PTBBar(barData, templateAPI) {
 
   function getId() {
     return barId;
+  }
+
+  function getElement() {
+    return barData.element;
   }
 }
 
@@ -67,12 +72,17 @@ function PTBController(templateAPI) {
     addEvent,
     setEvent,
     setMode,
-    setHeader
+    setHeader,
+    getBarElement
   };
   return publicAPI;
 
   function init(mode) {
     templateAPI.init(mode);
+  }
+
+  function getBarElement() {
+    return bar ? bar.getElement() : null;
   }
 
   function findEventById(eventId) {

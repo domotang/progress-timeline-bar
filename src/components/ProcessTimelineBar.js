@@ -25,6 +25,34 @@ function ProcessTimeLineBar({
   var [eventPage, setEventPage] = useState(null);
 
   var eventDomElements = processDomEventComponents();
+  var style1 = { top: 100, left: 150, position: "absolute" };
+
+  var modalView = headerMode === "detail" || currentEvent != null;
+
+  var dog = {
+    backgroundColor: styleOptions.backgroundColor,
+    width: styleOptions.barWidth.large,
+    position: "relative",
+    borderRadius: "5px",
+    padding: "5px",
+    marginTop: "10px",
+    marginLeft: "10px"
+    // top: pTBController.getBarElement() ? Math.floor(pTBController.getBarElement().getBoundingClientRect().y) : 10
+  }
+
+  var dog2 = {
+    backgroundColor: styleOptions.backgroundColor,
+    width: styleOptions.barWidth.large,
+    position: "fixed",
+    borderRadius: "5px",
+    padding: "5px",
+    marginTop: "10px",
+    marginLeft: "10px",
+    top: 20,
+    zIndex: 10
+    // transition: "top 1s"
+  }
+
 
   useEffect(() => {
     pTBController.init(currentMode);
@@ -64,41 +92,38 @@ function ProcessTimeLineBar({
   function processDomEventComponents() {
     return children
       ? Children.map(children, (child, index) => {
-          let eventAttributes = {
-            detailPages: child.props.children,
-            expandedHeight: child.props.expandedHeight
-          };
-          return cloneElement(child, {
-            PTBEvent,
-            eventClick,
-            id: index,
-            currentMode,
-            opened: currentEvent === index ? true : false,
-            isOnStatus: status == index + 1 ? true : false,
-            isCompleted: status > index + 1 ? true : false,
-            setRef: div => {
-              pTBController.addEvent({
-                ...eventAttributes,
-                eventId: index,
-                element: div,
-                id
-              });
-            }
-          });
-        })
+        let eventAttributes = {
+          detailPages: child.props.children,
+          expandedHeight: child.props.expandedHeight
+        };
+        return cloneElement(child, {
+          PTBEvent,
+          eventClick,
+          id: index,
+          currentMode,
+          opened: currentEvent === index ? true : false,
+          isOnStatus: status == index + 1 ? true : false,
+          isCompleted: status > index + 1 ? true : false,
+          setRef: div => {
+            pTBController.addEvent({
+              ...eventAttributes,
+              eventId: index,
+              element: div,
+              id
+            });
+          }
+        });
+      })
       : [];
   }
 
-  console.log("render bar", id);
+  console.log("render bar", id, modalView);
 
   return (
     <div
       className="proc-timeline"
       id={`proc-timeline-${id}`}
-      style={{
-        backgroundColor: styleOptions.backgroundColor,
-        width: styleOptions.barWidth.large
-      }}
+      style={modalView ? dog2 : dog}
       onClick={currentMode != "detail" ? pTLBClick : null}
       // onFocus={mode != "detail" ? pTLBClick : null}
       // cursor={mode != "detail" ? "default" : "pointer"}
@@ -116,7 +141,7 @@ function ProcessTimeLineBar({
         currentMode={currentMode}
       />
 
-      <div style={{ top: 100 }} className="event-details">
+      <div style={style1} className="event-details">
         {eventPage}
       </div>
     </div>

@@ -26,11 +26,11 @@ h2 {
 }
 
 .proc-timeline {
-  position: relative;
+  /* position: relative;
   border-radius: 5px;
   padding: 5px;
   margin-top: 10px;
-  margin-left: 10px;
+  margin-left: 10px; */
   /* width: 1050px; */
 
   /* z-index: 2; */
@@ -51,13 +51,24 @@ h2 {
   }
 } */
 
+@keyframes modal {
+  from {
+    top: 600px;
+  }
+  to {
+    top: 60px; /* your line height here */
+  }
+}
+
 .event-details {
-  position: absolute;
+  /* position: absolute; */
   /* z-index: 2; */
   /* top: 140px; */
-  left: 150px;
+  /* left: 150px; */
   /* animation-name: fadein;
   animation-iteration-count: 1;
   animation-timing-function: ease-in;
   animation-duration: 1s; */
+  animation-name: modal;
+  animation-duration: 1s;
 }
