@@ -29,30 +29,42 @@ function ProcessTimeLineBar({
 
   var modalView = headerMode === "detail" || currentEvent != null;
 
+  var frog = {
+    position: currentMode === "detail" ? "static" : "relative",
+    height: currentMode === "detail" ? 106 : null,
+    zIndex: currentMode === "detail" ? 100 : 0
+  };
+
   var dog = {
     backgroundColor: styleOptions.backgroundColor,
     width: styleOptions.barWidth.large,
+    zIndex: 0,
     position: "relative",
     borderRadius: "5px",
     padding: "5px",
     marginTop: "10px",
     marginLeft: "10px"
-    // top: pTBController.getBarElement() ? Math.floor(pTBController.getBarElement().getBoundingClientRect().y) : 10
-  }
+  };
 
   var dog2 = {
-    backgroundColor: styleOptions.backgroundColor,
+    backgroundColor: "rgba(158, 183, 186, 0.8)",
     width: styleOptions.barWidth.large,
-    position: "fixed",
+    position: "relative",
     borderRadius: "5px",
     padding: "5px",
     marginTop: "10px",
     marginLeft: "10px",
-    top: 20,
-    zIndex: 10
-    // transition: "top 1s"
-  }
+    zIndex: 100,
+    transition: "transform .4s",
+    transform: `translate(20px, -${
+      pTBController.getBarElement()
+        ? pTBController.getBarElement().offsetTop - 100
+        : 0
+    }px)`
+    // top: "offset().top"
+  };
 
+  // window.innerHeight
 
   useEffect(() => {
     pTBController.init(currentMode);
@@ -92,57 +104,59 @@ function ProcessTimeLineBar({
   function processDomEventComponents() {
     return children
       ? Children.map(children, (child, index) => {
-        let eventAttributes = {
-          detailPages: child.props.children,
-          expandedHeight: child.props.expandedHeight
-        };
-        return cloneElement(child, {
-          PTBEvent,
-          eventClick,
-          id: index,
-          currentMode,
-          opened: currentEvent === index ? true : false,
-          isOnStatus: status == index + 1 ? true : false,
-          isCompleted: status > index + 1 ? true : false,
-          setRef: div => {
-            pTBController.addEvent({
-              ...eventAttributes,
-              eventId: index,
-              element: div,
-              id
-            });
-          }
-        });
-      })
+          let eventAttributes = {
+            detailPages: child.props.children,
+            expandedHeight: child.props.expandedHeight
+          };
+          return cloneElement(child, {
+            PTBEvent,
+            eventClick,
+            id: index,
+            currentMode,
+            opened: currentEvent === index ? true : false,
+            isOnStatus: status == index + 1 ? true : false,
+            isCompleted: status > index + 1 ? true : false,
+            setRef: div => {
+              pTBController.addEvent({
+                ...eventAttributes,
+                eventId: index,
+                element: div,
+                id
+              });
+            }
+          });
+        })
       : [];
   }
 
   console.log("render bar", id, modalView);
 
   return (
-    <div
-      className="proc-timeline"
-      id={`proc-timeline-${id}`}
-      style={modalView ? dog2 : dog}
-      onClick={currentMode != "detail" ? pTLBClick : null}
-      // onFocus={mode != "detail" ? pTLBClick : null}
-      // cursor={mode != "detail" ? "default" : "pointer"}
-      cursor="pointer"
-      // role="button"
-      // tabIndex="0"
-      ref={div => pTBController.addBar({ barId: "procBar", element: div })}
-    >
-      <PTBar
-        eventDomElements={eventDomElements}
-        barClick={barClick}
-        title={title}
-        detail={detail}
-        headerMode={headerMode}
-        currentMode={currentMode}
-      />
+    <div className="pTBContainer" style={frog}>
+      <div
+        className="proc-timeline"
+        id={`proc-timeline-${id}`}
+        style={modalView ? dog2 : dog}
+        onClick={currentMode != "detail" ? pTLBClick : null}
+        // onFocus={mode != "detail" ? pTLBClick : null}
+        // cursor={mode != "detail" ? "default" : "pointer"}
+        cursor="pointer"
+        // role="button"
+        // tabIndex="0"
+        ref={div => pTBController.addBar({ barId: "procBar", element: div })}
+      >
+        <PTBar
+          eventDomElements={eventDomElements}
+          barClick={barClick}
+          title={title}
+          detail={detail}
+          headerMode={headerMode}
+          currentMode={currentMode}
+        />
 
-      <div style={style1} className="event-details">
-        {eventPage}
+        <div style={style1} className="event-details">
+          {eventPage}
+        </div>
       </div>
     </div>
   );
