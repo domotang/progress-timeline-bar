@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PTBMaterialTracker from "./lib/PTBmaterialTracker";
-import PTBListBos from "./components/PTBListBox";
+import PTBListBox from "./components/PTBListBox";
 import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
 import MaterialReceipt from "./components/details/MaterialReceipt";
@@ -25,7 +25,6 @@ function App() {
     fontColor: "white",
     barWidth: { large: 1040, small: 400 }
   };
-  // var [selectedBar, setSelectedBar] = useState(0);
 
   // useEffect(() => {
   //   var myDiv = document.getElementById(`proc-timeline-${selectedBar}`);
@@ -41,7 +40,7 @@ function App() {
         <h1>Process Timeline Bar React Component Demo</h1>
       </div>
 
-      <PTBListBos>
+      <PTBListBox>
         {shippingData.map((shipment, index) => (
           <ProcessTimelineBar
             styleOptions={barStyleOptions}
@@ -50,10 +49,8 @@ function App() {
             template={PTBMaterialTracker}
             title="SHIPMENTS"
             detail={shipment.shipment}
-            // mode={selectedBar === index ? "detail" : "large"}
             mode="large"
             status={shipment.status}
-            // setSelectedBar={setSelectedBar}
           >
             <ProcessTimelineBarEvent
               title="OPENED"
@@ -105,7 +102,34 @@ function App() {
             </ProcessTimelineBarEvent>
           </ProcessTimelineBar>
         ))}
-      </PTBListBos>
+      </PTBListBox>
+      {/* <div>
+        <ProcessTimelineBar
+          styleOptions={barStyleOptions}
+          key={0}
+          id={0}
+          template={PTBMaterialTracker}
+          title="SHIPMENTS"
+          detail="yes"
+          mode="large"
+          status="0"
+        >
+          <ProcessTimelineBarEvent
+            title="OPENED"
+            date="1/1/2322"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaRegFileAlt}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/1/2322"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaRegFileAlt}
+          ></ProcessTimelineBarEvent>
+        </ProcessTimelineBar>
+      </div> */}
     </div>
   );
 }

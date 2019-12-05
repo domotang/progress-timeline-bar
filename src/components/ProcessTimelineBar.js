@@ -3,6 +3,7 @@ import React, { Children, cloneElement, useState, useEffect } from "react";
 import { PTBController } from "../lib/PTBController";
 
 function ProcessTimeLineBar({
+  listBar,
   styleOptions,
   template,
   children,
@@ -43,7 +44,8 @@ function ProcessTimeLineBar({
     borderRadius: "5px",
     padding: "5px",
     marginTop: "10px",
-    marginLeft: "10px"
+    marginLeft: "10px",
+    transition: "all .4s .2s, z-index 0s .6s, backgroundColor 0s .6s"
   };
 
   var dog2 = {
@@ -81,6 +83,7 @@ function ProcessTimeLineBar({
   }, [mode]);
 
   function eventClick(eventId) {
+    console.log("Click!");
     setEventPage(null);
 
     pTBController.setEvent(eventId, currentEvent).then(() => {
@@ -91,12 +94,25 @@ function ProcessTimeLineBar({
   }
 
   function barClick() {
+    console.log("Click!");
     pTBController.setHeader("detail");
     setHeaderMode("detail");
   }
 
+  function backClick() {
+    console.log("Click!");
+    if (eventPage) {
+      setEventPage(null);
+    }
+    pTBController.setMode("detail");
+    setCurrentMode("detail");
+    setHeaderMode("closed");
+    setCurrentEvent(null);
+  }
+
   function pTLBClick() {
-    setSelectedBar(id);
+    console.log("Click!");
+    if (listBar) setSelectedBar(id);
     pTBController.setMode("detail");
     setCurrentMode("detail");
   }
@@ -148,6 +164,7 @@ function ProcessTimeLineBar({
         <PTBar
           eventDomElements={eventDomElements}
           barClick={barClick}
+          backClick={backClick}
           title={title}
           detail={detail}
           headerMode={headerMode}

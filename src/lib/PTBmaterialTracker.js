@@ -161,12 +161,10 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function setMode(mode) {
     switch (mode) {
       case "large":
-        _setMode();
+        _setModeLarge();
         break;
       case "detail":
-        barModeAnimations.timeScale(1);
-        barModeAnimations.reverse();
-        _updateBarHeight(modes["detail"].barHeight);
+        _setModeDetail();
         break;
     }
   }
@@ -184,16 +182,41 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
   //*************local methods*****************
 
-  function _setMode() {
+  function _setModeLarge() {
     closeEvent()
       .then(closeHeader)
       .then(changeMode);
 
     function changeMode() {
       yHeight = 0;
-      _updateBarHeight(38);
+      _updateBarHeight(modes["large"].barHeight);
       barModeAnimations.timeScale(1);
       barModeAnimations.play();
+    }
+
+    function closeEvent() {
+      return new Promise(resolve => {
+        if (openedElements.event) return openedElements.event.close(resolve);
+        return resolve();
+      });
+    }
+    function closeHeader() {
+      return new Promise(resolve => {
+        if (openedElements.header) return openedElements.header.close(resolve);
+        return resolve();
+      });
+    }
+  }
+
+  function _setModeDetail() {
+    _updateBarHeight(modes["detail"].barHeight);
+    closeEvent()
+      .then(closeHeader)
+      .then(changeMode);
+
+    function changeMode() {
+      barModeAnimations.timeScale(1);
+      barModeAnimations.reverse();
     }
 
     function closeEvent() {
@@ -303,6 +326,20 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
               {props.detail}
             </text>
           </g>
+          <svg className="back-icon" x="0" y="38" onClick={props.backClick}>
+            <g className="back-group">
+              <path
+                className="back-shape"
+                id={`cir-${props.id}`}
+                d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
+                transform="translate(2,2)"
+                fill="green"
+                stroke={styleOptions.backgroundColor}
+                strokeMiterlimit="10"
+                strokeWidth="2"
+              ></path>
+            </g>
+          </svg>
           <g className="events">{props.eventDomElements}</g>
         </svg>
       );
