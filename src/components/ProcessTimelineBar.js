@@ -51,7 +51,7 @@ function ProcessTimeLineBar({
   var dog2 = {
     backgroundColor: "rgba(158, 183, 186, 0.8)",
     width: styleOptions.barWidth.large,
-    position: "relative",
+    position: "fixed",
     borderRadius: "5px",
     padding: "5px",
     marginTop: "10px",
@@ -65,6 +65,11 @@ function ProcessTimeLineBar({
     }px)`
     // top: "offset().top"
   };
+
+  console.log(
+    "offset",
+    pTBController.getBarElement() ? pTBController.getBarElement().offsetTop : 0
+  );
 
   // window.innerHeight
 

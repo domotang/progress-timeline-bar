@@ -1,7 +1,11 @@
 "use strict";
 import React from "react";
-import { TimelineLite, TweenLite, Expo, Power0, Power3 } from "gsap/TweenMax";
-import { morphSVG } from "../lib/MorphSVGPlugin";
+import gsap, { TimelineLite, TweenLite, Expo, Power0, Power3 } from "gsap";
+import { MorphSVGPlugin } from "gsap/src/MorphSVGPlugin";
+
+gsap.registerPlugin(MorphSVGPlugin);
+
+console.log(MorphSVGPlugin);
 
 function PTBMaterialTracker(styleOptions, elementCount, status) {
   var xFactor = Math.round(
@@ -535,8 +539,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           scale: 2
         },
         ease: Expo.easeOut,
-        scale: 2,
-        transformOrigin: "left-top"
+        scale: 2
       },
       "spread"
     );
@@ -610,8 +613,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       barTag,
       0.3,
       {
-        morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 h-${timelineBarWidth -
-          147} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-24 a6,6,0,0,1,6,-6`,
+        morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidth -
+          146} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-25 a6,6,0,0,1,6,-6`,
         ease: Power3.inOut
       },
       "shrink"
@@ -627,10 +630,11 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       0.3,
       {
         morphSVG: {
-          shape: `M11,0 h${eventWidth + 5} l-10, 24 h-${eventWidth +
-            5} a6,6,0,0,1,-6,-6 l5, -12 a6,6,0,0,1,6,-6`,
-          shapeIndex: 1,
-          map: "position"
+          shape: `M11,1 h${eventWidth +
+            5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidth +
+            5} a6,6,0,0,1,-6,-6 l2 -6 l3 -6 a6,6,0,0,1,6,-6`,
+          shapeIndex: 0,
+          map: "complexity"
         },
         ease: Power3.inOut
       },
@@ -640,8 +644,12 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       eventNodes.tag.slice(1, eventNodes.tag.length - 1),
       0.3,
       {
-        morphSVG: `M4,0 h${eventWidth + 12} l-10, 24 h-${eventWidth +
-          12} l10, -24`,
+        morphSVG: {
+          shape: `M4,1 h${eventWidth + 12} l-5, 12 l-5, 12 h-${eventWidth +
+            12} l5, -12 l5, -12`,
+          shapeIndex: 0,
+          map: "complexity"
+        },
         ease: Power3.inOut
       },
       "shrink"
@@ -651,10 +659,11 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       0.3,
       {
         morphSVG: {
-          shape: `M-1,0 h${eventWidth +
-            5} a6,6,0,0,1,6,6 l-5, 12 a6,6,0,0,1,-6,6 h-${eventWidth +
-            5}  l10, -24`,
-          shapeIndex: 9
+          shape: `M-1,1 h${eventWidth +
+            5} a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidth +
+            5}  l0, 0 l5, -12 l5, -12 l0, 0`,
+          shapeIndex: 0,
+          map: "complexity"
         },
         ease: Power3.inOut
       },

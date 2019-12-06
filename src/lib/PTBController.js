@@ -5,16 +5,16 @@ function PTBBar(barData, templateAPI) {
   var barId = barData.barId;
 
   var publicAPI = {
-    getId,
+    // getId,
     getElement,
     open,
     close
   };
   return publicAPI;
 
-  function getId() {
-    return barId;
-  }
+  // function getId() {
+  //   return barId;
+  // }
 
   function getElement() {
     return barData.element;
@@ -35,7 +35,7 @@ function PTBEvent(eventData, templateAPI) {
     setState,
     getDetailPages,
     getId,
-    getExpandedHeight,
+    // getExpandedHeight,
     deregister
   };
   return publicAPI;
