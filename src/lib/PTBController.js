@@ -1,20 +1,12 @@
 "use strict";
 
 function PTBBar(barData, templateAPI) {
-  var { open, close } = templateAPI.regBar(barData);
-  var barId = barData.barId;
+  templateAPI.regBar(barData);
 
   var publicAPI = {
-    // getId,
-    getElement,
-    open,
-    close
+    getElement
   };
   return publicAPI;
-
-  // function getId() {
-  //   return barId;
-  // }
 
   function getElement() {
     return barData.element;
@@ -67,7 +59,6 @@ function PTBController(templateAPI) {
     addEvent,
     setEvent,
     setMode,
-    setHeader,
     getBarElement
   };
   return publicAPI;
@@ -113,31 +104,23 @@ function PTBController(templateAPI) {
     });
   }
 
-  function setHeader(state) {
-    switch (state) {
-      case "detail":
-        bar.open();
-        break;
-      case "closed":
-        bar.close();
-    }
-  }
-
   function setMode(mode) {
-    switch (mode) {
-      case "modal":
-        templateAPI.setMode("modal");
-        break;
-      case "detail":
-        templateAPI.setMode("detail");
-        break;
-      case "large":
-        templateAPI.setMode("large");
-        break;
-      case "small":
-        templateAPI.setMode("small");
-        break;
-    }
+    return new Promise(resolve => {
+      switch (mode) {
+        case "modal":
+          templateAPI.setMode("modal", resolve);
+          break;
+        case "detail":
+          templateAPI.setMode("detail", resolve);
+          break;
+        case "large":
+          templateAPI.setMode("large", resolve);
+          break;
+        case "small":
+          templateAPI.setMode("small", resolve);
+          break;
+      }
+    });
   }
 }
 

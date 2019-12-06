@@ -5,8 +5,6 @@ import { MorphSVGPlugin } from "gsap/src/MorphSVGPlugin";
 
 gsap.registerPlugin(MorphSVGPlugin);
 
-console.log(MorphSVGPlugin);
-
 function PTBMaterialTracker(styleOptions, elementCount, status) {
   var xFactor = Math.round(
     (styleOptions.barWidth.large - 10 - (154 + (elementCount - 1) * 0.1)) /
@@ -24,6 +22,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     barModeAnimations = null,
     openedElements = { event: null, header: null },
     yHeight = 0;
+  var animationSpeed = 1;
 
   var publicAPI = {
     init,
@@ -44,22 +43,20 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       events: element.querySelector(".events"),
       title: element.querySelector(".title"),
       detail: element.querySelector(".detail"),
-      eventDetails: element.querySelector(".event-details")
+      eventDetails: element.querySelector(".event-details"),
+      backButton: element.querySelector(".back-icon")
     };
+
     var animation = null;
 
     var internalBarAPI = {
+      getHeaderState,
       getNodes,
+      open,
       close
     };
 
     bar = internalBarAPI;
-
-    var eventAPI = {
-      open,
-      close
-    };
-    return eventAPI;
 
     function open() {
       yHeight = 100;
@@ -69,6 +66,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           90 +
           yHeight
       );
+      animation.timeScale(animationSpeed);
       animation.play();
       openedElements.header = internalBarAPI;
     }
@@ -79,12 +77,17 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           onResolve();
         };
       }
+      animation.timeScale(animationSpeed);
       animation.reverse();
       openedElements.header = null;
     }
 
     function getNodes() {
       return controlNodes;
+    }
+
+    function getHeaderState() {
+      return animation ? (animation.time() ? true : false) : false;
     }
   }
 
@@ -119,6 +122,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     return eventAPI;
 
     function open(expandedHeight, onResolve) {
+      if (!bar.getHeaderState()) bar.open();
       _updateBarHeight(expandedHeight + 130 + yHeight);
       currentExpandedHeight = expandedHeight;
       if (openedElements.event) openedElements.event.close();
@@ -133,7 +137,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           onResolve();
         };
       }
-      animation.timeScale(1);
+      animation.timeScale(animationSpeed);
       // animation.time(animation.totalDuration());
       animation.play();
       openedElements.event = internalEventAPI;
@@ -145,6 +149,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           onResolve();
         };
       }
+      animation.timeScale(animationSpeed);
       animation.reverse();
       openedElements.event = null;
     }
@@ -162,13 +167,16 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   }
   //*************public methods*****************
 
-  function setMode(mode) {
+  function setMode(mode, onResolve) {
     switch (mode) {
       case "large":
-        _setModeLarge();
+        _setModeLarge(onResolve);
         break;
       case "detail":
-        _setModeDetail();
+        _setModeDetail(onResolve);
+        break;
+      case "modal":
+        _setModeModal(onResolve);
         break;
     }
   }
@@ -187,54 +195,49 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   //*************local methods*****************
 
   function _setModeLarge() {
-    closeEvent()
-      .then(closeHeader)
-      .then(changeMode);
+    // closeEvent()
+    //   .then(closeHeader)
+    //   .then(changeMode);
+    if (openedElements.event) openedElements.event.close();
+    if (openedElements.header) openedElements.header.close();
+    changeMode();
 
     function changeMode() {
       yHeight = 0;
-      _updateBarHeight(modes["large"].barHeight);
-      barModeAnimations.timeScale(1);
+      _updateBarHeight(modes["large"].barHeight, 0.3);
+      barModeAnimations.timeScale(animationSpeed);
       barModeAnimations.play();
     }
 
-    function closeEvent() {
-      return new Promise(resolve => {
-        if (openedElements.event) return openedElements.event.close(resolve);
-        return resolve();
-      });
-    }
-    function closeHeader() {
-      return new Promise(resolve => {
-        if (openedElements.header) return openedElements.header.close(resolve);
-        return resolve();
-      });
+    // function closeEvent() {
+    //   return new Promise(resolve => {
+    //     if (openedElements.event) return openedElements.event.close(resolve);
+    //     return resolve();
+    //   });
+    // }
+    // function closeHeader() {
+    //   return new Promise(resolve => {
+    //     if (openedElements.header) return openedElements.header.close(resolve);
+    //     return resolve();
+    //   });
+    // }
+  }
+
+  function _setModeDetail(onResolve) {
+    _updateBarHeight(modes["detail"].barHeight, 0.4, onResolve);
+
+    if (openedElements.event) openedElements.event.close();
+    if (openedElements.header) openedElements.header.close();
+    changeMode();
+
+    function changeMode() {
+      barModeAnimations.timeScale(animationSpeed);
+      barModeAnimations.reverse();
     }
   }
 
-  function _setModeDetail() {
-    _updateBarHeight(modes["detail"].barHeight);
-    closeEvent()
-      .then(closeHeader)
-      .then(changeMode);
-
-    function changeMode() {
-      barModeAnimations.timeScale(1);
-      barModeAnimations.reverse();
-    }
-
-    function closeEvent() {
-      return new Promise(resolve => {
-        if (openedElements.event) return openedElements.event.close(resolve);
-        return resolve();
-      });
-    }
-    function closeHeader() {
-      return new Promise(resolve => {
-        if (openedElements.header) return openedElements.header.close(resolve);
-        return resolve();
-      });
-    }
+  function _setModeModal(onResolve) {
+    if (!bar.getHeaderState()) bar.open();
   }
 
   function _getEventsNodesByType() {
@@ -258,15 +261,16 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     return allNodesByType;
   }
 
-  function _updateBarHeight(height, speed) {
+  function _updateBarHeight(height, speed, onResolve) {
     TweenLite.to(
       bar.getNodes().barElement,
-      typeof speed !== "undefined" ? speed : 0.3,
+      typeof speed !== "undefined" ? speed : 0.6,
       {
         attr: {
           height: height
         },
-        height: height
+        height: height,
+        onComplete: onResolve
       }
     );
   }
@@ -276,6 +280,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function getBarTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
+      let Icon = props.icon;
       return (
         <svg
           className="proc-timeline-svg"
@@ -288,16 +293,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           <g
             className="top-element-node"
             id={`bar`}
-            onClick={
-              props.currentMode === "detail" && props.headerMode === "closed"
-                ? props.barClick
-                : null
-            }
-            cursor={
-              props.currentMode === "detail" && props.headerMode === "closed"
-                ? "pointer"
-                : "default"
-            }
+            onClick={props.currentMode === "detail" ? props.barClick : null}
+            cursor={props.currentMode === "detail" ? "pointer" : "default"}
           >
             <path
               className="header-bar"
@@ -330,18 +327,31 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
               {props.detail}
             </text>
           </g>
-          <svg className="back-icon" x="0" y="38" onClick={props.backClick}>
+          <svg
+            className="back-icon"
+            x="0"
+            y="68"
+            visibility="hidden"
+            onClick={props.backClick}
+          >
             <g className="back-group">
               <path
                 className="back-shape"
                 id={`cir-${props.id}`}
                 d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
                 transform="translate(2,2)"
-                fill="green"
+                fill="#4a75a1"
                 stroke={styleOptions.backgroundColor}
                 strokeMiterlimit="10"
                 strokeWidth="2"
               ></path>
+              <Icon
+                className="icon-svg"
+                fill={styleOptions.fontColor}
+                x="7"
+                y="8"
+                fontSize="28"
+              />
             </g>
           </svg>
           <g className="events">{props.eventDomElements}</g>
@@ -362,12 +372,12 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           id={`event-${props.id}`}
           ref={props.setRef}
           cursor={
-            props.currentMode === "detail" && !props.opened
+            props.currentMode != "large" && !props.opened
               ? "pointer"
               : "default"
           }
           onClick={() => {
-            if (props.currentMode === "detail" && !props.opened) {
+            if (props.currentMode != "large" && !props.opened) {
               props.eventClick(props.id);
             }
           }}
@@ -512,22 +522,22 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     tl.add("shrink");
     tl.to([title, date], 0.1, { opacity: 0 }, "shrink", "start");
     tl.to(event, 0.1, {
-      x: "+=20",
-      y: "+=18",
+      x: "20",
+      y: "18",
       scale: 0.7
     }),
       "shrink";
     tl.add("drop");
-    tl.to(event, 0.1, { x: "+=6", y: "+=48", ease: Power0.easeOut }, "drop");
+    tl.to(event, 0.1, { x: 26, y: 66, ease: Power0.easeOut }, "drop");
     tl.add("spread");
     tl.to(tag, 0.3, {
       x: 20,
-      y: "+=65",
+      y: "85",
       fill: "#ddeced",
       morphSVG: `M10,10 h${styleOptions.barWidth.large -
-        50} a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${styleOptions
+        80} a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${styleOptions
         .barWidth.large -
-        50} a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
+        80} a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
       ease: Expo.easeOut
     }),
       "spread";
@@ -557,30 +567,41 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       },
       "spread"
     );
-    tl.to(event, 0.3, { x: "-=26", y: "-=66", scale: 1 }, "spread");
+    tl.to(event, 0.3, { x: "0", y: "0", scale: 1 }, "spread");
 
     return tl;
   }
 
   function generateBarDetailAniTimeline() {
-    var { barElement, tag: barTag, events, eventDetails } = bar.getNodes();
+    var { backButton, tag: barTag, events, eventDetails } = bar.getNodes();
 
     let tl = new TimelineLite({ paused: true });
 
     tl.add("grow");
     tl.to(
       barTag,
-      0.6,
+      0.4,
       {
+        opacity: 0.8,
         morphSVG: `M0,0 h${styleOptions.barWidth.large -
-          40} a6,6,0,0,1,6,5 v${100 + 13} h-${styleOptions.barWidth.large -
-          202} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
-          76} a6,6,0,0,1,6,-6`,
-        ease: Expo.easeOut
+          100} a6,6,0,0,1,6,5 v${100 + 13} h-${styleOptions.barWidth.large -
+          262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
+          76} a6,6,0,0,1,6,-6`
       },
       "grow"
     );
-    tl.to([events, eventDetails], 0.6, { y: 100, ease: Expo.easeOut }, "grow");
+    tl.to(
+      backButton,
+      0.2,
+      {
+        attr: {
+          visibility: 1,
+          opacity: 1
+        }
+      },
+      "grow"
+    );
+    tl.to([events, eventDetails], 0.4, { y: 100 }, "grow");
 
     return tl;
   }

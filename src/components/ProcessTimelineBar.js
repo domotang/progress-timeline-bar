@@ -1,6 +1,7 @@
 "use strict";
 import React, { Children, cloneElement, useState, useEffect } from "react";
 import { PTBController } from "../lib/PTBController";
+import { IoIosArrowBack } from "react-icons/io";
 
 function ProcessTimeLineBar({
   listBar,
@@ -21,7 +22,6 @@ function ProcessTimeLineBar({
   var [PTBEvent] = useState(() => templateAPI.getEventTmplt());
   var [currentMode, setCurrentMode] = useState(mode);
   var [currentEvent, setCurrentEvent] = useState(null);
-  var [headerMode, setHeaderMode] = useState("closed");
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
   var [barTop, setBarTop] = useState(0);
@@ -29,12 +29,12 @@ function ProcessTimeLineBar({
   var eventDomElements = processDomEventComponents();
   var style1 = { top: 100, left: 150, position: "absolute" };
 
-  var modalView = headerMode === "detail" || currentEvent != null;
+  var modalView = currentMode === "modal";
 
   var frog = {
-    position: currentMode === "detail" ? "static" : "relative",
-    height: currentMode === "detail" ? 106 : null,
-    zIndex: currentMode === "detail" ? 100 : 0
+    position: currentMode === "modal" ? "static" : "relative",
+    height: currentMode === "modal" ? 100 : null,
+    zIndex: currentMode === "modal" ? 100 : 0
   };
 
   var dog = {
@@ -46,7 +46,7 @@ function ProcessTimeLineBar({
     padding: "5px",
     marginTop: "10px",
     marginLeft: "10px",
-    transition: "all .4s .2s, z-index 0s .6s, backgroundColor 0s .6s"
+    transition: "all .4s, z-index 0s .6s, backgroundColor 0s .6s"
   };
 
   var dog2 = {
@@ -62,13 +62,6 @@ function ProcessTimeLineBar({
     transform: `translate(20px, -${barTop - 10}px)`
   };
 
-  console.log(
-    "offset",
-    pTBController.getBarElement()
-      ? pTBController.getBarElement().getBoundingClientRect().top
-      : 0
-  );
-
   useEffect(() => {
     pTBController.init(currentMode);
   }, []);
@@ -79,16 +72,13 @@ function ProcessTimeLineBar({
     }
     setCurrentMode(mode);
     pTBController.setMode(mode);
-    setHeaderMode("closed");
     setCurrentEvent(null);
+    console.log(mode);
   }, [mode]);
 
   function eventClick(eventId) {
-    console.log(
-      "Click!",
-      pTBController.getBarElement().getBoundingClientRect().top - 1
-    );
-    setBarTop(pTBController.getBarElement().getBoundingClientRect().top - 1);
+    _checkSetBarTop();
+    setCurrentMode("modal");
     setEventPage(null);
 
     pTBController.setEvent(eventId, currentEvent).then(() => {
@@ -99,27 +89,30 @@ function ProcessTimeLineBar({
   }
 
   function barClick() {
-    console.log("Click!");
-    pTBController.setHeader("detail");
-    setHeaderMode("detail");
+    _checkSetBarTop();
+    setCurrentMode("modal");
+    pTBController.setMode("modal");
   }
 
   function backClick() {
-    console.log("Click!");
     if (eventPage) {
       setEventPage(null);
     }
-    pTBController.setMode("detail");
-    setCurrentMode("detail");
-    setHeaderMode("closed");
+    pTBController.setMode("detail").then(() => {
+      setCurrentMode("detail");
+    });
     setCurrentEvent(null);
   }
 
   function pTLBClick() {
-    console.log("Click!");
     if (listBar) setSelectedBar(id);
     pTBController.setMode("detail");
     setCurrentMode("detail");
+  }
+
+  function _checkSetBarTop() {
+    if (currentMode != "modal")
+      setBarTop(pTBController.getBarElement().getBoundingClientRect().top - 1);
   }
 
   function processDomEventComponents() {
@@ -158,10 +151,10 @@ function ProcessTimeLineBar({
         className="proc-timeline"
         id={`proc-timeline-${id}`}
         style={modalView ? dog2 : dog}
-        onClick={currentMode != "detail" ? pTLBClick : null}
+        onClick={currentMode === "large" ? pTLBClick : null}
         // onFocus={mode != "detail" ? pTLBClick : null}
         // cursor={mode != "detail" ? "default" : "pointer"}
-        cursor="pointer"
+        cursor="default"
         // role="button"
         // tabIndex="0"
         ref={div => pTBController.addBar({ barId: "procBar", element: div })}
@@ -172,8 +165,8 @@ function ProcessTimeLineBar({
           backClick={backClick}
           title={title}
           detail={detail}
-          headerMode={headerMode}
           currentMode={currentMode}
+          icon={IoIosArrowBack}
         />
 
         <div style={style1} className="event-details">
