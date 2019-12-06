@@ -24,6 +24,7 @@ function ProcessTimeLineBar({
   var [headerMode, setHeaderMode] = useState("closed");
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
+  var [barTop, setBarTop] = useState(0);
 
   var eventDomElements = processDomEventComponents();
   var style1 = { top: 100, left: 150, position: "absolute" };
@@ -58,17 +59,16 @@ function ProcessTimeLineBar({
     marginLeft: "10px",
     zIndex: 100,
     transition: "transform .4s",
-    transform: `translate(20px, -${
-      pTBController.getBarElement()
-        ? pTBController.getBarElement().offsetTop - 100
-        : 0
-    }px)`
+    transform: `translate(20px, -${barTop}px)`
     // top: "offset().top"
   };
 
   console.log(
     "offset",
-    pTBController.getBarElement() ? pTBController.getBarElement().offsetTop : 0
+    pTBController.getBarElement() ? pTBController.getBarElement().offsetTop : 0,
+    pTBController.getBarElement()
+      ? pTBController.getBarElement().getBoundingClientRect().top
+      : 0
   );
 
   // window.innerHeight
@@ -88,7 +88,11 @@ function ProcessTimeLineBar({
   }, [mode]);
 
   function eventClick(eventId) {
-    console.log("Click!");
+    setBarTop(pTBController.getBarElement().getBoundingClientRect().top - 1);
+    console.log(
+      "Click!",
+      pTBController.getBarElement().getBoundingClientRect().top - 1
+    );
     setEventPage(null);
 
     pTBController.setEvent(eventId, currentEvent).then(() => {
