@@ -52,26 +52,22 @@ function ProcessTimeLineBar({
   var dog2 = {
     backgroundColor: "rgba(158, 183, 186, 0.8)",
     width: styleOptions.barWidth.large,
-    position: "fixed",
+    position: "relative",
     borderRadius: "5px",
     padding: "5px",
     marginTop: "10px",
     marginLeft: "10px",
     zIndex: 100,
     transition: "transform .4s",
-    transform: `translate(20px, -${barTop}px)`
-    // top: "offset().top"
+    transform: `translate(20px, -${barTop - 10}px)`
   };
 
   console.log(
     "offset",
-    pTBController.getBarElement() ? pTBController.getBarElement().offsetTop : 0,
     pTBController.getBarElement()
       ? pTBController.getBarElement().getBoundingClientRect().top
       : 0
   );
-
-  // window.innerHeight
 
   useEffect(() => {
     pTBController.init(currentMode);
@@ -88,11 +84,11 @@ function ProcessTimeLineBar({
   }, [mode]);
 
   function eventClick(eventId) {
-    setBarTop(pTBController.getBarElement().getBoundingClientRect().top - 1);
     console.log(
       "Click!",
       pTBController.getBarElement().getBoundingClientRect().top - 1
     );
+    setBarTop(pTBController.getBarElement().getBoundingClientRect().top - 1);
     setEventPage(null);
 
     pTBController.setEvent(eventId, currentEvent).then(() => {

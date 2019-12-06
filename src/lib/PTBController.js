@@ -35,7 +35,6 @@ function PTBEvent(eventData, templateAPI) {
     setState,
     getDetailPages,
     getId,
-    // getExpandedHeight,
     deregister
   };
   return publicAPI;
@@ -46,10 +45,6 @@ function PTBEvent(eventData, templateAPI) {
 
   function getId() {
     return eventId;
-  }
-
-  function getExpandedHeight() {
-    return expandedHeight;
   }
 
   function setState(toState, onResolve) {
@@ -130,6 +125,9 @@ function PTBController(templateAPI) {
 
   function setMode(mode) {
     switch (mode) {
+      case "modal":
+        templateAPI.setMode("modal");
+        break;
       case "detail":
         templateAPI.setMode("detail");
         break;

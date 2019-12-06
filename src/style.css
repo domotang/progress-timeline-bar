@@ -53,7 +53,7 @@ h2 {
   }
 } */
 
-#modal {
+/* #modal {
   background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
   left: 0;
@@ -68,7 +68,7 @@ h2 {
 
 #modal:empty {
   display: none;
-}
+} */
 
 @keyframes modal {
   from {
