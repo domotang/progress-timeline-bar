@@ -224,7 +224,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   }
 
   function _setModeDetail(onResolve) {
-    _updateBarHeight(modes["detail"].barHeight, 0.4, onResolve);
+    _updateBarHeight(modes["detail"].barHeight, 0.3, onResolve);
 
     if (openedElements.event) openedElements.event.close();
     if (openedElements.header) openedElements.header.close();
@@ -264,7 +264,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function _updateBarHeight(height, speed, onResolve) {
     TweenLite.to(
       bar.getNodes().barElement,
-      typeof speed !== "undefined" ? speed : 0.6,
+      typeof speed !== "undefined" ? speed : 0.3,
       {
         attr: {
           height: height

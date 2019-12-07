@@ -33,8 +33,10 @@ function ProcessTimeLineBar({
 
   var frog = {
     position: currentMode === "modal" ? "static" : "relative",
-    height: currentMode === "modal" ? 100 : null,
-    zIndex: currentMode === "modal" ? 100 : 0
+    height: currentMode != "large" ? 104 : 52,
+    zIndex: currentMode === "modal" ? 100 : 0,
+    transition: "all .3s"
+    // backgroundColor: "blue"
   };
 
   var dog = {
@@ -73,7 +75,6 @@ function ProcessTimeLineBar({
     setCurrentMode(mode);
     pTBController.setMode(mode);
     setCurrentEvent(null);
-    console.log(mode);
   }, [mode]);
 
   function eventClick(eventId) {
@@ -98,9 +99,8 @@ function ProcessTimeLineBar({
     if (eventPage) {
       setEventPage(null);
     }
-    pTBController.setMode("detail").then(() => {
-      setCurrentMode("detail");
-    });
+    pTBController.setMode("detail");
+    setCurrentMode("detail");
     setCurrentEvent(null);
   }
 
