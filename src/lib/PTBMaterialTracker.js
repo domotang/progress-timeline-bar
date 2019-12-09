@@ -1,6 +1,6 @@
 "use strict";
 import React from "react";
-import gsap, { TimelineLite, TweenLite, Expo, Power0, Power3 } from "gsap";
+import gsap from "gsap";
 import { MorphSVGPlugin } from "gsap/src/MorphSVGPlugin";
 
 gsap.registerPlugin(MorphSVGPlugin);
@@ -26,8 +26,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
   var publicAPI = {
     init,
-    getBarTmplt,
-    getEventTmplt,
+    getTemplates,
     regBar,
     regEvent,
     setMode
@@ -58,14 +57,21 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
     bar = internalBarAPI;
 
-    function open() {
+    function open(onResolve) {
       yHeight = 100;
-      animation = generateBarDetailAniTimeline();
-      _updateBarHeight(
-        (openedElements.event ? openedElements.event.getExpandedHeight() : 0) +
-          90 +
-          yHeight
-      );
+      animation = generateBarDetailAniTimeline(onResolve);
+      if (!openedElements.event) {
+        _updateBarHeight(
+          (openedElements.event
+            ? openedElements.event.getExpandedHeight()
+            : 0) +
+            90 +
+            yHeight,
+          0.3,
+          0.24
+        );
+      }
+
       animation.timeScale(animationSpeed);
       animation.play();
       openedElements.header = internalBarAPI;
@@ -77,7 +83,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           onResolve();
         };
       }
-      animation.timeScale(animationSpeed);
       animation.reverse();
       openedElements.header = null;
     }
@@ -122,10 +127,11 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     return eventAPI;
 
     function open(expandedHeight, onResolve) {
-      if (!bar.getHeaderState()) bar.open();
-      _updateBarHeight(expandedHeight + 130 + yHeight);
-      currentExpandedHeight = expandedHeight;
       if (openedElements.event) openedElements.event.close();
+      openedElements.event = internalEventAPI;
+      if (!bar.getHeaderState()) bar.open();
+      _updateBarHeight(expandedHeight + 130 + yHeight, 0.3, 0);
+      currentExpandedHeight = expandedHeight;
       animation =
         type === "loading"
           ? generateEventLoadingAniTimeline(controlNodes)
@@ -138,9 +144,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
         };
       }
       animation.timeScale(animationSpeed);
-      // animation.time(animation.totalDuration());
       animation.play();
-      openedElements.event = internalEventAPI;
     }
 
     function close(onResolve) {
@@ -149,7 +153,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           onResolve();
         };
       }
-      animation.timeScale(animationSpeed);
       animation.reverse();
       openedElements.event = null;
     }
@@ -185,19 +188,24 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     barModeAnimations = generateBarAniTimeline();
     barModeAnimations.seek(mode);
     _updateBarHeight(modes[mode].barHeight, 0);
-    TweenLite.to(bar.getNodes().barElement, 0.2, {
+    gsap.to(bar.getNodes().barElement, 0.2, {
       attr: {
         visibility: 1
       }
     });
   }
 
+  function getTemplates() {
+    return {
+      bar: _getBarTmplt(),
+      event: _getEventTmplt(),
+      barHeights: _getBarHeights()
+    };
+  }
+
   //*************local methods*****************
 
   function _setModeLarge() {
-    // closeEvent()
-    //   .then(closeHeader)
-    //   .then(changeMode);
     if (openedElements.event) openedElements.event.close();
     if (openedElements.header) openedElements.header.close();
     changeMode();
@@ -208,23 +216,17 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       barModeAnimations.timeScale(animationSpeed);
       barModeAnimations.play();
     }
-
-    // function closeEvent() {
-    //   return new Promise(resolve => {
-    //     if (openedElements.event) return openedElements.event.close(resolve);
-    //     return resolve();
-    //   });
-    // }
-    // function closeHeader() {
-    //   return new Promise(resolve => {
-    //     if (openedElements.header) return openedElements.header.close(resolve);
-    //     return resolve();
-    //   });
-    // }
   }
 
   function _setModeDetail(onResolve) {
-    _updateBarHeight(modes["detail"].barHeight, 0.3, onResolve);
+    // if (!openedElements.event) onResolve();
+    _updateBarHeight(
+      modes["detail"].barHeight,
+      0.3,
+      0.2,
+      onResolve
+      // openedElements.event ? onResolve : null
+    );
 
     if (openedElements.event) openedElements.event.close();
     if (openedElements.header) openedElements.header.close();
@@ -237,7 +239,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   }
 
   function _setModeModal(onResolve) {
-    if (!bar.getHeaderState()) bar.open();
+    if (!bar.getHeaderState()) bar.open(onResolve);
   }
 
   function _getEventsNodesByType() {
@@ -261,23 +263,33 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     return allNodesByType;
   }
 
-  function _updateBarHeight(height, speed, onResolve) {
-    TweenLite.to(
+  function _getBarHeights() {
+    var modeHeights = {};
+    for (let mode in modes) {
+      modeHeights = { ...modeHeights, [mode]: modes[mode].barHeight };
+    }
+    return modeHeights;
+  }
+
+  function _updateBarHeight(height, speed, delay, onResolve) {
+    gsap.to(
       bar.getNodes().barElement,
-      typeof speed !== "undefined" ? speed : 0.3,
+      typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
       {
+        delay: delay ? delay : 0,
         attr: {
           height: height
         },
         height: height,
-        onComplete: onResolve
+        onComplete: onResolve,
+        ease: "Linear.easeNone"
       }
     );
   }
 
   //*************component templates*****************
 
-  function getBarTmplt() {
+  function _getBarTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
       let Icon = props.icon;
@@ -289,6 +301,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           width={styleOptions.barWidth.large}
           height="90"
           visibility="hidden"
+          display="block"
         >
           <g
             className="top-element-node"
@@ -332,7 +345,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
             x="0"
             y="68"
             visibility="hidden"
-            onClick={props.backClick}
+            onClick={props.currentMode === "modal" ? props.backClick : null}
+            cursor={props.currentMode === "modal" ? "pointer" : "default"}
           >
             <g className="back-group">
               <path
@@ -360,7 +374,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     };
   }
 
-  function getEventTmplt() {
+  function _getEventTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
       let x = props.id * xFactor;
@@ -426,6 +440,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                     : props.color
                 }
                 stroke={styleOptions.backgroundColor}
+                style={{ strokeOpacity: 1 }}
                 strokeMiterlimit="10"
                 strokeWidth="2"
               ></path>
@@ -447,7 +462,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
   function generateEventLoadingAniTimeline(controleNodes, expandedHeight) {
     let { tag, title, icon } = controleNodes;
-    let tl = new TimelineLite({ paused: true });
+    let tl = gsap.timeline({ paused: true });
     //animate event
     tl.add("shrink");
     tl.to(title, 0.1, { opacity: 0 }, "shrink");
@@ -477,15 +492,15 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       scale: 0.2
     }),
       "loader";
-    tl.to(icon, 0.2, { scale: 0.8, ease: Expo.easeOut }, "loader");
-    tl.to(tag, 0.2, { scale: 1, ease: Expo.easeOut }, "loader");
+    tl.to(icon, 0.2, { scale: 0.8, ease: "Expo.easeOut" }, "loader");
+    tl.to(tag, 0.2, { scale: 1, ease: "Expo.easeOut" }, "loader");
 
     tl.add("spin");
 
     tl.to(
       tag,
       1.6,
-      { rotation: 600, transformOrigin: "40, 28", ease: Power0.easeOut },
+      { rotation: 600, transformOrigin: "40, 28", ease: "Power0.easeOut" },
       "spin"
     );
 
@@ -496,14 +511,14 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       y: 88,
       fill: "#e3e3e3",
       morphSVG: `M10,10 h990 a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-990 a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
-      ease: Expo.easeOut
+      ease: "Expo.easeOut"
     }),
       "spread";
     tl.to(
       icon,
       0.3,
       {
-        ease: Expo.easeOut,
+        ease: "Expo.easeOut",
         x: -8,
         y: 76,
         scale: 2,
@@ -517,45 +532,45 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
   function generateEventStandardAniTlOpen(controleNodes, expandedHeight) {
     let { event, tag, title, date, icon, iconGroup } = controleNodes;
-    let tl = new TimelineLite({ paused: true });
+    let tl = gsap.timeline({ paused: true });
     // animate event
     tl.add("shrink");
     tl.to([title, date], 0.1, { opacity: 0 }, "shrink", "start");
     tl.to(event, 0.1, {
-      x: "20",
-      y: "18",
-      scale: 0.7
+      transformOrigin: "50% 50%",
+      scale: 0.8,
+      ease: "Power1.easeInOut"
     }),
       "shrink";
-    tl.add("drop");
-    tl.to(event, 0.1, { x: 26, y: 66, ease: Power0.easeOut }, "drop");
+    tl.to(event, 0.3, { y: 86, ease: "Power1.easeInOut" }, 0.1, "shrink");
     tl.add("spread");
-    tl.to(tag, 0.3, {
-      x: 20,
+    tl.to(tag, 0.2, {
+      x: "20",
       y: "85",
-      fill: "#ddeced",
+      opacity: 0.6,
+      fill: styleOptions.placeholderColor,
       morphSVG: `M10,10 h${styleOptions.barWidth.large -
         80} a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${styleOptions
         .barWidth.large -
         80} a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
-      ease: Expo.easeOut
+      ease: "Power1.easeInOut"
     }),
       "spread";
     tl.to(
       iconGroup,
-      0.3,
+      0.2,
       {
         attr: {
           scale: 2
         },
-        ease: Expo.easeOut,
-        scale: 2
+        scale: 2,
+        ease: "Power1.easeInOut"
       },
       "spread"
     );
     tl.to(
       icon,
-      0.3,
+      0.2,
       {
         attr: {
           x: 0,
@@ -563,33 +578,61 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           scale: 2,
           transformOrigin: "left-top"
         },
-        ease: Expo.easeOut
+        ease: "Power1.easeInOut"
       },
       "spread"
     );
-    tl.to(event, 0.3, { x: "0", y: "0", scale: 1 }, "spread");
+    tl.to(
+      event,
+      0.2,
+      { x: "0", y: "0", scale: 1, ease: "Power1.easeInOut" },
+      "spread"
+    );
 
     return tl;
   }
 
-  function generateBarDetailAniTimeline() {
+  function generateBarDetailAniTimeline(onResolve) {
     var { backButton, tag: barTag, events, eventDetails } = bar.getNodes();
 
-    let tl = new TimelineLite({ paused: true });
+    let tl = gsap.timeline({ paused: true });
 
-    tl.add("grow");
+    tl.add("widen");
     tl.to(
       barTag,
-      0.4,
+      0.2,
+      {
+        morphSVG: `M0,0 h${styleOptions.barWidth.large -
+          100} a6,6,0,0,1,6,5 v13 h-${styleOptions.barWidth.large -
+          262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`
+      },
+      "widen"
+    );
+
+    tl.add("grow");
+    if (onResolve) {
+      tl.call(onResolve);
+    }
+    tl.to(
+      barTag,
+      0.3,
       {
         opacity: 0.8,
         morphSVG: `M0,0 h${styleOptions.barWidth.large -
           100} a6,6,0,0,1,6,5 v${100 + 13} h-${styleOptions.barWidth.large -
           262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
-          76} a6,6,0,0,1,6,-6`
+          76} a6,6,0,0,1,6,-6`,
+        ease: "Power1.easeInOut"
       },
       "grow"
     );
+    tl.to(
+      [events, eventDetails],
+      0.3,
+      { y: 100, ease: "Power1.easeInOut" },
+      "grow"
+    );
+    tl.add("final");
     tl.to(
       backButton,
       0.2,
@@ -599,9 +642,9 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           opacity: 1
         }
       },
-      "grow"
+      "-=.1",
+      "final"
     );
-    tl.to([events, eventDetails], 0.4, { y: 100 }, "grow");
 
     return tl;
   }
@@ -610,7 +653,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     var { barElement, tag: barTag, events, title, detail } = bar.getNodes();
     var eventNodes = _getEventsNodesByType();
 
-    let tl = new TimelineLite({ paused: true });
+    let tl = gsap.timeline({ paused: true });
 
     tl.add("detail");
     tl.add("shrink");
@@ -618,7 +661,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     tl.to(
       eventNodes.iconGroup,
       0.3,
-      { scale: 0.3, x: "+=17", y: "+=14", ease: Power3.inOut },
+      { scale: 0.3, x: "+=17", y: "+=14", ease: "Power3.inOut" },
       "shrink"
     );
     tl.to(
@@ -636,7 +679,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       {
         morphSVG: `M0,0 h${timelineBarWidth} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidth -
           146} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-25 a6,6,0,0,1,6,-6`,
-        ease: Power3.inOut
+        ease: "Power3.inOut"
       },
       "shrink"
     );
@@ -657,7 +700,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           shapeIndex: 0,
           map: "complexity"
         },
-        ease: Power3.inOut
+        ease: "Power3.inOut"
       },
       "shrink"
     );
@@ -671,7 +714,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           shapeIndex: 0,
           map: "complexity"
         },
-        ease: Power3.inOut
+        ease: "Power3.inOut"
       },
       "shrink"
     );
@@ -686,7 +729,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           shapeIndex: 0,
           map: "complexity"
         },
-        ease: Power3.inOut
+        ease: "Power3.inOut"
       },
       "shrink"
     );

@@ -14,6 +14,8 @@ import {
 } from "react-icons/fa";
 import { MdAlarm } from "react-icons/md";
 import { shippingData } from "./lib/testData";
+import initReactFastclick from "react-fastclick";
+initReactFastclick();
 
 function App() {
   var barStyleOptions = {
@@ -25,14 +27,6 @@ function App() {
     fontColor: "white",
     barWidth: { large: 1040, small: 400 }
   };
-
-  // useEffect(() => {
-  //   var myDiv = document.getElementById(`proc-timeline-${selectedBar}`);
-  //   myDiv.scrollIntoView({
-  //     behavior: "smooth",
-  //     block: "center"
-  //   });
-  // }, [selectedBar]);
 
   return (
     <div className="parent">
@@ -111,7 +105,7 @@ function App() {
           template={PTBMaterialTracker}
           title="SHIPMENTS"
           detail="yes"
-          mode="large"
+          mode="modal"
           status="0"
         >
           <ProcessTimelineBarEvent

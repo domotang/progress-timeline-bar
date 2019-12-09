@@ -8,7 +8,7 @@ function ProcessTimelineEvent(props) {
     setMode(mode);
   }, [mode]);
 
-  return <props.PTBEvent {...props} />;
+  return <props.Event {...props} />;
 }
 export default ProcessTimelineEvent;
 

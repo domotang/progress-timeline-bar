@@ -17,6 +17,7 @@
     "gsap": "file:gsap-bonus.tgz",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-fastclick": "^3.0.2",
     "react-icons": "^3.8.0"
   },
   "devDependencies": {

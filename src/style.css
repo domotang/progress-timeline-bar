@@ -7,7 +7,7 @@
 }
 
 html {
-  overflow: auto;
+  /* overflow: auto; */
   height: 100%;
 }
 
@@ -21,40 +21,8 @@ h2 {
   width: 1080px;
 }
 
-.parent {
-  /* position: relative; */
-}
-
-.proc-timeline {
-  /* position: relative;
-  border-radius: 5px;
-  padding: 5px;
-  margin-top: 10px;
-  margin-left: 10px; */
-  /* width: 1050px; */
-
-  /* z-index: 2; */
-  /* animation-name: modal;
-  animation-duration: 1s; */
-}
-
-.proc-timeline-svg {
-  /* border: 1px solid red; */
-  /* position: relative; */
-  /* z-index: -1; */
-}
-
-/* @keyframes fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-} */
-
-/* #modal {
-  background-color: rgba(0, 0, 0, 0.8);
+#modal {
+  background-color: rgba(0, 0, 0, 0.7);
   position: fixed;
   left: 0;
   right: 0;
@@ -66,26 +34,12 @@ h2 {
   align-items: center;
 }
 
-#modal:empty {
-  display: none;
-} */
-
-@keyframes modal {
-  from {
-    top: 600px;
-  }
-  to {
-    top: 60px;
-  }
+div {
+  transition: background-color 0.3s;
 }
 
-.event-details {
-  /* position: absolute; */
-  /* z-index: 2; */
-  /* top: 140px; */
-  /* left: 150px; */
-  /* animation-name: fadein;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-in;
-  animation-duration: 1s; */
+#modal:empty {
+  background-color: rgba(255, 255, 255, 0);
+  /* display: none; */
+  z-index: 0;
 }

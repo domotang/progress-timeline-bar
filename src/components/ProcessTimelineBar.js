@@ -13,56 +13,59 @@ function ProcessTimeLineBar({
   status,
   mode,
   id,
-  setSelectedBar
+  setSelectedBar,
+  setModal
 }) {
   var [templateAPI] = useState(() =>
     template(styleOptions, children.length, status)
   );
-  var [PTBar] = useState(() => templateAPI.getBarTmplt());
-  var [PTBEvent] = useState(() => templateAPI.getEventTmplt());
+  var [templates] = useState(() => templateAPI.getTemplates());
   var [currentMode, setCurrentMode] = useState(mode);
   var [currentEvent, setCurrentEvent] = useState(null);
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
   var [barTop, setBarTop] = useState(0);
+  var [zIndex, setZIndex] = useState(0);
 
   var eventDomElements = processDomEventComponents();
-  var style1 = { top: 100, left: 150, position: "absolute" };
+  var barPadding = 5;
 
   var modalView = currentMode === "modal";
 
-  var frog = {
+  var modalStylePlaceholder = {
     position: currentMode === "modal" ? "static" : "relative",
-    height: currentMode != "large" ? 104 : 52,
-    zIndex: currentMode === "modal" ? 100 : 0,
-    transition: "all .3s"
+    height:
+      currentMode != "large"
+        ? templates.barHeights.detail + barPadding * 2
+        : templates.barHeights.large + barPadding * 2,
+    marginTop: "10px",
+    marginLeft: "10px",
+    transition: "all .4s"
     // backgroundColor: "blue"
   };
 
-  var dog = {
+  var modalStyleOff = {
     backgroundColor: styleOptions.backgroundColor,
     width: styleOptions.barWidth.large,
-    zIndex: 0,
+    zIndex: zIndex,
     position: "relative",
     borderRadius: "5px",
-    padding: "5px",
-    marginTop: "10px",
-    marginLeft: "10px",
-    transition: "all .4s, z-index 0s .6s, backgroundColor 0s .6s"
+    padding: barPadding + "px",
+    transition: "position .6s, transform .6s, backgroundColor .6s"
   };
 
-  var dog2 = {
-    backgroundColor: "rgba(158, 183, 186, 0.8)",
+  var modalStyleOn = {
+    backgroundColor: "rgba(211, 232, 235, 0.7)",
     width: styleOptions.barWidth.large,
     position: "relative",
     borderRadius: "5px",
     padding: "5px",
-    marginTop: "10px",
-    marginLeft: "10px",
     zIndex: 100,
-    transition: "transform .4s",
+    transition: "transform .6s, backgroundColor .6s",
     transform: `translate(20px, -${barTop - 10}px)`
   };
+
+  var eventPageStyle = { top: 100, left: 150, position: "absolute" };
 
   useEffect(() => {
     pTBController.init(currentMode);
@@ -80,6 +83,8 @@ function ProcessTimeLineBar({
   function eventClick(eventId) {
     _checkSetBarTop();
     setCurrentMode("modal");
+    setZIndex(100);
+    if (listBar) setModal(true);
     setEventPage(null);
 
     pTBController.setEvent(eventId, currentEvent).then(() => {
@@ -91,16 +96,25 @@ function ProcessTimeLineBar({
 
   function barClick() {
     _checkSetBarTop();
-    setCurrentMode("modal");
-    pTBController.setMode("modal");
+    pTBController.setMode("modal").then(() => {
+      setCurrentMode("modal");
+      setZIndex(100);
+      if (listBar) setModal(true);
+    });
   }
 
   function backClick() {
     if (eventPage) {
       setEventPage(null);
     }
-    pTBController.setMode("detail");
+    pTBController.setMode("detail").then(() => {
+      setZIndex(0);
+    });
     setCurrentMode("detail");
+    // pTBController.setMode("detail").then(() => {
+    //   setCurrentMode("detail");
+    // });
+    if (listBar) setModal(false);
     setCurrentEvent(null);
   }
 
@@ -108,6 +122,7 @@ function ProcessTimeLineBar({
     if (listBar) setSelectedBar(id);
     pTBController.setMode("detail");
     setCurrentMode("detail");
+    if (listBar) setModal(false);
   }
 
   function _checkSetBarTop() {
@@ -123,7 +138,7 @@ function ProcessTimeLineBar({
             expandedHeight: child.props.expandedHeight
           };
           return cloneElement(child, {
-            PTBEvent,
+            Event: templates.event,
             eventClick,
             id: index,
             currentMode,
@@ -143,23 +158,23 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  console.log("render bar", id, modalView);
+  // console.log("render bar", id, modalView);
 
   return (
-    <div className="pTBContainer" style={frog}>
+    <div className="pTBContainer" style={modalStylePlaceholder}>
       <div
         className="proc-timeline"
         id={`proc-timeline-${id}`}
-        style={modalView ? dog2 : dog}
+        style={modalView ? modalStyleOn : modalStyleOff}
         onClick={currentMode === "large" ? pTLBClick : null}
-        // onFocus={mode != "detail" ? pTLBClick : null}
+        // onFocus={currentMode === "large" ? pTLBClick : null}
         // cursor={mode != "detail" ? "default" : "pointer"}
-        cursor="default"
+        cursor="pointer"
         // role="button"
         // tabIndex="0"
         ref={div => pTBController.addBar({ barId: "procBar", element: div })}
       >
-        <PTBar
+        <templates.bar
           eventDomElements={eventDomElements}
           barClick={barClick}
           backClick={backClick}
@@ -169,7 +184,7 @@ function ProcessTimeLineBar({
           icon={IoIosArrowBack}
         />
 
-        <div style={style1} className="event-details">
+        <div style={eventPageStyle} className="event-details">
           {eventPage}
         </div>
       </div>
