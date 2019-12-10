@@ -5,6 +5,7 @@ import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
 import MaterialReceipt from "./components/details/MaterialReceipt";
 import ShipmentPackages from "./components/details/ShipmentPackages";
+import HeaderDetails from "./components/details/HeaderDetails";
 import {
   FaCogs,
   FaPaperPlane,
@@ -37,14 +38,16 @@ function App() {
       <PTBListBox>
         {shippingData.map((shipment, index) => (
           <ProcessTimelineBar
+            headerDetailPage={HeaderDetails}
             styleOptions={barStyleOptions}
             key={index}
             id={index}
             template={PTBMaterialTracker}
-            title="SHIPMENTS"
+            title="SHIPMENT"
             detail={shipment.shipment}
             mode="large"
             status={shipment.status}
+            headerDetails={shipment.headerDetails}
           >
             <ProcessTimelineBarEvent
               title="OPENED"

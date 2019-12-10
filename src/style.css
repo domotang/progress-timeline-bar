@@ -35,7 +35,7 @@ h2 {
 }
 
 div {
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, z-index 0.3s;
 }
 
 #modal:empty {

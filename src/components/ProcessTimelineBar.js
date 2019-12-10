@@ -4,6 +4,8 @@ import { PTBController } from "../lib/PTBController";
 import { IoIosArrowBack } from "react-icons/io";
 
 function ProcessTimeLineBar({
+  headerDetailPage: HeaderDetailPage,
+  headerDetails,
   listBar,
   styleOptions,
   template,
@@ -41,31 +43,68 @@ function ProcessTimeLineBar({
     marginTop: "10px",
     marginLeft: "10px",
     transition: "all .4s"
-    // backgroundColor: "blue"
+  };
+
+  var modalStyle = {
+    width: styleOptions.barWidth.large,
+    borderRadius: "5px",
+    position: "relative"
   };
 
   var modalStyleOff = {
+    ...modalStyle,
     backgroundColor: styleOptions.backgroundColor,
-    width: styleOptions.barWidth.large,
     zIndex: zIndex,
-    position: "relative",
-    borderRadius: "5px",
     padding: barPadding + "px",
     transition: "position .6s, transform .6s, backgroundColor .6s"
   };
 
   var modalStyleOn = {
+    ...modalStyle,
     backgroundColor: "rgba(211, 232, 235, 0.7)",
     width: styleOptions.barWidth.large,
-    position: "relative",
-    borderRadius: "5px",
     padding: "5px",
     zIndex: 100,
     transition: "transform .6s, backgroundColor .6s",
     transform: `translate(20px, -${barTop - 10}px)`
   };
 
-  var eventPageStyle = { top: 100, left: 150, position: "absolute" };
+  var headerPageStyle = {
+    top: 10,
+    left: 170,
+    position: "absolute"
+  };
+
+  var headerPageStyleOff = {
+    ...headerPageStyle,
+    opacity: 0,
+    transition: "opacity 1s"
+  };
+
+  var headerPageStyleOn = {
+    ...headerPageStyle,
+    opacity: 1,
+    transition: "opacity .2s .6s"
+  };
+
+  var eventPageStyle = {
+    top: 100,
+    left: 150,
+    position: "absolute"
+  };
+
+  var eventPageStyleOff = {
+    ...eventPageStyle,
+    opacity: 0,
+    transition: "opacity .2s"
+  };
+
+  var eventPageStyleOn = {
+    ...eventPageStyle,
+    opacity: 1,
+    position: "absolute",
+    transition: "opacity .2s"
+  };
 
   useEffect(() => {
     pTBController.init(currentMode);
@@ -111,9 +150,6 @@ function ProcessTimeLineBar({
       setZIndex(0);
     });
     setCurrentMode("detail");
-    // pTBController.setMode("detail").then(() => {
-    //   setCurrentMode("detail");
-    // });
     if (listBar) setModal(false);
     setCurrentEvent(null);
   }
@@ -184,7 +220,24 @@ function ProcessTimeLineBar({
           icon={IoIosArrowBack}
         />
 
-        <div style={eventPageStyle} className="event-details">
+        <div
+          style={
+            currentMode === "modal" ? headerPageStyleOn : headerPageStyleOff
+          }
+          className="header-details"
+        >
+          {currentMode === "modal" ? (
+            <HeaderDetailPage
+              fontColor={styleOptions.fontColor}
+              headerDetails={headerDetails}
+            />
+          ) : null}
+        </div>
+
+        <div
+          style={eventPage ? eventPageStyleOn : eventPageStyleOff}
+          className="event-details"
+        >
           {eventPage}
         </div>
       </div>
