@@ -6,10 +6,10 @@ import {
   Marker,
   Line
 } from "react-simple-maps";
-import world from "../../lib/world-110m.json";
+// import world from "../../lib/world-110m.json";
 
-// const map = "http://domosavant.com/world-110m.json";
-var map = world;
+const map = "http://domosavant.com/world-110m2.json";
+// var map = world;
 
 function Map({ fromCoord, toCoord, destination, offset }) {
   var markers = [
@@ -40,12 +40,7 @@ function Map({ fromCoord, toCoord, destination, offset }) {
           geographies
             // .filter(d => d.properties.REGION_UN === "Africa")
             .map(geo => (
-              <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                fill="white"
-                stroke="#D6D6DA"
-              />
+              <Geography key={geo.rsmKey} geography={geo} fill="white" />
             ))
         }
       </Geographies>
