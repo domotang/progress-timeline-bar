@@ -59,7 +59,8 @@ function PTBController(templateAPI) {
     addEvent,
     setEvent,
     setMode,
-    getBarElement
+    getBarElement,
+    closeEvents
   };
   return publicAPI;
 
@@ -102,6 +103,10 @@ function PTBController(templateAPI) {
       var event = findEventById(eventId);
       event.setState("open", resolve);
     });
+  }
+
+  function closeEvents() {
+    templateAPI.closeEvents();
   }
 
   function setMode(mode) {

@@ -29,7 +29,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     getTemplates,
     regBar,
     regEvent,
-    setMode
+    setMode,
+    closeEvents
   };
   return publicAPI;
 
@@ -43,7 +44,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       title: element.querySelector(".title"),
       detail: element.querySelector(".detail"),
       eventDetails: element.querySelector(".event-details"),
-      backButton: element.querySelector(".back-icon")
+      backButton: element.querySelector(".back-icon"),
+      upButton: element.querySelector(".up-icon")
     };
 
     var animation = null;
@@ -131,6 +133,10 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       openedElements.event = internalEventAPI;
       if (!bar.getHeaderState()) bar.open();
       _updateBarHeight(expandedHeight + 130 + yHeight, 0.3, 0);
+
+      let { x, y, width } = event.getBBox();
+      var upCoords = { x: width / 2 + x - 20, y: y + 146 };
+
       currentExpandedHeight = expandedHeight;
       animation =
         type === "loading"
@@ -140,6 +146,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           : null;
       if (onResolve) {
         animation.vars.onComplete = () => {
+          _updateEventBackButton(true, upCoords);
           onResolve();
         };
       }
@@ -153,6 +160,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           onResolve();
         };
       }
+      _updateEventBackButton(false);
       animation.reverse();
       openedElements.event = null;
     }
@@ -201,6 +209,17 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       event: _getEventTmplt(),
       barHeights: _getBarHeights()
     };
+  }
+
+  function closeEvents() {
+    if (openedElements.event) openedElements.event.close();
+    _updateBarHeight(
+      (openedElements.event ? openedElements.event.getExpandedHeight() : 0) +
+        90 +
+        yHeight,
+      0.3,
+      0.24
+    );
   }
 
   //*************local methods*****************
@@ -271,6 +290,81 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     return modeHeights;
   }
 
+  function _updateEventBackButton(active, coords) {
+    console.log(coords);
+    var upButton = bar.getNodes().upButton;
+
+    if (active) {
+      var tl = gsap.timeline({ paused: true });
+
+      tl.add("set");
+
+      tl.to(
+        upButton,
+        0,
+        {
+          attr: {
+            visibility: 0,
+            opacity: 0
+          }
+        },
+        "set"
+      );
+
+      tl.to(
+        upButton,
+        0,
+        {
+          attr: {
+            x: coords.x,
+            y: coords.y + 60
+          }
+        },
+        "set"
+      );
+
+      tl.add("move");
+
+      tl.to(
+        upButton,
+        0.4,
+        {
+          attr: {
+            visibility: 1,
+            opacity: 1
+          }
+        },
+        "move"
+      );
+
+      tl.to(
+        upButton,
+        0.2,
+        {
+          attr: {
+            x: coords.x,
+            y: coords.y
+          }
+        },
+        "move"
+      );
+
+      tl.play();
+    } else {
+      gsap.to(
+        upButton,
+        0.2,
+        {
+          attr: {
+            visibility: 0,
+            opacity: 0
+          }
+        },
+        "set"
+      );
+    }
+  }
+
   function _updateBarHeight(height, speed, delay, onResolve) {
     gsap.to(
       bar.getNodes().barElement,
@@ -292,7 +386,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function _getBarTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
-      let Icon = props.icon;
       return (
         <svg
           className="proc-timeline-svg"
@@ -359,13 +452,68 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                 strokeMiterlimit="10"
                 strokeWidth="2"
               ></path>
-              <Icon
-                className="icon-svg"
+              <svg
+                stroke="currentColor"
                 fill={styleOptions.fontColor}
+                strokeWidth="0"
+                viewBox="0 0 512 512"
+                className="icon-svg"
                 x="7"
                 y="8"
                 fontSize="28"
-              />
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M217.9 256L345 129c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.3-34 0L167
+                239c-9.1 9.1-9.3 23.7-.7 33.1L310.9 417c4.7 4.7 10.9 7 17 7s12.3-2.3 17-7c9.4-9.4
+                9.4-24.6 0-33.9L217.9 256z"
+                ></path>
+              </svg>
+            </g>
+          </svg>
+          <svg
+            className="up-icon"
+            x="30"
+            y="68"
+            visibility="hidden"
+            onClick={props.closeEventsClick}
+            cursor="pointer"
+          >
+            <g className="up-group">
+              <path
+                className="up-shape"
+                opacity="0"
+                id={`cir-${props.id}`}
+                d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
+                transform="translate(2,2)"
+                // d="M30,0 h40 a6,6,0,0,1,6,4 l8, 22 h-82 l8, -22 a6,6,0,0,1,6,-4"
+                // transform="translate(2,2)"
+                fill="#4a75a1"
+                stroke={styleOptions.backgroundColor}
+                strokeMiterlimit="10"
+                strokeWidth="0"
+              ></path>
+              <svg
+                stroke="currentColor"
+                fill="white"
+                strokeWidth="0"
+                viewBox="0 0 512 512"
+                className="icon-svg"
+                x="8"
+                y="0"
+                fontSize="28"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M256 217.9L383 345c9.4 9.4 24.6 9.4 33.9 0 9.4-9.4 9.3-24.6 0-34L273
+                167c-9.1-9.1-23.7-9.3-33.1-.7L95 310.9c-4.7 4.7-7 10.9-7 17s2.3 12.3 7 17c9.4 9.4
+                24.6 9.4 33.9 0l127.1-127z"
+                ></path>
+              </svg>
             </g>
           </svg>
           <g className="events">{props.eventDomElements}</g>
@@ -461,8 +609,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   //*************component animations*****************
 
   function generateEventLoadingAniTimeline(controleNodes, expandedHeight) {
-    let { tag, title, icon } = controleNodes;
-    let tl = gsap.timeline({ paused: true });
+    var { tag, title, icon } = controleNodes;
+    var tl = gsap.timeline({ paused: true });
     //animate event
     tl.add("shrink");
     tl.to(title, 0.1, { opacity: 0 }, "shrink");
@@ -531,8 +679,9 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   }
 
   function generateEventStandardAniTlOpen(controleNodes, expandedHeight) {
-    let { event, tag, title, date, icon, iconGroup } = controleNodes;
-    let tl = gsap.timeline({ paused: true });
+    var { event, tag, title, date, icon, iconGroup } = controleNodes;
+
+    var tl = gsap.timeline({ paused: true });
     // animate event
     tl.add("shrink");
     tl.to([title, date], 0.1, { opacity: 0 }, "shrink", "start");
@@ -595,7 +744,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function generateBarDetailAniTimeline(onResolve) {
     var { backButton, tag: barTag, events, eventDetails } = bar.getNodes();
 
-    let tl = gsap.timeline({ paused: true });
+    var tl = gsap.timeline({ paused: true });
 
     tl.add("widen");
     tl.to(
@@ -653,7 +802,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     var { barElement, tag: barTag, events, title, detail } = bar.getNodes();
     var eventNodes = _getEventsNodesByType();
 
-    let tl = gsap.timeline({ paused: true });
+    var tl = gsap.timeline({ paused: true });
 
     tl.add("detail");
     tl.add("shrink");

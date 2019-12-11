@@ -6,10 +6,10 @@ import {
   Marker,
   Line
 } from "react-simple-maps";
-// import world from "../../lib/world-110m.json";
+import world from "../../lib/ne_110m_land.json";
 
-const map = "http://domosavant.com/world-110m2.json";
-// var map = world;
+// const map = "http://domosavant.com/ne_110m_land.json";
+var map = world;
 
 function Map({ fromCoord, toCoord, destination, offset }) {
   var markers = [

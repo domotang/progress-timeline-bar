@@ -1,7 +1,6 @@
 "use strict";
 import React, { Children, cloneElement, useState, useEffect } from "react";
 import { PTBController } from "../lib/PTBController";
-import { IoIosArrowBack } from "react-icons/io";
 
 function ProcessTimeLineBar({
   headerDetailPage: HeaderDetailPage,
@@ -154,6 +153,14 @@ function ProcessTimeLineBar({
     setCurrentEvent(null);
   }
 
+  function closeEventsClick() {
+    if (eventPage) {
+      setEventPage(null);
+    }
+    pTBController.closeEvents();
+    setCurrentEvent(null);
+  }
+
   function pTLBClick() {
     if (listBar) setSelectedBar(id);
     pTBController.setMode("detail");
@@ -214,10 +221,10 @@ function ProcessTimeLineBar({
           eventDomElements={eventDomElements}
           barClick={barClick}
           backClick={backClick}
+          closeEventsClick={closeEventsClick}
           title={title}
           detail={detail}
           currentMode={currentMode}
-          icon={IoIosArrowBack}
         />
 
         <div
