@@ -7,13 +7,13 @@ import MaterialReceipt from "./components/details/MaterialReceipt";
 import ShipmentPackages from "./components/details/ShipmentPackages";
 import HeaderDetails from "./components/details/HeaderDetails";
 import {
-  FaCogs,
+  FaTruckLoading,
   FaPaperPlane,
-  FaRegCalendarCheck,
   FaRegCheckCircle,
-  FaRegFileAlt
+  FaBox,
+  FaTruckMoving
 } from "react-icons/fa";
-import { MdAlarm } from "react-icons/md";
+import { GoFileSubmodule } from "react-icons/go";
 import { shippingData } from "./lib/testData";
 import initReactFastclick from "react-fastclick";
 initReactFastclick();
@@ -54,7 +54,7 @@ function App() {
               date={shipment.statusDates.opened}
               color="#7699c2"
               expandedHeight="280"
-              icon={FaRegFileAlt}
+              icon={GoFileSubmodule}
             >
               <ShipmentPackages />
             </ProcessTimelineBarEvent>
@@ -63,7 +63,7 @@ function App() {
               date={shipment.statusDates.received}
               color="#6583a6"
               expandedHeight="300"
-              icon={FaRegCalendarCheck}
+              icon={FaTruckLoading}
             >
               <MaterialReceipt />
             </ProcessTimelineBarEvent>
@@ -72,14 +72,14 @@ function App() {
               date={shipment.statusDates.packed}
               color="#4a75a1"
               expandedHeight="400"
-              icon={MdAlarm}
+              icon={FaBox}
             />
             <ProcessTimelineBarEvent
               title="SHIPPED"
               date={shipment.statusDates.shipped}
               color="#3f658a"
               expandedHeight="160"
-              icon={FaCogs}
+              icon={FaTruckMoving}
             />
             <ProcessTimelineBarEvent
               title="IN TRANSIT"

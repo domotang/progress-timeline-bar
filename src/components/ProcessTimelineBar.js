@@ -201,7 +201,7 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  // console.log("render bar", id, modalView);
+  console.log("render bar", id, modalView);
 
   return (
     <div className="pTBContainer" style={modalStylePlaceholder}>

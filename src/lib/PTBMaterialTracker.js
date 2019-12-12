@@ -135,7 +135,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       _updateBarHeight(expandedHeight + 130 + yHeight, 0.3, 0);
 
       let { x, y, width } = event.getBBox();
-      var upCoords = { x: width / 2 + x - 20, y: y + 146 };
+      var upCoords = { x: width / 2 + x - 40, y: y + 90 };
 
       currentExpandedHeight = expandedHeight;
       animation =
@@ -436,7 +436,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           <svg
             className="back-icon"
             x="0"
-            y="68"
+            y="48"
             visibility="hidden"
             onClick={props.currentMode === "modal" ? props.backClick : null}
             cursor={props.currentMode === "modal" ? "pointer" : "default"}
@@ -444,13 +444,15 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
             <g className="back-group">
               <path
                 className="back-shape"
+                opacity="0"
                 id={`cir-${props.id}`}
-                d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
+                // d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
+                d="M0,00 h30 v90 h-30 v-90"
                 transform="translate(2,2)"
                 fill="#4a75a1"
                 stroke={styleOptions.backgroundColor}
                 strokeMiterlimit="10"
-                strokeWidth="2"
+                strokeWidth="0"
               ></path>
               <svg
                 stroke="currentColor"
@@ -458,7 +460,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                 strokeWidth="0"
                 viewBox="0 0 512 512"
                 className="icon-svg"
-                x="7"
+                x="0"
                 y="8"
                 fontSize="28"
                 height="1em"
@@ -486,10 +488,10 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                 className="up-shape"
                 opacity="0"
                 id={`cir-${props.id}`}
-                d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
-                transform="translate(2,2)"
-                // d="M30,0 h40 a6,6,0,0,1,6,4 l8, 22 h-82 l8, -22 a6,6,0,0,1,6,-4"
+                // d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
                 // transform="translate(2,2)"
+                d="M0,20 h70 v70 h-70 v-70"
+                transform="translate(2,2)"
                 fill="#4a75a1"
                 stroke={styleOptions.backgroundColor}
                 strokeMiterlimit="10"
@@ -501,8 +503,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                 strokeWidth="0"
                 viewBox="0 0 512 512"
                 className="icon-svg"
-                x="8"
-                y="0"
+                x="28"
+                y="56"
                 fontSize="28"
                 height="1em"
                 width="1em"
@@ -525,8 +527,8 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   function _getEventTmplt() {
     // eslint-disable-next-line react/display-name
     return props => {
-      let x = props.id * xFactor;
-      let Icon = props.icon;
+      var x = props.id * xFactor;
+      var Icon = props.icon;
 
       return (
         <g
