@@ -119,6 +119,7 @@ function ProcessTimeLineBar({
   }, [mode]);
 
   function eventClick(eventId) {
+    console.log("click");
     _checkSetBarTop();
     setCurrentMode("modal");
     setZIndex(100);
@@ -133,6 +134,7 @@ function ProcessTimeLineBar({
   }
 
   function barClick() {
+    console.log("click");
     _checkSetBarTop();
     pTBController.setMode("modal").then(() => {
       setCurrentMode("modal");
@@ -142,6 +144,7 @@ function ProcessTimeLineBar({
   }
 
   function backClick() {
+    console.log("click");
     if (eventPage) {
       setEventPage(null);
     }
@@ -154,6 +157,7 @@ function ProcessTimeLineBar({
   }
 
   function closeEventsClick() {
+    console.log("click");
     if (eventPage) {
       setEventPage(null);
     }
@@ -162,11 +166,19 @@ function ProcessTimeLineBar({
   }
 
   function pTLBClick() {
-    if (listBar) setSelectedBar(id);
-    pTBController.setMode("detail");
-    setCurrentMode("detail");
+    console.log("click small");
+    // if (listBar) setSelectedBar(id);
+    pTBController.setMode("small");
+    setCurrentMode("small");
     if (listBar) setModal(false);
   }
+  // function pTLBClick() {
+  //   console.log("click");
+  //   if (listBar) setSelectedBar(id);
+  //   pTBController.setMode("detail");
+  //   setCurrentMode("detail");
+  //   if (listBar) setModal(false);
+  // }
 
   function _checkSetBarTop() {
     if (currentMode != "modal")
@@ -201,7 +213,7 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  console.log("render bar", id, modalView);
+  console.log("render bar", id, mode);
 
   return (
     <div className="pTBContainer" style={modalStylePlaceholder}>

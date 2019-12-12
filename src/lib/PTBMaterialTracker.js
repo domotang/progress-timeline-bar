@@ -10,8 +10,14 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     (styleOptions.barWidth.large - 10 - (154 + (elementCount - 1) * 0.1)) /
       elementCount
   );
+  var xFactor2 = Math.round(
+    (styleOptions.barWidth.small - 10 - (154 + (elementCount - 1) * 0.1)) /
+      elementCount
+  );
   var eventWidth = xFactor - 15,
+    eventWidth2 = xFactor2 - 15,
     timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164,
+    timelineBarWidth2 = status > 0 ? 194 + xFactor2 * (status - 1) : 164,
     modes = {
       small: { barHeight: 38 },
       large: { barHeight: 38 },
@@ -32,6 +38,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     setMode,
     closeEvents
   };
+  console.log(timelineBarWidth2);
   return publicAPI;
 
   //*************component registrations*****************
@@ -180,6 +187,9 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
   function setMode(mode, onResolve) {
     switch (mode) {
+      case "small":
+        _setModeSmall(onResolve);
+        break;
       case "large":
         _setModeLarge(onResolve);
         break;
@@ -196,7 +206,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     barModeAnimations = generateBarAniTimeline();
     barModeAnimations.seek(mode);
     _updateBarHeight(modes[mode].barHeight, 0);
-    gsap.to(bar.getNodes().barElement, 0.2, {
+    gsap.to(bar.getNodes().barElement, 0, {
       attr: {
         visibility: 1
       }
@@ -233,7 +243,20 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
       yHeight = 0;
       _updateBarHeight(modes["large"].barHeight, 0.3);
       barModeAnimations.timeScale(animationSpeed);
-      barModeAnimations.play();
+      barModeAnimations.tweenTo("large");
+    }
+  }
+
+  function _setModeSmall() {
+    if (openedElements.event) openedElements.event.close();
+    if (openedElements.header) openedElements.header.close();
+
+    changeMode();
+    function changeMode() {
+      yHeight = 0;
+      _updateBarHeight(modes["small"].barHeight, 0.3);
+      barModeAnimations.timeScale(animationSpeed);
+      barModeAnimations.tweenTo("small");
     }
   }
 
@@ -253,7 +276,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
     function changeMode() {
       barModeAnimations.timeScale(animationSpeed);
-      barModeAnimations.reverse();
+      barModeAnimations.tweenTo("detail");
     }
   }
 
@@ -894,6 +917,35 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     );
     tl.to(eventNodes.date, 0.02, { opacity: 1 });
     tl.add("large");
+    tl.add("shrink2");
+    tl.to(
+      barTag,
+      0.3,
+      {
+        morphSVG: `M0,0 h${timelineBarWidth2 -
+          50} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidth2 -
+          146} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-77 a6,6,0,0,1,-6,-6 v-25 a6,6,0,0,1,6,-6`,
+        ease: "Power3.inOut"
+      },
+      "shrink2"
+    );
+    tl.to(
+      eventNodes.tag[0],
+      0.3,
+      {
+        x: 94,
+        morphSVG: {
+          shape: `M11,1 h${eventWidth +
+            5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidth +
+            5} a6,6,0,0,1,-6,-6 l2 -6 l3 -6 a6,6,0,0,1,6,-6`,
+          shapeIndex: 0,
+          map: "complexity"
+        },
+        ease: "Power3.inOut"
+      },
+      "shrink2"
+    );
+    tl.add("small");
 
     return tl;
   }
