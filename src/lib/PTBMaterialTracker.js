@@ -6,20 +6,14 @@ import { MorphSVGPlugin } from "gsap/src/MorphSVGPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 
 function PTBMaterialTracker(styleOptions, elementCount, status) {
-  var xFactor = Math.round(
-    (styleOptions.barWidth.large - 10 - (154 + (elementCount - 1) * 0.1)) /
-      elementCount
-  );
-  var xFactor2 = Math.round(
-    (styleOptions.barWidth.small - 10 - (154 + (elementCount - 1) * 0.1)) /
-      elementCount
-  );
+  var xFactor = Math.round((styleOptions.barWidth.large - 166) / elementCount);
+  var xFactor2 = Math.round((styleOptions.barWidth.small - 87) / elementCount);
   var eventWidth = xFactor - 15,
-    eventWidth2 = xFactor2 - 15,
+    eventWidth2 = xFactor2 - 9,
     timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164,
     timelineBarWidth2 = status > 0 ? 194 + xFactor2 * (status - 1) : 164,
     modes = {
-      small: { barHeight: 38 },
+      small: { barHeight: 21 },
       large: { barHeight: 38 },
       detail: { barHeight: 90 }
     },
@@ -38,7 +32,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     setMode,
     closeEvents
   };
-  console.log(timelineBarWidth2);
+
   return publicAPI;
 
   //*************component registrations*****************
@@ -578,23 +572,21 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           />
           <text
             className="title"
-            x={x + 190}
-            y="33"
             fontFamily="Verdana"
             fontSize="12"
             fontWeight="bold"
             fill={styleOptions.fontColor}
+            transform={`translate(${x + 190}, 33)`}
           >
             {props.title}
           </text>
           <text
             className="date"
-            x={x + 190}
-            y="47"
             fontFamily="Verdana"
             fontSize="9"
             fontWeight="bold"
             fill={styleOptions.fontColor}
+            transform={`translate(${x + 190}, 47)`}
           >
             {props.date}
           </text>
@@ -918,33 +910,68 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     tl.to(eventNodes.date, 0.02, { opacity: 1 });
     tl.add("large");
     tl.add("shrink2");
+    tl.to(barElement, 0.6, { width: styleOptions.barWidth.small }, "shrink2");
     tl.to(
       barTag,
       0.3,
       {
-        morphSVG: `M0,0 h${timelineBarWidth2 -
-          50} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidth2 -
-          146} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-77 a6,6,0,0,1,-6,-6 v-25 a6,6,0,0,1,6,-6`,
+        morphSVG: `M-5,0 h${timelineBarWidth2 -
+          80} l-3, 3 h-${timelineBarWidth2 -
+          176} l-8, 18 h-77 a3,3,0,0,1,-3,-3 v-15 a3,3,0,0,1,3,-3`,
         ease: "Power3.inOut"
       },
       "shrink2"
     );
-    tl.to(
-      eventNodes.tag[0],
-      0.3,
-      {
-        x: 94,
-        morphSVG: {
-          shape: `M11,1 h${eventWidth +
-            5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidth +
-            5} a6,6,0,0,1,-6,-6 l2 -6 l3 -6 a6,6,0,0,1,6,-6`,
-          shapeIndex: 0,
-          map: "complexity"
-        },
-        ease: "Power3.inOut"
-      },
-      "shrink2"
-    );
+
+    let eventNodesAniActions = eventNodes.tag.map((node, index) => {
+      return function nodeAniAction() {
+        tl.to(
+          node,
+          0.3,
+          {
+            x: index * xFactor2 + 80,
+            y: 17,
+            morphSVG: {
+              shape:
+                index < status - 1
+                  ? `M6,0 h${eventWidth2 + 6} l-7, 17 h-${eventWidth2 +
+                      6} l7 -17`
+                  : index === status - 1 && index !== elementCount - 1
+                  ? `M6,0 h18 l7,-7 h${eventWidth2 -
+                      16} l-10, 24 h-${eventWidth2 + 6} l7 -17`
+                  : index === elementCount - 1 && index != status - 1
+                  ? `M8,-4 h${eventWidth2 +
+                      2} a3,3,0,0,1,3,3 v15 a3,3,0,0,1,-3,3 h-${eventWidth2 +
+                      11} l10 -23`
+                  : index === elementCount - 1 && index === status - 1
+                  ? `M6,0 h18 l4,-4 h${eventWidth2 -
+                      19} a3,3,0,0,1,3,3 v15 a3,3,0,0,1,-3,3 h-${eventWidth2 +
+                      10} l7 -17`
+                  : `M8,-5 h${eventWidth2 + 6} l-9, 22 h-${eventWidth2 +
+                      6} l9 -22`,
+              shapeIndex: 0,
+              map: "complexity"
+            },
+            ease: "Power3.inOut"
+          },
+          "shrink2"
+        );
+        tl.to(
+          eventNodes.date[index],
+          0.3,
+          { x: index * xFactor2 + 84, scale: 0.5 },
+          "shrink2"
+        );
+      };
+    });
+
+    tl.to(eventNodes.iconGroup, 0.3, { opacity: 0, scale: 0 }, "shrink2");
+
+    eventNodesAniActions.forEach(nodeAniAction => {
+      nodeAniAction();
+    });
+
+    tl.to(detail, 0.3, { x: -10, y: -16, scale: 0.6 }, "shrink2");
     tl.add("small");
 
     return tl;

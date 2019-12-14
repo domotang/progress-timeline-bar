@@ -29,6 +29,7 @@ function ProcessTimeLineBar({
   var [zIndex, setZIndex] = useState(0);
 
   var eventDomElements = processDomEventComponents();
+  // var barPadding = 2;
   var barPadding = 5;
 
   var modalView = currentMode === "modal";
@@ -36,9 +37,13 @@ function ProcessTimeLineBar({
   var modalStylePlaceholder = {
     position: currentMode === "modal" ? "static" : "relative",
     height:
-      currentMode != "large"
+      currentMode === "detail"
         ? templates.barHeights.detail + barPadding * 2
-        : templates.barHeights.large + barPadding * 2,
+        : currentMode === "large"
+        ? templates.barHeights.large + barPadding * 2
+        : templates.barHeights.small,
+    // marginTop: "5px",
+    // marginLeft: "5px",
     marginTop: "10px",
     marginLeft: "10px",
     transition: "all .4s"

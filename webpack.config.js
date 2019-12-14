@@ -13,11 +13,12 @@ module.exports = {
   //   maxEntrypointSize: 512000,
   //   maxAssetSize: 512000
   // },
-  entry: {
-    index: path.join(__dirname, "src/index.js")
-    // cont: path.join(__dirname, "src/lib/PTBController.js"),
-    // template: path.join(__dirname, "src/lib/PTBMaterialTracker.js")
-  },
+  entry: path.join(__dirname, 'src/index.js'),
+  // entry: {
+  //   index: path.join(__dirname, "src/index.js")
+  // cont: path.join(__dirname, "src/lib/PTBController.js"),
+  // template: path.join(__dirname, "src/lib/PTBMaterialTracker.js")
+  // },
   output: {
     path: path.resolve(__dirname, "dist"),
     // filename: "[name]bundle.js"
