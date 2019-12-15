@@ -26,24 +26,32 @@ function ProcessTimeLineBar({
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
   var [barTop, setBarTop] = useState(0);
-  var [zIndex, setZIndex] = useState(0);
 
   var eventDomElements = processDomEventComponents();
-  // var barPadding = 2;
   var barPadding = 5;
 
+  // var modalView = currentMode === "modal";
+
+  // var modalStylePlaceholder = {
+  //   position: currentMode === "modal" ? "static" : "relative",
+  //   height:
+  //     currentMode === "detail"
+  //       ? templates.barHeights.detail + barPadding * 2
+  //       : currentMode === "large"
+  //       ? templates.barHeights.large + barPadding * 2
+  //       : templates.barHeights.small,
+  //   marginTop: "10px",
+  //   marginLeft: "10px",
+  //   transition: "all .4s"
+  // };
   var modalView = currentMode === "modal";
 
   var modalStylePlaceholder = {
     position: currentMode === "modal" ? "static" : "relative",
     height:
-      currentMode === "detail"
+      currentMode != "large"
         ? templates.barHeights.detail + barPadding * 2
-        : currentMode === "large"
-        ? templates.barHeights.large + barPadding * 2
-        : templates.barHeights.small,
-    // marginTop: "5px",
-    // marginLeft: "5px",
+        : templates.barHeights.large + barPadding * 2,
     marginTop: "10px",
     marginLeft: "10px",
     transition: "all .4s"
@@ -59,10 +67,9 @@ function ProcessTimeLineBar({
     ...modalStyle,
     backgroundColor: styleOptions.backgroundColor,
     zIndex: 0,
-    // zIndex: zIndex,
     padding: barPadding + "px",
     transition:
-      "position .6s, transform .6s, backgroundColor .6s, zIndex 0s .6s"
+      "position .6s, transform .6s, background-color .6s, z-index 0s 1s"
   };
 
   var modalStyleOn = {
@@ -71,7 +78,7 @@ function ProcessTimeLineBar({
     width: styleOptions.barWidth.large,
     padding: "5px",
     zIndex: 100,
-    transition: "transform .6s, backgroundColor .6s,  zIndex 0s .6s",
+    transition: "transform .6s, background-color .6s,  zIndex 0s .6s",
     transform: `translate(20px, -${barTop - 10}px)`
   };
 
@@ -125,11 +132,15 @@ function ProcessTimeLineBar({
     setCurrentEvent(null);
   }, [mode]);
 
+  useEffect(() => {
+    if (currentMode === "modal") {
+      _checkSetBarTop();
+    }
+  }, [currentMode]);
+
   function eventClick(eventId) {
     console.log("click");
-    _checkSetBarTop();
     setCurrentMode("modal");
-    setZIndex(100);
     if (listBar) setModal(true);
     setEventPage(null);
 
@@ -142,10 +153,8 @@ function ProcessTimeLineBar({
 
   function barClick() {
     console.log("click");
-    _checkSetBarTop();
     pTBController.setMode("modal").then(() => {
       setCurrentMode("modal");
-      setZIndex(100);
       if (listBar) setModal(true);
     });
   }
@@ -155,9 +164,7 @@ function ProcessTimeLineBar({
     if (eventPage) {
       setEventPage(null);
     }
-    pTBController.setMode("detail").then(() => {
-      setZIndex(0);
-    });
+    pTBController.setMode("detail").then(() => {});
     setCurrentMode("detail");
     if (listBar) setModal(false);
     setCurrentEvent(null);
@@ -172,20 +179,20 @@ function ProcessTimeLineBar({
     setCurrentEvent(null);
   }
 
-  function pTLBClick() {
-    console.log("click small");
-    // if (listBar) setSelectedBar(id);
-    pTBController.setMode("small");
-    setCurrentMode("small");
-    if (listBar) setModal(false);
-  }
   // function pTLBClick() {
-  //   console.log("click");
-  //   if (listBar) setSelectedBar(id);
-  //   pTBController.setMode("detail");
-  //   setCurrentMode("detail");
+  //   console.log("click small");
+  //   // if (listBar) setSelectedBar(id);
+  //   pTBController.setMode("small");
+  //   setCurrentMode("small");
   //   if (listBar) setModal(false);
   // }
+  function pTLBClick() {
+    console.log("click");
+    if (listBar) setSelectedBar(id);
+    pTBController.setMode("detail");
+    setCurrentMode("detail");
+    if (listBar) setModal(false);
+  }
 
   function _checkSetBarTop() {
     if (currentMode != "modal")
