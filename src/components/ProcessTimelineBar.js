@@ -58,9 +58,11 @@ function ProcessTimeLineBar({
   var modalStyleOff = {
     ...modalStyle,
     backgroundColor: styleOptions.backgroundColor,
-    zIndex: zIndex,
+    zIndex: 0,
+    // zIndex: zIndex,
     padding: barPadding + "px",
-    transition: "position .6s, transform .6s, backgroundColor .6s"
+    transition:
+      "position .6s, transform .6s, backgroundColor .6s, zIndex 0s .6s"
   };
 
   var modalStyleOn = {
@@ -69,7 +71,7 @@ function ProcessTimeLineBar({
     width: styleOptions.barWidth.large,
     padding: "5px",
     zIndex: 100,
-    transition: "transform .6s, backgroundColor .6s",
+    transition: "transform .6s, backgroundColor .6s,  zIndex 0s .6s",
     transform: `translate(20px, -${barTop - 10}px)`
   };
 

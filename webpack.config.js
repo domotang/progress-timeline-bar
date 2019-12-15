@@ -13,7 +13,7 @@ module.exports = {
   //   maxEntrypointSize: 512000,
   //   maxAssetSize: 512000
   // },
-  entry: path.join(__dirname, 'src/index.js'),
+  entry: path.join(__dirname, "src/index.js"),
   // entry: {
   //   index: path.join(__dirname, "src/index.js")
   // cont: path.join(__dirname, "src/lib/PTBController.js"),
@@ -63,6 +63,8 @@ module.exports = {
   },
   devServer: {
     contentBase: path.join(__dirname, "dist"),
-    writeToDisk: false
+    inline: true,
+    writeToDisk: false,
+    hot: true
   }
 };
