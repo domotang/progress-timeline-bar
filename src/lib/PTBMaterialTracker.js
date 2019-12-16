@@ -425,7 +425,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                   }
                 : null
             }
-            cursor={props.currentMode === "detail" ? "pointer" : "default"}
+            cursor={props.currentMode === "detail" ? "pointer" : "inherit"}
           >
             <path
               className="header-bar"
@@ -470,7 +470,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                   }
                 : null
             }
-            cursor={props.currentMode === "modal" ? "pointer" : "default"}
+            cursor={props.currentMode === "modal" ? "pointer" : "inherit"}
           >
             <g className="back-group">
               <path
@@ -520,8 +520,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                 className="up-shape"
                 opacity="0"
                 id={`cir-${props.id}`}
-                // d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
-                // transform="translate(2,2)"
                 d="M0,20 h70 v70 h-70 v-70"
                 transform="translate(2,2)"
                 fill="#4a75a1"
@@ -570,7 +568,7 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           cursor={
             props.currentMode != "large" && !props.opened
               ? "pointer"
-              : "default"
+              : "inherit"
           }
           onClick={() => {
             if (props.currentMode != "large" && !props.opened) {

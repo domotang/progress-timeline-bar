@@ -212,22 +212,16 @@ function ProcessTimeLineBar({
               }
             : null
         }
-        // onFocus={currentMode === "large" ? pTLBClick : null}
-        // cursor={mode != "detail" ? "default" : "pointer"}
+        onKeyDown={
+          currentMode === "large"
+            ? () => {
+                barClick("detail");
+              }
+            : null
+        }
         cursor="pointer"
-        // role="button"
-        // tabIndex="0"
         ref={div => pTBController.addBar({ barId: "procBar", element: div })}
       >
-        <templateAPI.bar
-          eventDomElements={eventDomElements}
-          barClick={barClick}
-          eventClick={eventClick}
-          title={title}
-          detail={detail}
-          currentMode={currentMode}
-        />
-
         <div
           style={modalView ? headerPageStyleOn : headerPageStyleOff}
           className="header-details"
@@ -239,6 +233,14 @@ function ProcessTimeLineBar({
             />
           ) : null}
         </div>
+        <templateAPI.bar
+          eventDomElements={eventDomElements}
+          barClick={barClick}
+          eventClick={eventClick}
+          title={title}
+          detail={detail}
+          currentMode={currentMode}
+        />
 
         <div
           style={eventPage ? eventPageStyleOn : eventPageStyleOff}
