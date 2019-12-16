@@ -1,13 +1,18 @@
 "use strict";
-import React, { Children, cloneElement, useState, useEffect } from "react";
+import React, {
+  Children,
+  cloneElement,
+  useState,
+  useEffect,
+  useContext
+} from "react";
+import { TemplateContext } from "./PTBTemplateContext";
 import { PTBController } from "../lib/PTBController";
 
 function ProcessTimeLineBar({
   headerDetailPage: HeaderDetailPage,
   headerDetails,
   listBar,
-  styleOptions,
-  template,
   children,
   title,
   detail,
@@ -17,17 +22,18 @@ function ProcessTimeLineBar({
   setSelectedBar,
   setModal
 }) {
-  var [templateAPI] = useState(() =>
-    template(styleOptions, children.length, status)
+  const [Template] = useState(
+    useContext(TemplateContext)(children.length, status)
   );
-  var [currentMode, setCurrentMode] = useState(mode);
-  var [currentEvent, setCurrentEvent] = useState(null);
-  var [pTBController] = useState(() => PTBController(templateAPI));
-  var [eventPage, setEventPage] = useState(null);
-  var [barTop, setBarTop] = useState(0);
-  var [modalView, setModalView] = useState(false);
+  const [currentMode, setCurrentMode] = useState(mode);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [pTBController] = useState(() => PTBController(Template));
+  const [eventPage, setEventPage] = useState(null);
+  const [barTop, setBarTop] = useState(0);
+  const [modalView, setModalView] = useState(false);
 
   var eventDomElements = processDomEventComponents();
+  const styleOptions = Template.getStyles();
   var barPadding = 5;
 
   useEffect(() => {
@@ -82,8 +88,8 @@ function ProcessTimeLineBar({
     position: modalView ? "static" : "relative",
     height:
       currentMode != "large"
-        ? templateAPI.barHeights.detail + barPadding * 2
-        : templateAPI.barHeights.large + barPadding * 2,
+        ? Template.barHeights.detail + barPadding * 2
+        : Template.barHeights.large + barPadding * 2,
     marginTop: "10px",
     marginLeft: "10px",
     transition: "all .4s"
@@ -177,7 +183,7 @@ function ProcessTimeLineBar({
             expandedHeight: child.props.expandedHeight
           };
           return cloneElement(child, {
-            Event: templateAPI.event,
+            Event: Template.event,
             eventClick,
             id: index,
             currentMode,
@@ -233,7 +239,7 @@ function ProcessTimeLineBar({
             />
           ) : null}
         </div>
-        <templateAPI.bar
+        <Template.bar
           eventDomElements={eventDomElements}
           barClick={barClick}
           eventClick={eventClick}
@@ -241,7 +247,6 @@ function ProcessTimeLineBar({
           detail={detail}
           currentMode={currentMode}
         />
-
         <div
           style={eventPage ? eventPageStyleOn : eventPageStyleOff}
           className="event-details"

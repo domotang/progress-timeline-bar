@@ -8,7 +8,7 @@ import React, {
   useEffect
 } from "react";
 
-function PTBListBox({ children }) {
+function PTBListBox({ children, template }) {
   var [selectedBar, setSelectedBar] = useState(0);
   var [modal, setModal] = useState(false);
   var [appendedChild, setAppendedChild] = useState(false);
@@ -41,8 +41,6 @@ function PTBListBox({ children }) {
         });
       })
     : [];
-
-  // console.log("render listBar");
 
   return <Fragment>{children2}</Fragment>;
 }
