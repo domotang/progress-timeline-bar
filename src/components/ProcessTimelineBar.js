@@ -20,38 +20,70 @@ function ProcessTimeLineBar({
   var [templateAPI] = useState(() =>
     template(styleOptions, children.length, status)
   );
-  var [templates] = useState(() => templateAPI.getTemplates());
   var [currentMode, setCurrentMode] = useState(mode);
   var [currentEvent, setCurrentEvent] = useState(null);
   var [pTBController] = useState(() => PTBController(templateAPI));
   var [eventPage, setEventPage] = useState(null);
   var [barTop, setBarTop] = useState(0);
+  var [modalView, setModalView] = useState(false);
 
   var eventDomElements = processDomEventComponents();
   var barPadding = 5;
 
-  // var modalView = currentMode === "modal";
+  useEffect(() => {
+    pTBController.init(currentMode);
+  }, []);
 
-  // var modalStylePlaceholder = {
-  //   position: currentMode === "modal" ? "static" : "relative",
-  //   height:
-  //     currentMode === "detail"
-  //       ? templates.barHeights.detail + barPadding * 2
-  //       : currentMode === "large"
-  //       ? templates.barHeights.large + barPadding * 2
-  //       : templates.barHeights.small,
-  //   marginTop: "10px",
-  //   marginLeft: "10px",
-  //   transition: "all .4s"
-  // };
-  var modalView = currentMode === "modal";
+  useEffect(() => {
+    setCurrentMode(mode);
+    setCurrentEvent(null);
+  }, [mode]);
+
+  useEffect(() => {
+    var modal = currentMode === "modal";
+    var openedEvent = currentEvent === null;
+
+    if (eventPage) {
+      setEventPage(null);
+    }
+
+    if (modal) {
+      if (openedEvent) {
+        pTBController.setMode(currentMode).then(() => {
+          setModalView(modal);
+        });
+      } else setModalView(modal);
+      if (listBar) {
+        setModal(true);
+      }
+    }
+    if (!modal) {
+      setCurrentEvent(null);
+      pTBController.setMode(currentMode);
+      setModalView(modal);
+      setModal(false);
+    }
+
+    if (currentMode === "detail") if (listBar) setSelectedBar(id);
+  }, [currentMode]);
+
+  useEffect(() => {
+    if (eventPage) {
+      setEventPage(null);
+    }
+    if (currentEvent != null) {
+      pTBController.setEvent(currentEvent).then(() => {
+        setEventPage(pTBController.getDetailPages(currentEvent));
+      });
+    } else if (currentMode === "modal") pTBController.closeEvents();
+  }, [currentEvent]);
 
   var modalStylePlaceholder = {
-    position: currentMode === "modal" ? "static" : "relative",
+    position: modalView ? "static" : "relative",
     height:
       currentMode != "large"
-        ? templates.barHeights.detail + barPadding * 2
-        : templates.barHeights.large + barPadding * 2,
+        ? templateAPI.barHeights.detail + barPadding * 2
+        : templateAPI.barHeights.large + barPadding * 2,
     marginTop: "10px",
     marginLeft: "10px",
     transition: "all .4s"
@@ -119,82 +151,20 @@ function ProcessTimeLineBar({
     transition: "opacity .2s"
   };
 
-  useEffect(() => {
-    pTBController.init(currentMode);
-  }, []);
-
-  useEffect(() => {
-    if (eventPage) {
-      setEventPage(null);
-    }
-    setCurrentMode(mode);
-    pTBController.setMode(mode);
-    setCurrentEvent(null);
-  }, [mode]);
-
-  useEffect(() => {
-    if (currentMode === "modal") {
-      _checkSetBarTop();
-    }
-  }, [currentMode]);
-
   function eventClick(eventId) {
+    _setBarTop();
     console.log("click");
     setCurrentMode("modal");
-    if (listBar) setModal(true);
-    setEventPage(null);
-
-    pTBController.setEvent(eventId, currentEvent).then(() => {
-      setEventPage(pTBController.getDetailPages(eventId));
-    });
-
     setCurrentEvent(eventId);
   }
 
-  function barClick() {
+  function barClick(mode) {
+    _setBarTop();
     console.log("click");
-    pTBController.setMode("modal").then(() => {
-      setCurrentMode("modal");
-      if (listBar) setModal(true);
-    });
+    setCurrentMode(mode);
   }
 
-  function backClick() {
-    console.log("click");
-    if (eventPage) {
-      setEventPage(null);
-    }
-    pTBController.setMode("detail").then(() => {});
-    setCurrentMode("detail");
-    if (listBar) setModal(false);
-    setCurrentEvent(null);
-  }
-
-  function closeEventsClick() {
-    console.log("click");
-    if (eventPage) {
-      setEventPage(null);
-    }
-    pTBController.closeEvents();
-    setCurrentEvent(null);
-  }
-
-  // function pTLBClick() {
-  //   console.log("click small");
-  //   // if (listBar) setSelectedBar(id);
-  //   pTBController.setMode("small");
-  //   setCurrentMode("small");
-  //   if (listBar) setModal(false);
-  // }
-  function pTLBClick() {
-    console.log("click");
-    if (listBar) setSelectedBar(id);
-    pTBController.setMode("detail");
-    setCurrentMode("detail");
-    if (listBar) setModal(false);
-  }
-
-  function _checkSetBarTop() {
+  function _setBarTop() {
     if (currentMode != "modal")
       setBarTop(pTBController.getBarElement().getBoundingClientRect().top - 1);
   }
@@ -207,7 +177,7 @@ function ProcessTimeLineBar({
             expandedHeight: child.props.expandedHeight
           };
           return cloneElement(child, {
-            Event: templates.event,
+            Event: templateAPI.event,
             eventClick,
             id: index,
             currentMode,
@@ -235,7 +205,13 @@ function ProcessTimeLineBar({
         className="proc-timeline"
         id={`proc-timeline-${id}`}
         style={modalView ? modalStyleOn : modalStyleOff}
-        onClick={currentMode === "large" ? pTLBClick : null}
+        onClick={
+          currentMode === "large"
+            ? () => {
+                barClick("detail");
+              }
+            : null
+        }
         // onFocus={currentMode === "large" ? pTLBClick : null}
         // cursor={mode != "detail" ? "default" : "pointer"}
         cursor="pointer"
@@ -243,20 +219,17 @@ function ProcessTimeLineBar({
         // tabIndex="0"
         ref={div => pTBController.addBar({ barId: "procBar", element: div })}
       >
-        <templates.bar
+        <templateAPI.bar
           eventDomElements={eventDomElements}
           barClick={barClick}
-          backClick={backClick}
-          closeEventsClick={closeEventsClick}
+          eventClick={eventClick}
           title={title}
           detail={detail}
           currentMode={currentMode}
         />
 
         <div
-          style={
-            currentMode === "modal" ? headerPageStyleOn : headerPageStyleOff
-          }
+          style={modalView ? headerPageStyleOn : headerPageStyleOff}
           className="header-details"
         >
           {currentMode === "modal" ? (

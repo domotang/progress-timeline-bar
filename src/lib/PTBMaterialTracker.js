@@ -26,11 +26,14 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
 
   var publicAPI = {
     init,
-    getTemplates,
+    // getTemplates,
     regBar,
     regEvent,
     setMode,
-    closeEvents
+    closeEvents,
+    bar: _getBarTmplt(),
+    event: _getEventTmplt(),
+    barHeights: _getBarHeights()
   };
 
   return publicAPI;
@@ -207,13 +210,13 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
     });
   }
 
-  function getTemplates() {
-    return {
-      bar: _getBarTmplt(),
-      event: _getEventTmplt(),
-      barHeights: _getBarHeights()
-    };
-  }
+  // function getTemplates() {
+  //   return {
+  //     bar: _getBarTmplt(),
+  //     event: _getEventTmplt(),
+  //     barHeights: _getBarHeights()
+  //   };
+  // }
 
   function closeEvents() {
     if (openedElements.event) openedElements.event.close();
@@ -308,7 +311,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
   }
 
   function _updateEventBackButton(active, coords) {
-    console.log(coords);
     var upButton = bar.getNodes().upButton;
 
     if (active) {
@@ -416,7 +418,13 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
           <g
             className="top-element-node"
             id={`bar`}
-            onClick={props.currentMode === "detail" ? props.barClick : null}
+            onClick={
+              props.currentMode === "detail"
+                ? () => {
+                    props.barClick("modal");
+                  }
+                : null
+            }
             cursor={props.currentMode === "detail" ? "pointer" : "default"}
           >
             <path
@@ -455,7 +463,13 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
             x="0"
             y="48"
             visibility="hidden"
-            onClick={props.currentMode === "modal" ? props.backClick : null}
+            onClick={
+              props.currentMode === "modal"
+                ? () => {
+                    props.barClick("detail");
+                  }
+                : null
+            }
             cursor={props.currentMode === "modal" ? "pointer" : "default"}
           >
             <g className="back-group">
@@ -463,7 +477,6 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
                 className="back-shape"
                 opacity="0"
                 id={`cir-${props.id}`}
-                // d="M0,20 a20,20,0,0,1,40,0 a20,20,0,0,1,-40,0"
                 d="M0,00 h30 v90 h-30 v-90"
                 transform="translate(2,2)"
                 fill="#4a75a1"
@@ -497,7 +510,9 @@ function PTBMaterialTracker(styleOptions, elementCount, status) {
             x="30"
             y="68"
             visibility="hidden"
-            onClick={props.closeEventsClick}
+            onClick={() => {
+              props.eventClick(null);
+            }}
             cursor="pointer"
           >
             <g className="up-group">
