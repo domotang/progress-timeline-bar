@@ -8,12 +8,9 @@ gsap.registerPlugin(MorphSVGPlugin);
 export default StyledTemplate;
 
 function StyledTemplate(styleOptions) {
-  return () => {
-    return Template;
-  };
+  return Template;
 
   function Template(elementCount, status) {
-    console.log("no");
     var xFactor = Math.round(
         (styleOptions.barWidth.large - 166) / elementCount
       ),

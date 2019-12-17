@@ -9,27 +9,27 @@ const htmlWebpackPlugin = new HtmlWebpackPlugin({
 console.log(process.env.NODE_ENV);
 module.exports = {
   // performance: {
-  //   hints: false,
-  //   maxEntrypointSize: 512000,
-  //   maxAssetSize: 512000
+  //   hints: "warning",
+  //   maxEntrypointSize: 212000,
+  //   maxAssetSize: 212000
   // },
-  entry: path.join(__dirname, "src/index.js"),
-  // entry: {
-  //   index: path.join(__dirname, "src/index.js")
-  // cont: path.join(__dirname, "src/lib/PTBController.js"),
-  // template: path.join(__dirname, "src/lib/PTBMaterialTracker.js")
-  // },
+  // entry: path.join(__dirname, "src/index.js"),
+  entry: {
+    index: path.join(__dirname, "src/index.js"),
+    cont: path.join(__dirname, "src/lib/PTBController.js"),
+    template: path.join(__dirname, "src/lib/PTBTemplateMaterial.js")
+  },
   output: {
     path: path.resolve(__dirname, "dist"),
     // filename: "[name]bundle.js"
-    filename: "bundle.js"
-    // chunkFilename: "[name].bundle.js"
+    // filename: "bundle.js"
+    chunkFilename: "[name].bundle.js"
   },
-  // optimization: {
-  //   splitChunks: {
-  //     chunks: "all"
-  //   }
-  // },
+  optimization: {
+    splitChunks: {
+      chunks: "all"
+    }
+  },
   devtool: debug ? "inline-source-map" : false,
   module: {
     rules: [

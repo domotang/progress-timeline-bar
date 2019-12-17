@@ -22,18 +22,17 @@ function ProcessTimeLineBar({
   setSelectedBar,
   setModal
 }) {
-  const [Template] = useState(
-    useContext(TemplateContext)(children.length, status)
-  );
+  const Template = useContext(TemplateContext);
+  const [templateAPI] = useState(() => Template(children.length, status));
   const [currentMode, setCurrentMode] = useState(mode);
   const [currentEvent, setCurrentEvent] = useState(null);
-  const [pTBController] = useState(() => PTBController(Template));
+  const [pTBController] = useState(() => PTBController(templateAPI));
   const [eventPage, setEventPage] = useState(null);
   const [barTop, setBarTop] = useState(0);
   const [modalView, setModalView] = useState(false);
 
   var eventDomElements = processDomEventComponents();
-  const styleOptions = Template.getStyles();
+  const styleOptions = templateAPI.getStyles();
   var barPadding = 5;
 
   useEffect(() => {
@@ -88,8 +87,8 @@ function ProcessTimeLineBar({
     position: modalView ? "static" : "relative",
     height:
       currentMode != "large"
-        ? Template.barHeights.detail + barPadding * 2
-        : Template.barHeights.large + barPadding * 2,
+        ? templateAPI.barHeights.detail + barPadding * 2
+        : templateAPI.barHeights.large + barPadding * 2,
     marginTop: "10px",
     marginLeft: "10px",
     transition: "all .4s"
@@ -183,7 +182,7 @@ function ProcessTimeLineBar({
             expandedHeight: child.props.expandedHeight
           };
           return cloneElement(child, {
-            Event: Template.event,
+            Event: templateAPI.event,
             eventClick,
             id: index,
             currentMode,
@@ -203,7 +202,7 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  console.log("render bar", id, mode);
+  // console.log("render bar", id, mode);
 
   return (
     <div className="pTBContainer" style={modalStylePlaceholder}>
@@ -239,7 +238,7 @@ function ProcessTimeLineBar({
             />
           ) : null}
         </div>
-        <Template.bar
+        <templateAPI.bar
           eventDomElements={eventDomElements}
           barClick={barClick}
           eventClick={eventClick}
