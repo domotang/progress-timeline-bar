@@ -27,7 +27,7 @@ function App() {
     eventOnStatusColor: "#7d2828",
     expandedColor: "#e3e3e3",
     fontColor: "white",
-    barWidth: { large: 1040, small: 400 }
+    barWidth: { large: 1040, small: 380 }
   };
 
   return (
@@ -40,7 +40,7 @@ function App() {
         template={PTBTemplateMaterial}
         styleOptions={barStyleOptions}
       >
-        <PTBListBox>
+        <PTBListBox mode="large">
           {shippingData.map((shipment, index) => (
             <ProcessTimelineBar
               headerDetailPage={HeaderDetails}
@@ -104,33 +104,200 @@ function App() {
           ))}
         </PTBListBox>
       </PTBTemplateContext>
-      {/* <div>
+      <PTBTemplateContext
+        template={PTBTemplateMaterial}
+        styleOptions={barStyleOptions}
+      >
         <ProcessTimelineBar
+          headerDetailPage={HeaderDetails}
           styleOptions={barStyleOptions}
           key={0}
           id={0}
-          template={PTBMaterialTracker}
           title="SHIPMENTS"
           detail="yes"
-          mode="modal"
-          status="0"
+          mode="small"
+          status="6"
+          headerDetails={{
+            destination: "uganda",
+            port: "enterbbe",
+            mot: "air",
+            carrier: "delta",
+            billNo: "AWB:006-90048563",
+            fromCoord: [-95.358421, 29.749907],
+            toCoord: [32.58252, 0.347596],
+            offset: false
+          }}
         >
           <ProcessTimelineBarEvent
             title="OPENED"
-            date="1/1/2322"
+            date="1/2"
             color="#7699c2"
             expandedHeight="280"
-            icon={FaRegFileAlt}
+            icon={GoFileSubmodule}
           ></ProcessTimelineBarEvent>
           <ProcessTimelineBarEvent
             title="CLOSED"
-            date="1/1/2322"
+            date="1/4"
             color="#7699c2"
             expandedHeight="280"
-            icon={FaRegFileAlt}
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/9"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/19"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/11"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/17"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
           ></ProcessTimelineBarEvent>
         </ProcessTimelineBar>
-      </div> */}
+        <ProcessTimelineBar
+          headerDetailPage={HeaderDetails}
+          styleOptions={barStyleOptions}
+          key={0}
+          id={0}
+          title="SHIPMENTS"
+          detail="yes"
+          mode="small"
+          status="3"
+          headerDetails={{
+            destination: "uganda",
+            port: "enterbbe",
+            mot: "air",
+            carrier: "delta",
+            billNo: "AWB:006-90048563",
+            fromCoord: [-95.358421, 29.749907],
+            toCoord: [32.58252, 0.347596],
+            offset: false
+          }}
+        >
+          <ProcessTimelineBarEvent
+            title="OPENED"
+            date="1/2"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={GoFileSubmodule}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/4"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/9"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/19"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/11"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/17"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+        </ProcessTimelineBar>
+        <ProcessTimelineBar
+          headerDetailPage={HeaderDetails}
+          styleOptions={barStyleOptions}
+          key={0}
+          id={0}
+          title="SHIPMENTS"
+          detail="yes"
+          mode="small"
+          status="5"
+          headerDetails={{
+            destination: "uganda",
+            port: "enterbbe",
+            mot: "air",
+            carrier: "delta",
+            billNo: "AWB:006-90048563",
+            fromCoord: [-95.358421, 29.749907],
+            toCoord: [32.58252, 0.347596],
+            offset: false
+          }}
+        >
+          <ProcessTimelineBarEvent
+            title="OPENED"
+            date="1/2"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={GoFileSubmodule}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/4"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/9"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/19"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/11"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+          <ProcessTimelineBarEvent
+            title="CLOSED"
+            date="1/17"
+            color="#7699c2"
+            expandedHeight="280"
+            icon={FaTruckLoading}
+          ></ProcessTimelineBarEvent>
+        </ProcessTimelineBar>
+      </PTBTemplateContext>
     </div>
   );
 }

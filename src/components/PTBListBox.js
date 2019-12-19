@@ -8,7 +8,7 @@ import React, {
   useEffect
 } from "react";
 
-function PTBListBox({ children, template }) {
+function PTBListBox({ children, mode }) {
   var [selectedBar, setSelectedBar] = useState(0);
   var [modal, setModal] = useState(false);
   var [appendedChild, setAppendedChild] = useState(false);
@@ -37,7 +37,12 @@ function PTBListBox({ children, template }) {
           listBar: true,
           setSelectedBar,
           setModal,
-          mode: selectedBar === index ? "detail" : "large"
+          mode:
+            mode === "small"
+              ? "small"
+              : selectedBar === index
+              ? "detail"
+              : "large"
         });
       })
     : [];

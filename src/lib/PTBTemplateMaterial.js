@@ -14,13 +14,14 @@ function StyledTemplate(styleOptions) {
     var xFactor = Math.round(
         (styleOptions.barWidth.large - 166) / elementCount
       ),
-      xFactor2 = Math.round((styleOptions.barWidth.small - 87) / elementCount),
+      xFactor2 = Math.round((styleOptions.barWidth.small - 97) / elementCount),
       eventWidth = xFactor - 15,
-      eventWidth2 = xFactor2 - 9,
+      // eventWidth2 = xFactor2 - 10,
+      eventWidth2 = xFactor2 - 8,
       timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164,
       timelineBarWidth2 = status > 0 ? 194 + xFactor2 * (status - 1) : 164,
       modes = {
-        small: { barHeight: 21 },
+        small: { barHeight: 15 },
         large: { barHeight: 38 },
         detail: { barHeight: 90 }
       },
@@ -30,6 +31,8 @@ function StyledTemplate(styleOptions) {
       openedElements = { event: null, header: null },
       yHeight = 0;
     var animationSpeed = 1;
+
+    console.log(xFactor2);
 
     var publicAPI = {
       init,
@@ -286,7 +289,11 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeModal(onResolve) {
-      if (!bar.getHeaderState()) bar.open(onResolve);
+      barModeAnimations.tweenTo("detail", { onComplete: barOpen });
+
+      function barOpen() {
+        if (!bar.getHeaderState()) bar.open(onResolve);
+      }
     }
 
     function _getEventsNodesByType() {
@@ -583,7 +590,11 @@ function StyledTemplate(styleOptions) {
                 : "inherit"
             }
             onClick={() => {
-              if (props.currentMode != "large" && !props.opened) {
+              if (
+                props.currentMode != "large" &&
+                props.currentMode != "small" &&
+                !props.opened
+              ) {
                 props.eventClick(props.id);
               }
             }}
@@ -942,7 +953,7 @@ function StyledTemplate(styleOptions) {
         {
           morphSVG: `M-5,0 h${timelineBarWidth2 -
             80} l-3, 3 h-${timelineBarWidth2 -
-            176} l-8, 18 h-77 a3,3,0,0,1,-3,-3 v-15 a3,3,0,0,1,3,-3`,
+            176} l-5, 12 h-77 a3,3,0,0,1,-3,-3 v-9 a3,3,0,0,1,3,-3`,
           ease: "Power3.inOut"
         },
         "shrink2"
@@ -959,21 +970,21 @@ function StyledTemplate(styleOptions) {
               morphSVG: {
                 shape:
                   index < status - 1
-                    ? `M6,0 h${eventWidth2 + 6} l-7, 17 h-${eventWidth2 +
-                        6} l7 -17`
+                    ? `M6,0 h${eventWidth2 + 6} l-5, 11 h-${eventWidth2 +
+                        6} l5 -11`
                     : index === status - 1 && index !== elementCount - 1
                     ? `M6,0 h18 l7,-7 h${eventWidth2 -
-                        16} l-10, 24 h-${eventWidth2 + 6} l7 -17`
+                        16} l-8, 18 h-${eventWidth2 + 6} l4 -11`
                     : index === elementCount - 1 && index != status - 1
-                    ? `M8,-4 h${eventWidth2 +
-                        2} a3,3,0,0,1,3,3 v15 a3,3,0,0,1,-3,3 h-${eventWidth2 +
-                        11} l10 -23`
+                    ? `M7,-4 h${eventWidth2 +
+                        2} a3,3,0,0,1,3,3 v9 a3,3,0,0,1,-3,3 h-${eventWidth2 +
+                        8} l8 -17`
                     : index === elementCount - 1 && index === status - 1
                     ? `M6,0 h18 l4,-4 h${eventWidth2 -
-                        19} a3,3,0,0,1,3,3 v15 a3,3,0,0,1,-3,3 h-${eventWidth2 +
-                        10} l7 -17`
-                    : `M8,-5 h${eventWidth2 + 6} l-9, 22 h-${eventWidth2 +
-                        6} l9 -22`,
+                        19} a3,3,0,0,1,3,3 v9 a3,3,0,0,1,-3,3 h-${eventWidth2 +
+                        8} l5 -11`
+                    : `M8,-4 h${eventWidth2 + 6} l-7, 16 h-${eventWidth2 +
+                        6} l7 -16`,
                 shapeIndex: 0,
                 map: "complexity"
               },
@@ -984,7 +995,7 @@ function StyledTemplate(styleOptions) {
           tl.to(
             eventNodes.date[index],
             0.3,
-            { x: index * xFactor2 + 84, scale: 0.5 },
+            { x: index * xFactor2 + 86, y: 29, scale: 0.45 },
             "shrink2"
           );
         };
@@ -996,7 +1007,7 @@ function StyledTemplate(styleOptions) {
         nodeAniAction();
       });
 
-      tl.to(detail, 0.3, { x: -10, y: -16, scale: 0.6 }, "shrink2");
+      tl.to(detail, 0.3, { x: -6, y: -18, scale: 0.5 }, "shrink2");
       tl.add("small");
 
       return tl;
