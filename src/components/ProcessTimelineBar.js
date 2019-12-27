@@ -4,8 +4,7 @@ import React, {
   cloneElement,
   useState,
   useEffect,
-  useContext,
-  useRef
+  useContext
 } from "react";
 import { TemplateContext } from "./PTBTemplateContext";
 import { PTBController } from "../lib/PTBController";
@@ -34,7 +33,6 @@ function ProcessTimeLineBar({
 
   var eventDomElements = processDomEventComponents();
   const styleOptions = templateAPI.getStyles();
-  var previousMode = usePrevious(currentMode);
   var barPadding = 5;
 
   useEffect(() => {
@@ -47,7 +45,6 @@ function ProcessTimeLineBar({
   }, [mode]);
 
   useEffect(() => {
-    console.log("run effect");
     var modal = currentMode === "modal";
     var openedEvent = currentEvent === null;
 
@@ -56,16 +53,15 @@ function ProcessTimeLineBar({
     }
 
     if (modal) {
-      if (openedEvent && previousMode === "detail") {
+      if (openedEvent && mode === "detail") {
         pTBController.setMode(currentMode).then(() => {
           setModalView(modal);
         });
-      } else if (openedEvent && previousMode === "small") {
-        setModalView(modal);
+      } else if (openedEvent && mode === "small") {
         pTBController.setMode(currentMode);
+        setModalView(modal);
       } else {
         setModalView(modal);
-        console.log("buggy");
       }
       if (listBar) {
         setModal(true);
@@ -94,8 +90,6 @@ function ProcessTimeLineBar({
     } else if (currentMode === "modal") pTBController.closeEvents();
   }, [currentEvent]);
 
-  console.log(id, previousMode, currentMode);
-
   var modalStylePlaceholder = {
     position: modalView ? "static" : "relative",
     height:
@@ -103,10 +97,12 @@ function ProcessTimeLineBar({
         ? templateAPI.barHeights.large + barPadding * 2
         : currentMode === "small"
         ? templateAPI.barHeights.small + 3 * 2
-        : previousMode === "small" && currentMode === "modal"
-        ? templateAPI.barHeights.small + 3 * 2
-        : previousMode === "small" && currentMode === "modal"
+        : currentMode === "detail"
         ? templateAPI.barHeights.detail + barPadding * 2
+        : currentMode === "modal" && mode === "detail"
+        ? templateAPI.barHeights.detail + barPadding * 2
+        : currentMode === "modal" && mode === "small"
+        ? templateAPI.barHeights.small
         : 0,
     marginTop: currentMode === "small" ? "3px" : "10px",
     marginLeft: "10px",
@@ -155,7 +151,7 @@ function ProcessTimeLineBar({
   var headerPageStyleOn = {
     ...headerPageStyle,
     opacity: 1,
-    transition: "opacity .2s .6s"
+    transition: mode === "detail" ? "opacity .2s .6s" : "opacity .2s 1.4s"
   };
 
   var eventPageStyle = {
@@ -188,14 +184,6 @@ function ProcessTimeLineBar({
     _setBarTop();
     console.log("click");
     setCurrentMode(mode);
-  }
-
-  function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-      ref.current = value;
-    });
-    return ref.current;
   }
 
   function _setBarTop() {
@@ -278,6 +266,7 @@ function ProcessTimeLineBar({
           title={title}
           detail={detail}
           currentMode={currentMode}
+          mode={mode}
         />
         <div
           style={eventPage ? eventPageStyleOn : eventPageStyleOff}

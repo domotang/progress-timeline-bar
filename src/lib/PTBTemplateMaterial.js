@@ -32,11 +32,8 @@ function StyledTemplate(styleOptions) {
       yHeight = 0;
     var animationSpeed = 1;
 
-    console.log(xFactor2);
-
     var publicAPI = {
       init,
-      // getTemplates,
       regBar,
       regEvent,
       setMode,
@@ -194,6 +191,7 @@ function StyledTemplate(styleOptions) {
     //*************public methods*****************
 
     function setMode(mode, onResolve) {
+      console.log("set mode", mode);
       switch (mode) {
         case "small":
           _setModeSmall(onResolve);
@@ -220,14 +218,6 @@ function StyledTemplate(styleOptions) {
         }
       });
     }
-
-    // function getTemplates() {
-    //   return {
-    //     bar: _getBarTmplt(),
-    //     event: _getEventTmplt(),
-    //     barHeights: _getBarHeights()
-    //   };
-    // }
 
     function closeEvents() {
       if (openedElements.event) openedElements.event.close();
@@ -262,7 +252,7 @@ function StyledTemplate(styleOptions) {
       changeMode();
       function changeMode() {
         yHeight = 0;
-        _updateBarHeight(modes["small"].barHeight, 0.3);
+        _updateBarHeight(modes["small"].barHeight, 0.6);
         barModeAnimations.timeScale(animationSpeed);
         barModeAnimations.tweenTo("small");
       }
@@ -289,9 +279,13 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeModal(onResolve) {
-      barModeAnimations.tweenTo("detail", { onComplete: barOpen });
+      if (barModeAnimations.currentLabel() != "detail") {
+        _updateBarHeight(modes["detail"].barHeight, 0.3);
+        return barModeAnimations.tweenTo("detail", { onComplete: barOpen });
+      }
+      barOpen(onResolve);
 
-      function barOpen() {
+      function barOpen(onResolve) {
         if (!bar.getHeaderState()) bar.open(onResolve);
       }
     }
@@ -485,7 +479,9 @@ function StyledTemplate(styleOptions) {
               onClick={
                 props.currentMode === "modal"
                   ? () => {
-                      props.barClick("detail");
+                      if (props.mode === "detail")
+                        return props.barClick("detail");
+                      props.barClick("small");
                     }
                   : null
               }
