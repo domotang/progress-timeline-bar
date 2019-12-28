@@ -16,21 +16,23 @@ function StyledTemplate(styleOptions) {
       ),
       xFactor2 = Math.round((styleOptions.barWidth.small - 97) / elementCount),
       eventWidth = xFactor - 15,
-      // eventWidth2 = xFactor2 - 10,
       eventWidth2 = xFactor2 - 8,
       timelineBarWidth = status > 0 ? 194 + xFactor * (status - 1) : 164,
       timelineBarWidth2 = status > 0 ? 194 + xFactor2 * (status - 1) : 164,
       modes = {
-        small: { barHeight: 15 },
-        large: { barHeight: 38 },
-        detail: { barHeight: 90 }
+        small: { barHeight: 15, barPadding: 3 },
+        large: { barHeight: 38, barPadding: 5 },
+        detail: { barHeight: 90, barPadding: 5 }
       },
       bar = {},
       events = [],
       barModeAnimations = null,
+      barPositionAnimation = null,
       openedElements = { event: null, header: null },
-      yHeight = 0;
-    var animationSpeed = 1;
+      yHeight = 0,
+      animationSpeed = 1,
+      mode = "detail",
+      modal = false;
 
     var publicAPI = {
       init,
@@ -50,6 +52,8 @@ function StyledTemplate(styleOptions) {
 
     function regBar({ element }) {
       var controlNodes = {
+        barContainer: element,
+        barDiv: element.querySelector(".proc-timeline"),
         barElement: element.querySelector(".proc-timeline-svg"),
         tag: element.querySelector(".header-bar"),
         events: element.querySelector(".events"),
@@ -71,7 +75,9 @@ function StyledTemplate(styleOptions) {
 
       bar = internalBarAPI;
 
-      function open(onResolve) {
+      function open(barTop, onResolve) {
+        _setBarPosition(barTop);
+        modal = true;
         yHeight = 100;
         animation = generateBarDetailAniTimeline(onResolve);
         if (!openedElements.event) {
@@ -92,6 +98,8 @@ function StyledTemplate(styleOptions) {
       }
 
       function close(onResolve) {
+        modal = false;
+        if (barPositionAnimation) barPositionAnimation.reverse();
         if (onResolve) {
           animation.vars.onReverseComplete = () => {
             onResolve();
@@ -140,10 +148,10 @@ function StyledTemplate(styleOptions) {
       };
       return eventAPI;
 
-      function open(expandedHeight, onResolve) {
+      function open(expandedHeight, opts, onResolve) {
         if (openedElements.event) openedElements.event.close();
         openedElements.event = internalEventAPI;
-        if (!bar.getHeaderState()) bar.open();
+        if (!bar.getHeaderState()) bar.open(opts.barTop);
         _updateBarHeight(expandedHeight + 130 + yHeight, 0.3, 0);
 
         let { x, y, width } = event.getBBox();
@@ -190,8 +198,7 @@ function StyledTemplate(styleOptions) {
     }
     //*************public methods*****************
 
-    function setMode(mode, onResolve) {
-      console.log("set mode", mode);
+    function setMode(mode, opts, onResolve) {
       switch (mode) {
         case "small":
           _setModeSmall(onResolve);
@@ -203,7 +210,7 @@ function StyledTemplate(styleOptions) {
           _setModeDetail(onResolve);
           break;
         case "modal":
-          _setModeModal(onResolve);
+          _setModeModal(opts, onResolve);
           break;
       }
     }
@@ -211,7 +218,7 @@ function StyledTemplate(styleOptions) {
     function init(mode) {
       barModeAnimations = generateBarAniTimeline();
       barModeAnimations.seek(mode);
-      _updateBarHeight(modes[mode].barHeight, 0);
+      _updateBarHeight(modes[mode].barHeight, false, 0);
       gsap.to(bar.getNodes().barElement, 0, {
         attr: {
           visibility: 1
@@ -233,19 +240,21 @@ function StyledTemplate(styleOptions) {
     //*************local methods*****************
 
     function _setModeLarge() {
+      mode = "large";
       if (openedElements.event) openedElements.event.close();
       if (openedElements.header) openedElements.header.close();
       changeMode();
 
       function changeMode() {
         yHeight = 0;
-        _updateBarHeight(modes["large"].barHeight, 0.3);
+        _updateBarHeight(modes["large"].barHeight, false, 0.3);
         barModeAnimations.timeScale(animationSpeed);
         barModeAnimations.tweenTo("large");
       }
     }
 
     function _setModeSmall() {
+      mode = "small";
       if (openedElements.event) openedElements.event.close();
       if (openedElements.header) openedElements.header.close();
 
@@ -259,6 +268,7 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeDetail(onResolve) {
+      mode = "detail";
       // if (!openedElements.event) onResolve();
       _updateBarHeight(
         modes["detail"].barHeight,
@@ -278,16 +288,19 @@ function StyledTemplate(styleOptions) {
       }
     }
 
-    function _setModeModal(onResolve) {
+    function _setModeModal(opts, onResolve) {
+      //**address this modal assignment
+      modal = true;
       if (barModeAnimations.currentLabel() != "detail") {
         _updateBarHeight(modes["detail"].barHeight, 0.3);
         return barModeAnimations.tweenTo("detail", { onComplete: barOpen });
       }
-      barOpen(onResolve);
+      barOpen(opts, onResolve);
 
-      function barOpen(onResolve) {
-        if (!bar.getHeaderState()) bar.open(onResolve);
+      function barOpen(opts, onResolve) {
+        if (!bar.getHeaderState()) bar.open(opts.barTop, onResolve);
       }
+      // _setBarPosition(opts.barTop);
     }
 
     function _getEventsNodesByType() {
@@ -398,6 +411,16 @@ function StyledTemplate(styleOptions) {
     }
 
     function _updateBarHeight(height, speed, delay, onResolve) {
+      if (!modal) {
+        gsap.to(bar.getNodes().barContainer, 1, {
+          height: height + modes[mode].barPadding * 2,
+          attr: {
+            height: height + modes[mode].barPadding * 2
+          },
+          ease: "Linear.easeNone"
+        });
+      }
+
       gsap.to(
         bar.getNodes().barElement,
         typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
@@ -411,6 +434,12 @@ function StyledTemplate(styleOptions) {
           ease: "Linear.easeNone"
         }
       );
+    }
+
+    function _setBarPosition(top) {
+      barPositionAnimation = generateBarPositionTl(top);
+      barPositionAnimation.timeScale(animationSpeed);
+      barPositionAnimation.play();
     }
 
     //*************component templates*****************
@@ -1005,6 +1034,18 @@ function StyledTemplate(styleOptions) {
 
       tl.to(detail, 0.3, { x: -6, y: -18, scale: 0.5 }, "shrink2");
       tl.add("small");
+
+      return tl;
+    }
+
+    function generateBarPositionTl(top) {
+      var { barElement, tag: barTag, events, title, detail } = bar.getNodes();
+      var eventNodes = _getEventsNodesByType();
+
+      var tl = gsap.timeline({ paused: true });
+
+      tl.add("start");
+      tl.to(bar.getNodes().barDiv, 0.3, { x: 20, y: `-=${top - 10}` }, "start");
 
       return tl;
     }

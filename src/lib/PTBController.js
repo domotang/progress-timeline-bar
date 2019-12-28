@@ -39,10 +39,10 @@ function PTBEvent(eventData, templateAPI) {
     return eventId;
   }
 
-  function setState(toState, onResolve) {
+  function setState(toState, opts, onResolve) {
     switch (toState) {
       case "open":
-        open(expandedHeight, onResolve);
+        open(expandedHeight, opts, onResolve);
         break;
     }
   }
@@ -98,10 +98,10 @@ function PTBController(templateAPI) {
     return findEventById(eventId).getDetailPages();
   }
 
-  function setEvent(eventId) {
+  function setEvent(eventId, opts) {
     return new Promise(resolve => {
       var event = findEventById(eventId);
-      event.setState("open", resolve);
+      event.setState("open", opts, resolve);
     });
   }
 
@@ -109,20 +109,20 @@ function PTBController(templateAPI) {
     templateAPI.closeEvents();
   }
 
-  function setMode(mode) {
+  function setMode(mode, opts) {
     return new Promise(resolve => {
       switch (mode) {
         case "modal":
-          templateAPI.setMode("modal", resolve);
+          templateAPI.setMode("modal", opts, resolve);
           break;
         case "detail":
-          templateAPI.setMode("detail", resolve);
+          templateAPI.setMode("detail", opts, resolve);
           break;
         case "large":
-          templateAPI.setMode("large", resolve);
+          templateAPI.setMode("large", opts, resolve);
           break;
         case "small":
-          templateAPI.setMode("small", resolve);
+          templateAPI.setMode("small", opts, resolve);
           break;
       }
     });
