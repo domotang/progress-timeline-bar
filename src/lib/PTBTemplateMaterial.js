@@ -75,9 +75,7 @@ function StyledTemplate(styleOptions) {
 
       bar = internalBarAPI;
 
-      function open(barTop, onResolve) {
-        _setBarPosition(barTop);
-        modal = true;
+      function open(onResolve) {
         yHeight = 100;
         animation = generateBarDetailAniTimeline(onResolve);
         if (!openedElements.event) {
@@ -151,7 +149,10 @@ function StyledTemplate(styleOptions) {
       function open(expandedHeight, opts, onResolve) {
         if (openedElements.event) openedElements.event.close();
         openedElements.event = internalEventAPI;
-        if (!bar.getHeaderState()) bar.open(opts.barTop);
+
+        if (!modal) {
+          _setModeModal(opts);
+        }
         _updateBarHeight(expandedHeight + 130 + yHeight, 0.3, 0);
 
         let { x, y, width } = event.getBBox();
@@ -289,18 +290,21 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeModal(opts, onResolve) {
-      //**address this modal assignment
       modal = true;
+      _setBarPosition(opts.barTop);
+
       if (barModeAnimations.currentLabel() != "detail") {
         _updateBarHeight(modes["detail"].barHeight, 0.3);
-        return barModeAnimations.tweenTo("detail", { onComplete: barOpen });
+        return barModeAnimations.tweenTo("detail", {
+          onComplete: () => barOpen(opts)
+        });
       }
-      barOpen(opts, onResolve);
 
-      function barOpen(opts, onResolve) {
-        if (!bar.getHeaderState()) bar.open(opts.barTop, onResolve);
+      barOpen(onResolve);
+
+      function barOpen(onResolve) {
+        if (!bar.getHeaderState()) bar.open(onResolve);
       }
-      // _setBarPosition(opts.barTop);
     }
 
     function _getEventsNodesByType() {
@@ -412,7 +416,7 @@ function StyledTemplate(styleOptions) {
 
     function _updateBarHeight(height, speed, delay, onResolve) {
       if (!modal) {
-        gsap.to(bar.getNodes().barContainer, 1, {
+        gsap.to(bar.getNodes().barContainer, 0.3, {
           height: height + modes[mode].barPadding * 2,
           attr: {
             height: height + modes[mode].barPadding * 2
@@ -1039,13 +1043,23 @@ function StyledTemplate(styleOptions) {
     }
 
     function generateBarPositionTl(top) {
-      var { barElement, tag: barTag, events, title, detail } = bar.getNodes();
-      var eventNodes = _getEventsNodesByType();
+      var { barDiv } = bar.getNodes();
 
       var tl = gsap.timeline({ paused: true });
 
       tl.add("start");
-      tl.to(bar.getNodes().barDiv, 0.3, { x: 20, y: `-=${top - 10}` }, "start");
+      tl.to(
+        barDiv,
+        0.3,
+        {
+          x: 20,
+          y: `-=${top - 10}`,
+          zIndex: 100,
+          backgroundColor: "rgba(211, 232, 235, 0.7)",
+          padding: "5px"
+        },
+        "start"
+      );
 
       return tl;
     }

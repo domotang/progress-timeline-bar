@@ -28,7 +28,6 @@ function ProcessTimeLineBar({
   const [currentEvent, setCurrentEvent] = useState(null);
   const [pTBController] = useState(() => PTBController(templateAPI));
   const [eventPage, setEventPage] = useState(null);
-  const [barTop, setBarTop] = useState(0);
   const [modalView, setModalView] = useState(false);
 
   var eventDomElements = processDomEventComponents();
@@ -45,7 +44,7 @@ function ProcessTimeLineBar({
 
   useEffect(() => {
     var modal = currentMode === "modal";
-    var openedEvent = currentEvent === null;
+    var openedEvent = currentEvent != null;
 
     if (eventPage) {
       setEventPage(null);
@@ -53,13 +52,9 @@ function ProcessTimeLineBar({
 
     if (modal) {
       let opts = {
-        barTop: pTBController.getBarElement().getBoundingClientRect().top - 1
+        barTop: _getBarTop()
       };
-      if (openedEvent && mode === "detail") {
-        pTBController.setMode(currentMode, opts).then(() => {
-          setModalView(modal);
-        });
-      } else if (openedEvent && mode === "small") {
+      if (!openedEvent) {
         pTBController.setMode(currentMode, opts);
         setModalView(modal);
       } else {
@@ -83,7 +78,7 @@ function ProcessTimeLineBar({
 
   useEffect(() => {
     let opts = {
-      barTop: pTBController.getBarElement().getBoundingClientRect().top - 1
+      barTop: _getBarTop()
     };
     if (eventPage) {
       setEventPage(null);
@@ -104,30 +99,14 @@ function ProcessTimeLineBar({
   };
 
   var modalStyle = {
+    backgroundColor: styleOptions.backgroundColor,
+    padding: currentMode === "small" ? "3px" : "5px",
     width:
       currentMode === "small"
         ? styleOptions.barWidth.small
         : styleOptions.barWidth.large,
     borderRadius: "5px",
     position: "relative"
-  };
-
-  var modalStyleOff = {
-    ...modalStyle,
-    backgroundColor: styleOptions.backgroundColor,
-    zIndex: 0,
-    padding: currentMode === "small" ? "3px" : "5px",
-    transition:
-      "position .6s, transform .6s, background-color .6s, z-index 0s 1s"
-  };
-
-  var modalStyleOn = {
-    ...modalStyle,
-    backgroundColor: "rgba(211, 232, 235, 0.7)",
-    padding: "5px",
-    zIndex: 100,
-    transition: "transform .6s, background-color .6s,  zIndex 0s .6s"
-    // transform: `translate(20px, -${barTop - 10}px)`
   };
 
   var headerPageStyle = {
@@ -168,21 +147,18 @@ function ProcessTimeLineBar({
   };
 
   function eventClick(eventId) {
-    _setBarTop();
     console.log("click");
     setCurrentMode("modal");
     setCurrentEvent(eventId);
   }
 
   function barClick(mode) {
-    _setBarTop();
     console.log("click");
     setCurrentMode(mode);
   }
 
-  function _setBarTop() {
-    if (currentMode != "modal")
-      setBarTop(pTBController.getBarElement().getBoundingClientRect().top - 1);
+  function _getBarTop() {
+    return pTBController.getBarElement().getBoundingClientRect().top - 10;
   }
 
   function processDomEventComponents() {
@@ -213,7 +189,7 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  // console.log("render bar", id, mode);
+  if (id === 0) console.log("render bar", id, mode);
 
   return (
     <div
@@ -224,7 +200,7 @@ function ProcessTimeLineBar({
       <div
         className="proc-timeline"
         id={`proc-timeline-${id}`}
-        style={modalView ? modalStyleOn : modalStyleOff}
+        style={modalStyle}
         onClick={
           currentMode === "large"
             ? () => {
