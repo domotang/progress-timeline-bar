@@ -17,7 +17,10 @@ module.exports = {
   entry: {
     index: path.join(__dirname, "src/index.js"),
     cont: path.join(__dirname, "src/lib/PTBController.js"),
-    template: path.join(__dirname, "src/lib/PTBTemplateMaterial.js")
+    template: path.join(__dirname, "src/lib/PTBTemplateMaterial.js"),
+    animations: path.join(__dirname, "src/lib/pTBMaterialAnimations.js"),
+    tmpComponents: path.join(__dirname, "src/lib/pTBMaterialComponents.js"),
+    globe: path.join(__dirname, "src/lib/ne_110m_land.json")
   },
   output: {
     path: path.resolve(__dirname, "dist"),
