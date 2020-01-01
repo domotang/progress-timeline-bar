@@ -60,7 +60,10 @@ function PTBController(templateAPI) {
     setEvent,
     setMode,
     getBarElement,
-    closeEvents
+    closeEvents,
+    getStyles,
+    Bar: templateAPI.Bar,
+    Event: templateAPI.Event
   };
   return publicAPI;
 
@@ -70,6 +73,10 @@ function PTBController(templateAPI) {
 
   function getBarElement() {
     return bar ? bar.getElement() : null;
+  }
+
+  function getStyles() {
+    return templateAPI.getStyles();
   }
 
   function findEventById(eventId) {

@@ -79,9 +79,12 @@ export function EventLoadingAniTl({ controleNodes, expandedHeight }) {
 export function EventStandardAniOpenTl({
   controlNodes,
   expandedHeight,
-  styleOptions
+  styleOptions,
+  bar,
+  onResolve
 }) {
   var { event, tag, title, date, icon, iconGroup } = controlNodes;
+  var { eventDetails } = bar.getNodes();
 
   var tl = gsap.timeline({ paused: true });
   // animate event
@@ -90,7 +93,8 @@ export function EventStandardAniOpenTl({
   tl.to(event, 0.1, {
     transformOrigin: "50% 50%",
     scale: 0.8,
-    ease: "Power1.easeInOut"
+    ease: "Power1.easeInOut",
+    onComplete: onResolve
   }),
     "shrink";
   tl.to(event, 0.3, { y: 86, ease: "Power1.easeInOut" }, 0.1, "shrink");
@@ -139,12 +143,19 @@ export function EventStandardAniOpenTl({
     { x: "0", y: "0", scale: 1, ease: "Power1.easeInOut" },
     "spread"
   );
+  tl.to(eventDetails, 0.2, { opacity: 1 }, 0.6, "spread");
 
   return tl;
 }
 
 export function BarDetailAniTl({ bar, styleOptions, onResolve }) {
-  var { backButton, tag: barTag, events, eventDetails } = bar.getNodes();
+  var {
+    backButton,
+    tag: barTag,
+    events,
+    headerDetails,
+    eventDetails
+  } = bar.getNodes();
 
   var tl = gsap.timeline({ paused: true });
 
@@ -155,15 +166,13 @@ export function BarDetailAniTl({ bar, styleOptions, onResolve }) {
     {
       morphSVG: `M0,0 h${styleOptions.barWidth.large -
         100} a6,6,0,0,1,6,5 v13 h-${styleOptions.barWidth.large -
-        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`
+        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`,
+      onComplete: onResolve
     },
     "widen"
   );
 
   tl.add("grow");
-  if (onResolve) {
-    tl.call(onResolve);
-  }
   tl.to(
     barTag,
     0.3,
@@ -196,6 +205,7 @@ export function BarDetailAniTl({ bar, styleOptions, onResolve }) {
     "-=.1",
     "final"
   );
+  tl.to(headerDetails, 0.3, { opacity: 1 }, "final");
 
   return tl;
 }
@@ -372,6 +382,10 @@ export function BarPositionTl({ bar, top }) {
 
   var tl = gsap.timeline({ paused: true });
 
+  tl.to(barDiv, 0, {
+    zIndex: 0
+  });
+
   tl.add("start");
   tl.to(
     barDiv,
@@ -397,7 +411,6 @@ export function BarPositionTl({ bar, top }) {
 }
 
 export function BarEventUpBtnTl({ upButton, coords }) {
-  console.log(coords);
   var tl = gsap.timeline({ paused: true });
 
   tl.add("set");

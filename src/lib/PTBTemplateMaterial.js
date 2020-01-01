@@ -41,8 +41,8 @@ function StyledTemplate(styleOptions) {
       regEvent,
       setMode,
       closeEvents,
-      bar: components.getBarTmplt({ styleOptions, timelineBarWidthLg }),
-      event: components.getEventTmplt({
+      Bar: components.getBarTmplt({ styleOptions, timelineBarWidthLg }),
+      Event: components.getEventTmplt({
         xFactorLg,
         eventWidthLg,
         styleOptions
@@ -64,6 +64,7 @@ function StyledTemplate(styleOptions) {
         events: element.querySelector(".events"),
         title: element.querySelector(".title"),
         detail: element.querySelector(".detail"),
+        headerDetails: element.querySelector(".header-details"),
         eventDetails: element.querySelector(".event-details"),
         backButton: element.querySelector(".back-icon"),
         upButton: element.querySelector(".up-icon")
@@ -166,19 +167,22 @@ function StyledTemplate(styleOptions) {
 
         currentExpandedHeight = expandedHeight;
 
-        let AniOpts = { controlNodes, expandedHeight, styleOptions };
+        let AniOpts = {
+          controlNodes,
+          expandedHeight,
+          styleOptions,
+          bar,
+          onResolve
+        };
         animation =
           type === "loading"
             ? animations.EventLoadingAniTl(AniOpts)
             : type === "standard"
             ? animations.EventStandardAniOpenTl(AniOpts)
             : null;
-        if (onResolve) {
-          animation.vars.onComplete = () => {
-            _updateEventBackButton(true, upCoords);
-            onResolve();
-          };
-        }
+        animation.vars.onComplete = () => {
+          _updateEventBackButton(true, upCoords);
+        };
         animation.timeScale(animationSpeed);
         animation.play();
       }
@@ -225,6 +229,38 @@ function StyledTemplate(styleOptions) {
     }
 
     function init(mode) {
+      gsap.to(bar.getNodes().barContainer, 0, {
+        marginTop: mode === "small" ? "3px" : "10px",
+        position: "relative",
+        marginLeft: "10px"
+      });
+
+      gsap.to(bar.getNodes().barDiv, 0, {
+        backgroundColor: styleOptions.backgroundColor,
+        padding: mode === "small" ? "3px" : "5px",
+        width:
+          mode === "small"
+            ? styleOptions.barWidth.small
+            : styleOptions.barWidth.large,
+        borderRadius: "5px",
+        position: "relative",
+        zIndex: 0
+      });
+
+      gsap.to(bar.getNodes().headerDetails, 0, {
+        top: 10,
+        left: 170,
+        opacity: 0,
+        position: "absolute"
+      });
+
+      gsap.to(bar.getNodes().eventDetails, 0, {
+        top: 100,
+        left: 150,
+        opacity: 0,
+        position: "absolute"
+      });
+
       let opts = {
         eventNodes: _getEventsNodesByType(),
         bar,
@@ -239,7 +275,7 @@ function StyledTemplate(styleOptions) {
       };
       barModeAnimations = animations.BarAniTl(opts);
       barModeAnimations.seek(mode);
-      _updateBarHeight(modes[mode].barHeight, false, 0);
+      _updateBarHeight(modes[mode].barHeight, 0);
       gsap.to(bar.getNodes().barElement, 0, {
         attr: {
           visibility: 1
@@ -260,7 +296,7 @@ function StyledTemplate(styleOptions) {
 
     //*************local methods*****************
 
-    function _setModeLarge() {
+    function _setModeLarge(onResolve) {
       mode = "large";
       if (openedElements.event) openedElements.event.close();
       if (openedElements.header) openedElements.header.close();
@@ -268,13 +304,16 @@ function StyledTemplate(styleOptions) {
 
       function changeMode() {
         yHeight = 0;
-        _updateBarHeight(modes["large"].barHeight, false, 0.3);
+        _updateBarHeight(modes["large"].barHeight, 0.3);
         barModeAnimations.timeScale(animationSpeed);
-        barModeAnimations.tweenTo("large");
+        barModeAnimations.tweenTo("large", {
+          overwrite: true,
+          onComplete: onResolve()
+        });
       }
     }
 
-    function _setModeSmall() {
+    function _setModeSmall(onResolve) {
       mode = "small";
       if (openedElements.event) openedElements.event.close();
       if (openedElements.header) openedElements.header.close();
@@ -284,20 +323,16 @@ function StyledTemplate(styleOptions) {
         yHeight = 0;
         _updateBarHeight(modes["small"].barHeight, 0.6);
         barModeAnimations.timeScale(animationSpeed);
-        barModeAnimations.tweenTo("small");
+        barModeAnimations.tweenTo("small", {
+          overwrite: true,
+          onComplete: onResolve()
+        });
       }
     }
 
     function _setModeDetail(onResolve) {
       mode = "detail";
-      // if (!openedElements.event) onResolve();
-      _updateBarHeight(
-        modes["detail"].barHeight,
-        0.3,
-        0.2,
-        onResolve
-        // openedElements.event ? onResolve : null
-      );
+      _updateBarHeight(modes["detail"].barHeight, 0.3, 0.2, onResolve);
 
       if (openedElements.event) openedElements.event.close();
       if (openedElements.header) openedElements.header.close();
@@ -305,25 +340,51 @@ function StyledTemplate(styleOptions) {
 
       function changeMode() {
         barModeAnimations.timeScale(animationSpeed);
-        barModeAnimations.tweenTo("detail");
+        barModeAnimations.tweenTo("detail", {
+          overwrite: true,
+          onComplete: onResolve
+        });
       }
     }
 
+    // function _setModeModal(opts, onResolve) {
+    //   modal = true;
+    //   _setBarPosition(opts.barTop);
+
+    //   if (barModeAnimations.currentLabel() != "detail") {
+    //     _updateBarHeight(modes["detail"].barHeight, 0.3);
+    //     return barModeAnimations.tweenTo("detail", {
+    //       onComplete: () => barOpen(opts)
+    //     });
+    //   }
+
+    //   barOpen(onResolve);
+
+    //   function barOpen(onResolve) {
+    //     if (!bar.getHeaderState()) bar.open(onResolve);
+    //   }
+    // }
+
     function _setModeModal(opts, onResolve) {
       modal = true;
-      _setBarPosition(opts.barTop);
 
       if (barModeAnimations.currentLabel() != "detail") {
         _updateBarHeight(modes["detail"].barHeight, 0.3);
         return barModeAnimations.tweenTo("detail", {
-          onComplete: () => barOpen(opts)
+          onComplete: () => barOpen(doIt)
         });
       }
 
-      barOpen(onResolve);
+      barOpen(doIt);
 
-      function barOpen(onResolve) {
-        if (!bar.getHeaderState()) bar.open(onResolve);
+      function barOpen(doIt) {
+        if (!bar.getHeaderState()) bar.open(doIt);
+      }
+
+      function doIt() {
+        _setBarPosition(
+          bar.getNodes().barContainer.getBoundingClientRect().top - 10
+        );
       }
     }
 
@@ -389,20 +450,25 @@ function StyledTemplate(styleOptions) {
 
     function _updateBarHeight(height, speed, delay, onResolve) {
       if (!modal) {
-        gsap.to(bar.getNodes().barContainer, 0.3, {
-          height: height + modes[mode].barPadding * 2,
-          attr: {
-            height: height + modes[mode].barPadding * 2
-          },
-          ease: "Linear.easeNone"
-        });
+        gsap.to(
+          bar.getNodes().barContainer,
+          typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
+          {
+            height: height + modes[mode].barPadding * 2,
+            // delay: delay ? delay : 0,
+            attr: {
+              height: height + modes[mode].barPadding * 2
+            },
+            ease: "Linear.easeNone"
+          }
+        );
       }
 
       gsap.to(
         bar.getNodes().barElement,
         typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
         {
-          delay: delay ? delay : 0,
+          // delay: delay ? delay : 0,
           attr: {
             height: height
           },
