@@ -31,7 +31,7 @@ function StyledTemplate(styleOptions) {
       barPositionAnimation = null,
       openedElements = { event: null, header: null },
       yHeight = 0,
-      animationSpeed = 1,
+      animationSpeed = 0.3,
       mode = "detail",
       modal = false;
 
@@ -369,22 +369,19 @@ function StyledTemplate(styleOptions) {
       modal = true;
 
       if (barModeAnimations.currentLabel() != "detail") {
+        //modal().then(top & headerdetail)
+        _setBarPosition(opts.barTop);
         _updateBarHeight(modes["detail"].barHeight, 0.3);
-        return barModeAnimations.tweenTo("detail", {
-          onComplete: () => barOpen(doIt)
+        barModeAnimations.tweenTo("detail", {
+          onComplete: () => barOpen()
         });
+      } else {
+        barOpen(() => _setBarPosition(opts.barTop));
+        //modal().then(spread).then().then(top & headerdetail & drop)
       }
 
-      barOpen(doIt);
-
-      function barOpen(doIt) {
-        if (!bar.getHeaderState()) bar.open(doIt);
-      }
-
-      function doIt() {
-        _setBarPosition(
-          bar.getNodes().barContainer.getBoundingClientRect().top - 10
-        );
+      function barOpen(ops) {
+        if (!bar.getHeaderState()) bar.open(ops);
       }
     }
 
