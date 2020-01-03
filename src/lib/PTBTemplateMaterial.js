@@ -81,48 +81,6 @@ function StyledTemplate(styleOptions) {
 
       bar = internalBarAPI;
 
-      //   function open(onResolve) {
-      //     yHeight = 100;
-      //     let opts = { bar, styleOptions, onResolve };
-      //     animation = animations.BarDetailAniTl(opts);
-      //     if (!openedElements.event) {
-      //       _updateBarHeight(
-      //         (openedElements.event
-      //           ? openedElements.event.getExpandedHeight()
-      //           : 0) +
-      //           90 +
-      //           yHeight,
-      //         0.3,
-      //         0.24
-      //       );
-      //     }
-
-      //     animation.timeScale(animationSpeed);
-      //     animation.play();
-      //     openedElements.header = internalBarAPI;
-      //   }
-
-      //   function close(onResolve) {
-      //     modal = false;
-      //     if (barPositionAnimation) barPositionAnimation.reverse();
-      //     if (onResolve) {
-      //       animation.vars.onReverseComplete = () => {
-      //         onResolve();
-      //       };
-      //     }
-      //     animation.reverse();
-      //     openedElements.header = null;
-      //   }
-
-      //   function getNodes() {
-      //     return controlNodes;
-      //   }
-
-      //   function getHeaderState() {
-      //     return animation ? (animation.time() ? true : false) : false;
-      //   }
-      // }
-
       function open(onResolve) {
         yHeight = 100;
         let opts = { bar, styleOptions, onResolve };
@@ -145,7 +103,6 @@ function StyledTemplate(styleOptions) {
       }
 
       function close(onResolve) {
-        modal = false;
         // if (barPositionAnimation) barPositionAnimation.reverse();
         if (onResolve) {
           animation.vars.onReverseComplete = () => {
@@ -339,6 +296,7 @@ function StyledTemplate(styleOptions) {
     //*************local methods*****************
 
     function _setModeLarge(onResolve) {
+      modal = false;
       mode = "large";
       if (openedElements.event) openedElements.event.close();
       if (openedElements.header) openedElements.header.close();
@@ -356,6 +314,7 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeSmall(onResolve) {
+      modal = false;
       mode = "small";
       if (openedElements.event) openedElements.event.close();
       if (openedElements.header) openedElements.header.close();
@@ -390,24 +349,6 @@ function StyledTemplate(styleOptions) {
       }
     }
 
-    // function _setModeModal(opts, onResolve) {
-    //   modal = true;
-    //   _setBarPosition(opts.barTop);
-
-    //   if (barModeAnimations.currentLabel() != "detail") {
-    //     _updateBarHeight(modes["detail"].barHeight, 0.3);
-    //     return barModeAnimations.tweenTo("detail", {
-    //       onComplete: () => barOpen(opts)
-    //     });
-    //   }
-
-    //   barOpen(onResolve);
-
-    //   function barOpen(onResolve) {
-    //     if (!bar.getHeaderState()) bar.open(onResolve);
-    //   }
-    // }
-
     function _setModeModal(opts, onResolve) {
       var top = opts.barTop;
       modal = true;
@@ -420,22 +361,13 @@ function StyledTemplate(styleOptions) {
           onComplete: () => barOpen()
         });
       } else {
-        let opts = { bar, styleOptions, top };
-        var barPositionAnimation = animations.BarPositionTl(opts);
-        var barModalAnimation = animations.BarModalTl(opts);
-        var barOpenAnimation = animations.BarDetailAniTl({
-          ...opts,
-          onResolveTl: barPositionAnimation
-        });
+        let opts = { bar, styleOptions, top, yHeight };
+        var barModalHeaderAnimation = animations.BarModalHeaderTl(opts);
 
-        var tl = gsap.timeline({ paused: true });
-        tl.add(barModalAnimation.play());
-        tl.add(barOpenAnimation.play());
+        barModalHeaderAnimation.timeScale(animationSpeed);
+        barModalHeaderAnimation.play();
 
-        tl.play();
-
-        openedElements.modal = tl;
-        //modal().then(spread).then().then(top & headerdetail & drop)
+        openedElements.modal = barModalHeaderAnimation;
       }
 
       function barOpen(ops) {
@@ -533,12 +465,5 @@ function StyledTemplate(styleOptions) {
         }
       );
     }
-
-    // function _setBarPosition(top) {
-    //   let opts = { bar, top };
-    //   barPositionAnimation = animations.BarPositionTl(opts);
-    //   barPositionAnimation.timeScale(animationSpeed);
-    //   barPositionAnimation.play();
-    // }
   }
 }

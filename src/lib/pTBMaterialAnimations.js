@@ -378,7 +378,7 @@ export function BarAniTl({
   return tl;
 }
 
-export function BarModalTl({ bar }) {
+export function BarModalLockTl({ bar }) {
   var { barDiv } = bar.getNodes();
 
   var tl = gsap.timeline({ paused: true });
@@ -390,7 +390,7 @@ export function BarModalTl({ bar }) {
   tl.add("start");
   tl.to(
     barDiv,
-    0.2,
+    0,
     {
       zIndex: 100
     },
@@ -476,4 +476,52 @@ export function BarEventUpBtnTl({ upButton, coords }) {
     "move"
   );
   return tl;
+}
+
+export function BarModalHeaderTl(opts) {
+  var barPositionAnimation = BarPositionTl(opts);
+  var barModalLockAnimation = BarModalLockTl(opts);
+  var barOpenAnimation = BarDetailAniTl({
+    ...opts,
+    onResolveTl: barPositionAnimation
+  });
+
+  var tl = gsap.timeline({ paused: true });
+
+  tl.add("start");
+  tl.add(barOpenAnimation.play(), "start");
+  tl.add(barModalLockAnimation.play(), "start");
+
+  return tl;
+}
+
+function _updateBarHeight(height, speed, delay, modal, onResolve) {
+  if (!modal) {
+    gsap.to(
+      bar.getNodes().barContainer,
+      typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
+      {
+        height: height + modes[mode].barPadding * 2,
+        // delay: delay ? delay : 0,
+        attr: {
+          height: height + modes[mode].barPadding * 2
+        },
+        ease: "Linear.easeNone"
+      }
+    );
+  }
+
+  gsap.to(
+    bar.getNodes().barElement,
+    typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
+    {
+      // delay: delay ? delay : 0,
+      attr: {
+        height: height
+      },
+      height: height,
+      onComplete: onResolve,
+      ease: "Linear.easeNone"
+    }
+  );
 }
