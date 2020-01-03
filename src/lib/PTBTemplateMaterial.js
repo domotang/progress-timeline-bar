@@ -1,6 +1,6 @@
 "use strict";
 import gsap from "gsap";
-import { MorphSVGPlugin } from "gsap/src/MorphSVGPlugin";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import * as animations from "./pTBMaterialAnimations";
 import * as components from "./pTBMaterialComponents";
 
@@ -28,8 +28,8 @@ function StyledTemplate(styleOptions) {
       bar = {},
       events = [],
       barModeAnimations = null,
-      barPositionAnimation = null,
-      openedElements = { event: null, header: null },
+      // barPositionAnimation = null,
+      openedElements = { event: null, header: null, modal: null },
       yHeight = 0,
       animationSpeed = 0.3,
       mode = "detail",
@@ -81,6 +81,48 @@ function StyledTemplate(styleOptions) {
 
       bar = internalBarAPI;
 
+      //   function open(onResolve) {
+      //     yHeight = 100;
+      //     let opts = { bar, styleOptions, onResolve };
+      //     animation = animations.BarDetailAniTl(opts);
+      //     if (!openedElements.event) {
+      //       _updateBarHeight(
+      //         (openedElements.event
+      //           ? openedElements.event.getExpandedHeight()
+      //           : 0) +
+      //           90 +
+      //           yHeight,
+      //         0.3,
+      //         0.24
+      //       );
+      //     }
+
+      //     animation.timeScale(animationSpeed);
+      //     animation.play();
+      //     openedElements.header = internalBarAPI;
+      //   }
+
+      //   function close(onResolve) {
+      //     modal = false;
+      //     if (barPositionAnimation) barPositionAnimation.reverse();
+      //     if (onResolve) {
+      //       animation.vars.onReverseComplete = () => {
+      //         onResolve();
+      //       };
+      //     }
+      //     animation.reverse();
+      //     openedElements.header = null;
+      //   }
+
+      //   function getNodes() {
+      //     return controlNodes;
+      //   }
+
+      //   function getHeaderState() {
+      //     return animation ? (animation.time() ? true : false) : false;
+      //   }
+      // }
+
       function open(onResolve) {
         yHeight = 100;
         let opts = { bar, styleOptions, onResolve };
@@ -104,7 +146,7 @@ function StyledTemplate(styleOptions) {
 
       function close(onResolve) {
         modal = false;
-        if (barPositionAnimation) barPositionAnimation.reverse();
+        // if (barPositionAnimation) barPositionAnimation.reverse();
         if (onResolve) {
           animation.vars.onReverseComplete = () => {
             onResolve();
@@ -335,7 +377,8 @@ function StyledTemplate(styleOptions) {
       _updateBarHeight(modes["detail"].barHeight, 0.3, 0.2, onResolve);
 
       if (openedElements.event) openedElements.event.close();
-      if (openedElements.header) openedElements.header.close();
+      // if (openedElements.header) openedElements.header.close();
+      if (openedElements.modal) openedElements.modal.reverse();
       changeMode();
 
       function changeMode() {
@@ -366,17 +409,32 @@ function StyledTemplate(styleOptions) {
     // }
 
     function _setModeModal(opts, onResolve) {
+      var top = opts.barTop;
       modal = true;
 
       if (barModeAnimations.currentLabel() != "detail") {
         //modal().then(top & headerdetail)
-        _setBarPosition(opts.barTop);
+        // _setBarPosition(opts.barTop);
         _updateBarHeight(modes["detail"].barHeight, 0.3);
         barModeAnimations.tweenTo("detail", {
           onComplete: () => barOpen()
         });
       } else {
-        barOpen(() => _setBarPosition(opts.barTop));
+        let opts = { bar, styleOptions, top };
+        var barPositionAnimation = animations.BarPositionTl(opts);
+        var barModalAnimation = animations.BarModalTl(opts);
+        var barOpenAnimation = animations.BarDetailAniTl({
+          ...opts,
+          onResolveTl: barPositionAnimation
+        });
+
+        var tl = gsap.timeline({ paused: true });
+        tl.add(barModalAnimation.play());
+        tl.add(barOpenAnimation.play());
+
+        tl.play();
+
+        openedElements.modal = tl;
         //modal().then(spread).then().then(top & headerdetail & drop)
       }
 
@@ -476,11 +534,11 @@ function StyledTemplate(styleOptions) {
       );
     }
 
-    function _setBarPosition(top) {
-      let opts = { bar, top };
-      barPositionAnimation = animations.BarPositionTl(opts);
-      barPositionAnimation.timeScale(animationSpeed);
-      barPositionAnimation.play();
-    }
+    // function _setBarPosition(top) {
+    //   let opts = { bar, top };
+    //   barPositionAnimation = animations.BarPositionTl(opts);
+    //   barPositionAnimation.timeScale(animationSpeed);
+    //   barPositionAnimation.play();
+    // }
   }
 }

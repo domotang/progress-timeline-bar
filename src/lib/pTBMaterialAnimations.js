@@ -1,6 +1,6 @@
 "use strict";
 import gsap from "gsap";
-import { MorphSVGPlugin } from "gsap/src/MorphSVGPlugin";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
 gsap.registerPlugin(MorphSVGPlugin);
 
@@ -148,7 +148,7 @@ export function EventStandardAniOpenTl({
   return tl;
 }
 
-export function BarDetailAniTl({ bar, styleOptions, onResolve }) {
+export function BarDetailAniTl({ bar, styleOptions, onResolveTl }) {
   var {
     backButton,
     tag: barTag,
@@ -167,7 +167,8 @@ export function BarDetailAniTl({ bar, styleOptions, onResolve }) {
       morphSVG: `M0,0 h${styleOptions.barWidth.large -
         100} a6,6,0,0,1,6,5 v13 h-${styleOptions.barWidth.large -
         262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`,
-      onComplete: onResolve
+      onComplete: () => onResolveTl.play(),
+      onReverseComplete: () => onResolveTl.reverse()
     },
     "widen"
   );
@@ -377,7 +378,7 @@ export function BarAniTl({
   return tl;
 }
 
-export function BarPositionTl({ bar, top }) {
+export function BarModalTl({ bar }) {
   var { barDiv } = bar.getNodes();
 
   var tl = gsap.timeline({ paused: true });
@@ -389,12 +390,22 @@ export function BarPositionTl({ bar, top }) {
   tl.add("start");
   tl.to(
     barDiv,
-    0,
+    0.2,
     {
       zIndex: 100
     },
     "start"
   );
+
+  return tl;
+}
+
+export function BarPositionTl({ bar, top }) {
+  var { barDiv } = bar.getNodes();
+
+  var tl = gsap.timeline({ paused: true });
+
+  tl.add("start");
   tl.to(
     barDiv,
     0.6,
