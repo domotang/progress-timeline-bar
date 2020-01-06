@@ -279,7 +279,7 @@ export function BarAniTl({
     { height: modes.small.barHeight, ease: "none" },
     "shrink2"
   );
-  tl.to(barElement, 0.6, { width: styleOptions.barWidth.small }, "shrink2");
+  tl.to(barElement, 0.3, { width: styleOptions.barWidth.small }, "shrink2");
   tl.to(
     barTag,
     0.3,
@@ -403,14 +403,14 @@ export function BarEventUpBtnTl({ upButton, coords }) {
   return tl;
 }
 
-export function BarModalHeaderTl(opts) {
+export function BarModalDetailTl(opts) {
   var nodes = opts.bar.getNodes();
   var tl = gsap.timeline({ paused: true });
 
   tl.add("widen").add(_barDetailWidenTl(nodes.tag, opts.styleOptions), "widen");
   tl.add("move")
     .add(_barModalLockTl(opts.bar), "move")
-    .add(_barPositionTl(opts.bar, opts.top), "move")
+    .add(_barPositionTl(opts.bar, opts.barTop), "move")
     .add(
       _updateBarHeightTl(opts.bar.getNodes().barElement, opts.height),
       "move"
@@ -424,16 +424,15 @@ export function BarModalSmallTl(opts) {
   var nodes = opts.bar.getNodes();
   var tl = gsap.timeline({ paused: true });
 
-  opts.barModeAnimations.tweenTo("detail");
-
   tl.add("move")
+    .add(opts.barModeAnimations.tweenTo("detail", { overwrite: true }), "start")
     .add(_barModalLockTl(opts.bar), "move")
-    .add(_barPositionTl(opts.bar, opts.top), "move")
+    .add(_barPositionTl(opts.bar, opts.barTop), "move")
     .add(
       _updateBarHeightTl(opts.bar.getNodes().barElement, opts.height),
-      "move"
+      "move+=.62"
     )
-    .add(_barDetailAniTl(nodes, opts.styleOptions), "move");
+    .add(_barDetailAniTl(nodes, opts.styleOptions), "move+=.62");
 
   return tl;
 }
@@ -462,7 +461,7 @@ function _barPositionTl(bar, top) {
 function _updateBarHeightTl(node, height) {
   var tl = gsap.timeline();
 
-  tl.to(node, {
+  tl.to(node, 0.2, {
     attr: {
       height: height
     },
