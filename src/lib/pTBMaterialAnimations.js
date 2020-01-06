@@ -148,70 +148,6 @@ export function EventStandardAniOpenTl({
   return tl;
 }
 
-export function BarDetailAniTl({ bar, styleOptions, onResolveTl }) {
-  var {
-    backButton,
-    tag: barTag,
-    events,
-    headerDetails,
-    eventDetails
-  } = bar.getNodes();
-
-  var tl = gsap.timeline({ paused: true });
-
-  tl.add("widen");
-  tl.to(
-    barTag,
-    0.2,
-    {
-      morphSVG: `M0,0 h${styleOptions.barWidth.large -
-        100} a6,6,0,0,1,6,5 v13 h-${styleOptions.barWidth.large -
-        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`
-      // onComplete: () => onResolveTl.play(),
-      // onReverseComplete: () => onResolveTl.reverse()
-    },
-    "widen"
-  );
-
-  tl.add("grow");
-  tl.add(() => onResolveTl(), "grow");
-  tl.to(
-    barTag,
-    0.3,
-    {
-      opacity: 0.8,
-      morphSVG: `M0,0 h${styleOptions.barWidth.large -
-        100} a6,6,0,0,1,6,5 v${100 + 13} h-${styleOptions.barWidth.large -
-        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
-        76} a6,6,0,0,1,6,-6`,
-      ease: "Power1.easeInOut"
-    },
-    "grow"
-  );
-  tl.to(
-    [events, eventDetails],
-    0.3,
-    { y: 100, ease: "Power1.easeInOut" },
-    "grow"
-  );
-  tl.add("final");
-  tl.to(
-    backButton,
-    0.2,
-    {
-      attr: {
-        visibility: 1,
-        opacity: 1
-      }
-    },
-    "-=.1",
-    "final"
-  );
-  tl.to(headerDetails, 0.3, { opacity: 1 }, "final");
-
-  return tl;
-}
-
 export function BarAniTl({
   eventNodes,
   bar,
@@ -222,15 +158,31 @@ export function BarAniTl({
   eventWidthSm,
   xFactorSm,
   elementCount,
-  status
+  status,
+  modes
 }) {
-  var { barElement, tag: barTag, title, detail } = bar.getNodes();
+  var { barContainer, barElement, tag: barTag, title, detail } = bar.getNodes();
 
   var tl = gsap.timeline({ paused: true });
 
   tl.add("detail");
   tl.add("shrink");
   tl.to(eventNodes.date, 0.2, { opacity: 0 }, "shrink");
+  tl.to(
+    barContainer,
+    0.3,
+    {
+      height: modes.large.barHeight + modes.large.barPadding * 2,
+      ease: "none"
+    },
+    "shrink"
+  );
+  tl.to(
+    barElement,
+    0.3,
+    { height: modes.large.barHeight, ease: "none" },
+    "shrink"
+  );
   tl.to(
     eventNodes.iconGroup,
     0.3,
@@ -312,6 +264,21 @@ export function BarAniTl({
   tl.to(eventNodes.date, 0.02, { opacity: 1 });
   tl.add("large");
   tl.add("shrink2");
+  tl.to(
+    barContainer,
+    0.3,
+    {
+      height: modes.small.barHeight + modes.small.barPadding * 2,
+      ease: "none"
+    },
+    "shrink2"
+  );
+  tl.to(
+    barElement,
+    0.3,
+    { height: modes.small.barHeight, ease: "none" },
+    "shrink2"
+  );
   tl.to(barElement, 0.6, { width: styleOptions.barWidth.small }, "shrink2");
   tl.to(
     barTag,
@@ -379,49 +346,6 @@ export function BarAniTl({
   return tl;
 }
 
-export function BarModalLockTl({ bar }) {
-  var { barDiv } = bar.getNodes();
-
-  var tl = gsap.timeline({ paused: true });
-
-  tl.to(barDiv, 0, {
-    zIndex: 0
-  });
-
-  tl.add("start");
-  tl.to(
-    barDiv,
-    0,
-    {
-      zIndex: 100
-    },
-    "start"
-  );
-
-  return tl;
-}
-
-export function BarPositionTl({ bar, top }) {
-  var { barDiv } = bar.getNodes();
-
-  var tl = gsap.timeline({ paused: true });
-
-  tl.add("start");
-  tl.to(
-    barDiv,
-    0.6,
-    {
-      x: 20,
-      y: `-=${top - 10}`,
-      backgroundColor: "rgba(211, 232, 235, 0.7)",
-      padding: "5px"
-    },
-    "start"
-  );
-
-  return tl;
-}
-
 export function BarEventUpBtnTl({ upButton, coords }) {
   var tl = gsap.timeline({ paused: true });
 
@@ -480,54 +404,152 @@ export function BarEventUpBtnTl({ upButton, coords }) {
 }
 
 export function BarModalHeaderTl(opts) {
-  console.log(opts.height);
-  var barPositionAnimation = BarPositionTl(opts);
-  var barModalLockAnimation = BarModalLockTl(opts);
-  var barOpenAnimation = BarDetailAniTl({
-    ...opts,
-    onResolveTl: () => {
-      barPositionAnimation.play();
-      _updateBarHeight(opts.bar, opts.height);
-    }
-  });
-  // var barOpenAnimation = BarDetailAniTl({
-  //   ...opts,
-  //   onResolveTl: barPositionAnimation
-  // });
-
+  var nodes = opts.bar.getNodes();
   var tl = gsap.timeline({ paused: true });
 
-  tl.add("start");
-  tl.add(barOpenAnimation.play(), "start");
-  tl.add(barModalLockAnimation.play(), "start");
+  tl.add("widen").add(_barDetailWidenTl(nodes.tag, opts.styleOptions), "widen");
+  tl.add("move")
+    .add(_barModalLockTl(opts.bar), "move")
+    .add(_barPositionTl(opts.bar, opts.top), "move")
+    .add(
+      _updateBarHeightTl(opts.bar.getNodes().barElement, opts.height),
+      "move"
+    )
+    .add(_barDetailAniTl(nodes, opts.styleOptions), "move");
 
   return tl;
 }
 
-function _updateBarHeight(bar, height, speed, delay, modal) {
-  if (!modal) {
-    gsap.to(
-      bar.getNodes().barContainer,
-      typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
-      {
-        height: height,
-        attr: {
-          height: height
-        },
-        ease: "Linear.easeNone"
-      }
-    );
-  }
+export function BarModalSmallTl(opts) {
+  var nodes = opts.bar.getNodes();
+  var tl = gsap.timeline({ paused: true });
 
-  gsap.to(
-    bar.getNodes().barElement,
-    typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
+  opts.barModeAnimations.tweenTo("detail");
+
+  tl.add("move")
+    .add(_barModalLockTl(opts.bar), "move")
+    .add(_barPositionTl(opts.bar, opts.top), "move")
+    .add(
+      _updateBarHeightTl(opts.bar.getNodes().barElement, opts.height),
+      "move"
+    )
+    .add(_barDetailAniTl(nodes, opts.styleOptions), "move");
+
+  return tl;
+}
+
+function _barPositionTl(bar, top) {
+  var { barDiv } = bar.getNodes();
+
+  var tl = gsap.timeline();
+
+  tl.add("start");
+  tl.to(
+    barDiv,
+    0.6,
+    {
+      x: 20,
+      y: `-=${top - 10}`,
+      backgroundColor: "rgba(211, 232, 235, 0.7)",
+      padding: "5px"
+    },
+    "start"
+  );
+
+  return tl;
+}
+
+function _updateBarHeightTl(node, height) {
+  var tl = gsap.timeline();
+
+  tl.to(node, {
+    attr: {
+      height: height
+    },
+    height: height,
+    ease: "none"
+  });
+
+  return tl;
+}
+
+function _barModalLockTl(bar) {
+  var { barDiv } = bar.getNodes();
+
+  var tl = gsap.timeline();
+
+  tl.to(barDiv, 0, {
+    zIndex: 0
+  });
+
+  tl.add("start");
+  tl.to(
+    barDiv,
+    0,
+    {
+      zIndex: 100
+    },
+    "start"
+  );
+
+  return tl;
+}
+
+function _barDetailWidenTl(tag, styleOptions) {
+  var tl = gsap.timeline();
+
+  tl.add("widen");
+  tl.to(
+    tag,
+    0.2,
+    {
+      morphSVG: `M0,0 h${styleOptions.barWidth.large -
+        100} a6,6,0,0,1,6,5 v13 h-${styleOptions.barWidth.large -
+        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`
+    },
+    "widen"
+  );
+
+  return tl;
+}
+
+function _barDetailAniTl(nodes, styleOptions) {
+  var tl = gsap.timeline();
+
+  tl.add("grow");
+  tl.to(
+    nodes.tag,
+    0.3,
+    {
+      opacity: 0.8,
+      morphSVG: `M0,0 h${styleOptions.barWidth.large -
+        100} a6,6,0,0,1,6,5 v${100 + 13} h-${styleOptions.barWidth.large -
+        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
+        76} a6,6,0,0,1,6,-6`,
+      ease: "Power1.easeInOut"
+    },
+    "grow"
+  );
+  tl.to(
+    [nodes.events, nodes.eventDetails],
+    0.3,
+    { y: 100, ease: "Power1.easeInOut" },
+    "grow"
+  );
+  tl.add("final");
+  tl.to(
+    nodes.backButton,
+    0.2,
     {
       attr: {
-        height: height
-      },
-      height: height,
-      ease: "Linear.easeNone"
-    }
+        visibility: 1,
+        opacity: 1
+      }
+    },
+    "-=.1",
+    "final"
   );
+  tl.to(nodes.headerDetails, 0.3, { opacity: 1 }, "final");
+
+  return tl;
 }
