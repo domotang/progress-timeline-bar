@@ -166,14 +166,15 @@ export function BarDetailAniTl({ bar, styleOptions, onResolveTl }) {
     {
       morphSVG: `M0,0 h${styleOptions.barWidth.large -
         100} a6,6,0,0,1,6,5 v13 h-${styleOptions.barWidth.large -
-        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`,
-      onComplete: () => onResolveTl.play(),
-      onReverseComplete: () => onResolveTl.reverse()
+        262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`
+      // onComplete: () => onResolveTl.play(),
+      // onReverseComplete: () => onResolveTl.reverse()
     },
     "widen"
   );
 
   tl.add("grow");
+  tl.add(() => onResolveTl(), "grow");
   tl.to(
     barTag,
     0.3,
@@ -479,12 +480,20 @@ export function BarEventUpBtnTl({ upButton, coords }) {
 }
 
 export function BarModalHeaderTl(opts) {
+  console.log(opts.height);
   var barPositionAnimation = BarPositionTl(opts);
   var barModalLockAnimation = BarModalLockTl(opts);
   var barOpenAnimation = BarDetailAniTl({
     ...opts,
-    onResolveTl: barPositionAnimation
+    onResolveTl: () => {
+      barPositionAnimation.play();
+      _updateBarHeight(opts.bar, opts.height);
+    }
   });
+  // var barOpenAnimation = BarDetailAniTl({
+  //   ...opts,
+  //   onResolveTl: barPositionAnimation
+  // });
 
   var tl = gsap.timeline({ paused: true });
 
@@ -495,16 +504,15 @@ export function BarModalHeaderTl(opts) {
   return tl;
 }
 
-function _updateBarHeight(height, speed, delay, modal, onResolve) {
+function _updateBarHeight(bar, height, speed, delay, modal) {
   if (!modal) {
     gsap.to(
       bar.getNodes().barContainer,
       typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
       {
-        height: height + modes[mode].barPadding * 2,
-        // delay: delay ? delay : 0,
+        height: height,
         attr: {
-          height: height + modes[mode].barPadding * 2
+          height: height
         },
         ease: "Linear.easeNone"
       }
@@ -515,12 +523,10 @@ function _updateBarHeight(height, speed, delay, modal, onResolve) {
     bar.getNodes().barElement,
     typeof speed !== "undefined" ? speed / (animationSpeed * 1.3) : 0.3,
     {
-      // delay: delay ? delay : 0,
       attr: {
         height: height
       },
       height: height,
-      onComplete: onResolve,
       ease: "Linear.easeNone"
     }
   );

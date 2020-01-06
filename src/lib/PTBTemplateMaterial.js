@@ -31,7 +31,7 @@ function StyledTemplate(styleOptions) {
       // barPositionAnimation = null,
       openedElements = { event: null, header: null, modal: null },
       yHeight = 0,
-      animationSpeed = 0.3,
+      animationSpeed = 1,
       mode = "detail",
       modal = false;
 
@@ -361,9 +361,14 @@ function StyledTemplate(styleOptions) {
           onComplete: () => barOpen()
         });
       } else {
-        let opts = { bar, styleOptions, top, yHeight };
+        let opts = {
+          bar,
+          styleOptions,
+          top,
+          height: modes["detail"].barHeight + 100,
+          animationSpeed
+        };
         var barModalHeaderAnimation = animations.BarModalHeaderTl(opts);
-
         barModalHeaderAnimation.timeScale(animationSpeed);
         barModalHeaderAnimation.play();
 
