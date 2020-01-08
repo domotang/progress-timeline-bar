@@ -5,6 +5,7 @@ import * as animations from "./pTBMaterialAnimations";
 import * as components from "./pTBMaterialComponents";
 
 gsap.registerPlugin(MorphSVGPlugin);
+gsap.globalTimeline.timeScale(1);
 
 export default StyledTemplate;
 
@@ -29,8 +30,6 @@ function StyledTemplate(styleOptions) {
       events = [],
       barModeAnimations = null,
       openedElements = { event: null, header: null, modal: null },
-      yHeight = 0,
-      animationSpeed = 1,
       mode = "detail";
 
     var publicAPI = {
@@ -80,22 +79,9 @@ function StyledTemplate(styleOptions) {
       bar = internalBarAPI;
 
       function open(onResolve) {
-        yHeight = 100;
         let opts = { bar, styleOptions, onResolve };
-        animation = animations.BarDetailAniTl(opts);
-        if (!openedElements.event) {
-          // _updateBarHeight(
-          //   (openedElements.event
-          //     ? openedElements.event.getExpandedHeight()
-          //     : 0) +
-          //     90 +
-          //     yHeight,
-          //   0.3,
-          //   0.24
-          // );
-        }
+        // animation = animations.BarDetailAniTl(opts);
 
-        animation.timeScale(animationSpeed);
         animation.play();
         openedElements.header = internalBarAPI;
       }
@@ -121,7 +107,6 @@ function StyledTemplate(styleOptions) {
     }
 
     function regEvent(event, type, id) {
-      var currentExpandedHeight = 0;
       var controlNodes = {
         event,
         tag: event.querySelector(".tag"),
@@ -136,7 +121,6 @@ function StyledTemplate(styleOptions) {
       var internalEventAPI = {
         getNodes,
         close,
-        getExpandedHeight,
         id
       };
 
@@ -155,42 +139,37 @@ function StyledTemplate(styleOptions) {
         openedElements.event = internalEventAPI;
 
         if (!openedElements.modal) {
-          _setModeModal(opts);
+          _setModeModal({ ...opts, expandedHeight });
         }
-        // _updateBarHeight(expandedHeight + 130 + yHeight, 0.3, 0);
 
         let { x, y, width } = event.getBBox();
         var upCoords = { x: width / 2 + x - 40, y: y + 90 };
 
-        currentExpandedHeight = expandedHeight;
-
         let AniOpts = {
-          controlNodes,
+          type,
+          controlNodes: {
+            ...controlNodes,
+            eventDetails: bar.getNodes().eventDetails,
+            barElement: bar.getNodes().barElement,
+            upButton: bar.getNodes().upButton
+          },
           expandedHeight,
+          barHeight: modes["detail"].barHeight + (expandedHeight + 130),
+          upCoords,
           styleOptions,
-          bar,
           onResolve
         };
-        animation =
-          type === "loading"
-            ? animations.EventLoadingAniTl(AniOpts)
-            : type === "standard"
-            ? animations.EventStandardAniOpenTl(AniOpts)
-            : null;
-        animation.vars.onComplete = () => {
-          _updateEventBackButton(true, upCoords);
-        };
-        animation.timeScale(animationSpeed);
+        animation = animations.EventOpenTl(AniOpts);
+
         animation.play();
       }
 
       function close(onResolve) {
-        if (onResolve) {
-          animation.vars.onReverseComplete = () => {
-            onResolve();
-          };
-        }
-        _updateEventBackButton(false, { x: 0, y: 0 });
+        // if (onResolve) {
+        // animation.vars.onReverseComplete = () => {
+        //   onResolve();
+        // };
+        // }
         animation.reverse();
         openedElements.event = null;
       }
@@ -199,9 +178,6 @@ function StyledTemplate(styleOptions) {
         return controlNodes;
       }
 
-      function getExpandedHeight() {
-        return currentExpandedHeight;
-      }
       function deregister() {
         events = events.filter(event => event.id != id);
       }
@@ -230,16 +206,12 @@ function StyledTemplate(styleOptions) {
         marginTop: mode === "small" ? "3px" : "10px",
         position: "relative",
         marginLeft: "10px"
-        // backgroundColor: "blue"
       });
 
       gsap.to(bar.getNodes().barDiv, 0, {
         backgroundColor: styleOptions.backgroundColor,
         padding: mode === "small" ? "3px" : "5px",
-        width:
-          mode === "small"
-            ? styleOptions.barWidth.small
-            : styleOptions.barWidth.large,
+        width: styleOptions.barWidth.large,
         borderRadius: "5px",
         position: "relative",
         zIndex: 0
@@ -273,7 +245,6 @@ function StyledTemplate(styleOptions) {
         modes
       };
       barModeAnimations = animations.BarAniTl(opts);
-      barModeAnimations.timeScale(animationSpeed);
       barModeAnimations.seek(mode);
       gsap.to(bar.getNodes().barElement, 0, {
         attr: {
@@ -284,13 +255,6 @@ function StyledTemplate(styleOptions) {
 
     function closeEvents() {
       if (openedElements.event) openedElements.event.close();
-      // _updateBarHeight(
-      //   (openedElements.event ? openedElements.event.getExpandedHeight() : 0) +
-      //     90 +
-      //     yHeight,
-      //   0.3,
-      //   0.24
-      // );
     }
 
     //*************local methods*****************
@@ -302,7 +266,6 @@ function StyledTemplate(styleOptions) {
       changeMode();
 
       function changeMode() {
-        yHeight = 0;
         barModeAnimations.tweenTo("large", {
           overwrite: true,
           onComplete: onResolve()
@@ -349,9 +312,11 @@ function StyledTemplate(styleOptions) {
     function _setModeModal(opts) {
       let AnimationOpts = {
         ...opts,
-        bar,
+        nodes: bar.getNodes(),
         styleOptions,
-        height: modes["detail"].barHeight + 100,
+        height:
+          modes["detail"].barHeight +
+          (opts.expandedHeight ? opts.expandedHeight + 130 : 100),
         barModeAnimations
       };
       var barModalAnimation =
@@ -359,7 +324,6 @@ function StyledTemplate(styleOptions) {
           ? animations.BarModalSmallTl(AnimationOpts)
           : animations.BarModalDetailTl(AnimationOpts);
 
-      barModalAnimation.timeScale(animationSpeed);
       barModalAnimation.play();
 
       openedElements.modal = barModalAnimation;
@@ -396,33 +360,6 @@ function StyledTemplate(styleOptions) {
 
     function _getStyles() {
       return styleOptions;
-    }
-
-    function _updateEventBackButton(active, coords) {
-      var upButton = bar.getNodes().upButton;
-
-      let opts = {
-        upButton,
-        coords
-      };
-
-      var eventBtnAni = animations.BarEventUpBtnTl(opts);
-
-      if (active) {
-        eventBtnAni.play();
-      } else {
-        gsap.to(
-          upButton,
-          0.2,
-          {
-            attr: {
-              visibility: 0,
-              opacity: 0
-            }
-          },
-          "set"
-        );
-      }
     }
   }
 }
