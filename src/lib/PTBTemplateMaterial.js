@@ -5,7 +5,7 @@ import * as animations from "./pTBMaterialAnimations";
 import * as components from "./pTBMaterialComponents";
 
 gsap.registerPlugin(MorphSVGPlugin);
-gsap.globalTimeline.timeScale(1);
+gsap.globalTimeline.timeScale(0.5);
 
 export default StyledTemplate;
 
@@ -22,9 +22,9 @@ function StyledTemplate(styleOptions) {
       timelineBarWidthLg = status > 0 ? 194 + xFactorLg * (status - 1) : 164,
       timelineBarWidthSm = status > 0 ? 194 + xFactorSm * (status - 1) : 164,
       modes = {
-        small: { barHeight: 15, barPadding: 3 },
-        large: { barHeight: 38, barPadding: 5 },
-        detail: { barHeight: 90, barPadding: 5 }
+        small: { barHeight: 15, barPadding: 3, _containerHeight },
+        large: { barHeight: 38, barPadding: 5, _containerHeight },
+        detail: { barHeight: 90, barPadding: 5, _containerHeight }
       },
       bar = {},
       events = [],
@@ -205,7 +205,8 @@ function StyledTemplate(styleOptions) {
       gsap.to(bar.getNodes().barContainer, 0, {
         marginTop: mode === "small" ? "3px" : "10px",
         position: "relative",
-        marginLeft: "10px"
+        marginLeft: "10px",
+        backgroundColor: "blue"
       });
 
       gsap.to(bar.getNodes().barDiv, 0, {
@@ -242,7 +243,8 @@ function StyledTemplate(styleOptions) {
         xFactorSm,
         elementCount,
         status,
-        modes
+        modes,
+        getContainerHeight
       };
       barModeAnimations = animations.BarAniTl(opts);
       barModeAnimations.seek(mode);
@@ -317,6 +319,7 @@ function StyledTemplate(styleOptions) {
         height:
           modes["detail"].barHeight +
           (opts.expandedHeight ? opts.expandedHeight + 130 : 100),
+        barContainerHeight: modes[mode].barHeight,
         barModeAnimations
       };
       var barModalAnimation =
@@ -360,6 +363,15 @@ function StyledTemplate(styleOptions) {
 
     function _getStyles() {
       return styleOptions;
+    }
+
+    function _containerHeight() {
+      return this.barHeight + this.barPadding * 2;
+    }
+
+    function getContainerHeight() {
+      console.log("mode", mode);
+      return modes[mode]._containerHeight();
     }
   }
 }

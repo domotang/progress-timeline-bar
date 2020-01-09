@@ -16,7 +16,8 @@ export function BarAniTl({
   xFactorSm,
   elementCount,
   status,
-  modes
+  modes,
+  getContainerHeight
 }) {
   var {
     barContainer,
@@ -31,12 +32,14 @@ export function BarAniTl({
 
   tl.add("detail");
   tl.add("shrink");
+  tl.add(() => console.log("hello"), "shrink");
   tl.to(eventNodes.date, 0.2, { opacity: 0 }, "shrink");
   tl.to(
     barContainer,
     0.3,
     {
-      height: modes.large.barHeight + modes.large.barPadding * 2,
+      height: getContainerHeight(),
+      // height: modes.large.barHeight + modes.large.barPadding * 2,
       ease: "none"
     },
     "shrink"
@@ -221,7 +224,13 @@ export function BarAniTl({
   return tl;
 }
 
-export function BarModalDetailTl({ nodes, styleOptions, barTop, height }) {
+export function BarModalDetailTl({
+  nodes,
+  styleOptions,
+  barTop,
+  height,
+  barContainerHeight
+}) {
   var tl = gsap.timeline({ paused: true });
 
   tl.add("widen").add(_barDetailWidenTl(nodes.tag, styleOptions), "widen");
@@ -232,7 +241,7 @@ export function BarModalDetailTl({ nodes, styleOptions, barTop, height }) {
       if (!tl.reversed()) _barHeightTween(nodes.barElement, height);
     }, "move+=.01")
     .add(() => {
-      if (tl.reversed()) _barHeightTween(nodes.barElement, 90);
+      if (tl.reversed()) _barHeightTween(nodes.barElement, barContainerHeight);
     }, "move+=.2")
     .add(_barDetailAniTl(nodes, styleOptions), "move");
 
@@ -244,6 +253,7 @@ export function BarModalSmallTl({
   styleOptions,
   barTop,
   height,
+  barContainerHeight,
   barModeAnimations
 }) {
   var tl = gsap.timeline({ paused: true });
@@ -255,10 +265,13 @@ export function BarModalSmallTl({
     .add(_barModalLockTl(nodes.barDiv), "move")
     .add(() => {
       if (!tl.reversed())
-        _barHeightTween(nodes.barElement, !tl.reversed() ? height : 90);
+        _barHeightTween(
+          nodes.barElement,
+          !tl.reversed() ? height : barContainerHeight
+        );
     }, "move")
     .add(() => {
-      if (tl.reversed()) _barHeightTween(nodes.barElement, 90);
+      if (tl.reversed()) _barHeightTween(nodes.barElement, barContainerHeight);
     }, "move+=.1")
     .add(_barDetailAniTl(nodes, styleOptions), "move");
 
