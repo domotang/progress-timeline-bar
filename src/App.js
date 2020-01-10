@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { PTBTemplateContext } from "./components/PTBTemplateContext";
 import PTBTemplateMaterial from "./lib/PTBTemplateMaterial";
 import PTBListBox from "./components/PTBListBox";
@@ -20,6 +20,8 @@ import initReactFastclick from "react-fastclick";
 initReactFastclick();
 
 function App() {
+  var [mode, setMode] = useState("large");
+
   var barStyleOptions = {
     backgroundColor: "#c3dde0",
     placeholderColor: "#ddeced",
@@ -34,13 +36,26 @@ function App() {
     <div className="parent">
       <div className="controls">
         <h1>Process Timeline Bar React Component Demo</h1>
+        Mode ({mode}){" "}
+        <select
+          value={mode}
+          onChange={e => setMode(e.target.value)}
+          onBlur={e => setMode(e.target.value)}
+        >
+          <option key="1" value="large">
+            Large
+          </option>
+          <option key="2" value="small">
+            Small
+          </option>
+        </select>
       </div>
 
       <PTBTemplateContext
         template={PTBTemplateMaterial}
         styleOptions={barStyleOptions}
       >
-        <PTBListBox mode="large">
+        <PTBListBox mode={mode}>
           {shippingData.map((shipment, index) => (
             <ProcessTimelineBar
               headerDetailPage={HeaderDetails}
@@ -103,200 +118,6 @@ function App() {
             </ProcessTimelineBar>
           ))}
         </PTBListBox>
-      </PTBTemplateContext>
-      <PTBTemplateContext
-        template={PTBTemplateMaterial}
-        styleOptions={barStyleOptions}
-      >
-        <ProcessTimelineBar
-          headerDetailPage={HeaderDetails}
-          styleOptions={barStyleOptions}
-          key={0}
-          id={0}
-          title="SHIPMENTS"
-          detail="yes"
-          mode="small"
-          status="6"
-          headerDetails={{
-            destination: "uganda",
-            port: "enterbbe",
-            mot: "air",
-            carrier: "delta",
-            billNo: "AWB:006-90048563",
-            fromCoord: [-95.358421, 29.749907],
-            toCoord: [32.58252, 0.347596],
-            offset: false
-          }}
-        >
-          <ProcessTimelineBarEvent
-            title="OPENED"
-            date="1/2"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={GoFileSubmodule}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/4"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/9"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/19"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/11"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/17"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-        </ProcessTimelineBar>
-        <ProcessTimelineBar
-          headerDetailPage={HeaderDetails}
-          styleOptions={barStyleOptions}
-          key={0}
-          id={0}
-          title="SHIPMENTS"
-          detail="yes"
-          mode="small"
-          status="3"
-          headerDetails={{
-            destination: "uganda",
-            port: "enterbbe",
-            mot: "air",
-            carrier: "delta",
-            billNo: "AWB:006-90048563",
-            fromCoord: [-95.358421, 29.749907],
-            toCoord: [32.58252, 0.347596],
-            offset: false
-          }}
-        >
-          <ProcessTimelineBarEvent
-            title="OPENED"
-            date="1/2"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={GoFileSubmodule}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/4"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/9"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/19"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/11"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/17"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-        </ProcessTimelineBar>
-        <ProcessTimelineBar
-          headerDetailPage={HeaderDetails}
-          styleOptions={barStyleOptions}
-          key={0}
-          id={0}
-          title="SHIPMENTS"
-          detail="yes"
-          mode="small"
-          status="5"
-          headerDetails={{
-            destination: "uganda",
-            port: "enterbbe",
-            mot: "air",
-            carrier: "delta",
-            billNo: "AWB:006-90048563",
-            fromCoord: [-95.358421, 29.749907],
-            toCoord: [32.58252, 0.347596],
-            offset: false
-          }}
-        >
-          <ProcessTimelineBarEvent
-            title="OPENED"
-            date="1/2"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={GoFileSubmodule}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/4"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/9"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/19"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/11"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-          <ProcessTimelineBarEvent
-            title="CLOSED"
-            date="1/17"
-            color="#7699c2"
-            expandedHeight="280"
-            icon={FaTruckLoading}
-          ></ProcessTimelineBarEvent>
-        </ProcessTimelineBar>
       </PTBTemplateContext>
     </div>
   );

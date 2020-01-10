@@ -31,6 +31,11 @@ function PTBListBox({ children, mode }) {
     }
   }, [modal]);
 
+  useEffect(() => {
+    console.log("mode change");
+    // setSelectedBar(2);
+  }, mode);
+
   var children2 = children
     ? Children.map(children, (child, index) => {
         return cloneElement(child, {

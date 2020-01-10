@@ -16,34 +16,15 @@ export function BarAniTl({
   xFactorSm,
   elementCount,
   status,
-  modes,
-  getContainerHeight
+  modes
 }) {
-  var {
-    barContainer,
-    barDiv,
-    barElement,
-    tag: barTag,
-    title,
-    detail
-  } = bar.getNodes();
+  var { barDiv, barElement, tag: barTag, title, detail } = bar.getNodes();
 
   var tl = gsap.timeline({ paused: true });
 
   tl.add("detail");
   tl.add("shrink");
-  tl.add(() => console.log("hello"), "shrink");
   tl.to(eventNodes.date, 0.2, { opacity: 0 }, "shrink");
-  tl.to(
-    barContainer,
-    0.3,
-    {
-      height: getContainerHeight(),
-      // height: modes.large.barHeight + modes.large.barPadding * 2,
-      ease: "none"
-    },
-    "shrink"
-  );
   tl.to(
     barElement,
     0.3,
@@ -132,15 +113,6 @@ export function BarAniTl({
   tl.add("large");
   tl.add("shrink2");
   tl.to(
-    barContainer,
-    0.3,
-    {
-      height: modes.small.barHeight + modes.small.barPadding * 2,
-      ease: "none"
-    },
-    "shrink2"
-  );
-  tl.to(
     barElement,
     0.3,
     {
@@ -227,21 +199,26 @@ export function BarAniTl({
 export function BarModalDetailTl({
   nodes,
   styleOptions,
+  eventDrop,
   barTop,
   height,
-  barContainerHeight
+  barHeight
 }) {
   var tl = gsap.timeline({ paused: true });
 
-  tl.add("widen").add(_barDetailWidenTl(nodes.tag, styleOptions), "widen");
-  tl.add("move")
-    .add(_barModalLockTl(nodes.barDiv), "move")
+  if (eventDrop) {
+    tl.add("move");
+  } else {
+    tl.add("widen").add(_barDetailWidenTl(nodes.tag, styleOptions), "widen");
+    tl.add("move");
+  }
+  tl.add(_barModalLockTl(nodes.barDiv), "move")
     .add(_barPositionTl(nodes.barDiv, barTop), "move")
     .add(() => {
       if (!tl.reversed()) _barHeightTween(nodes.barElement, height);
     }, "move+=.01")
     .add(() => {
-      if (tl.reversed()) _barHeightTween(nodes.barElement, barContainerHeight);
+      if (tl.reversed()) _barHeightTween(nodes.barElement, barHeight);
     }, "move+=.2")
     .add(_barDetailAniTl(nodes, styleOptions), "move");
 
@@ -253,7 +230,7 @@ export function BarModalSmallTl({
   styleOptions,
   barTop,
   height,
-  barContainerHeight,
+  barHeight,
   barModeAnimations
 }) {
   var tl = gsap.timeline({ paused: true });
@@ -264,14 +241,10 @@ export function BarModalSmallTl({
   tl.add("move")
     .add(_barModalLockTl(nodes.barDiv), "move")
     .add(() => {
-      if (!tl.reversed())
-        _barHeightTween(
-          nodes.barElement,
-          !tl.reversed() ? height : barContainerHeight
-        );
+      if (!tl.reversed()) _barHeightTween(nodes.barElement, height);
     }, "move")
     .add(() => {
-      if (tl.reversed()) _barHeightTween(nodes.barElement, barContainerHeight);
+      if (tl.reversed()) _barHeightTween(nodes.barElement, barHeight);
     }, "move+=.1")
     .add(_barDetailAniTl(nodes, styleOptions), "move");
 
@@ -312,6 +285,16 @@ export function EventOpenTl({
         _updateEventCloseBackButton(controlNodes.upButton);
       }
     }, "start+=.8");
+
+  return tl;
+}
+
+export function EventsCloseTl({ nodes, height, eventClose }) {
+  var tl = gsap.timeline({ paused: true });
+
+  tl.add("start");
+  tl.add(() => eventClose(), "start");
+  tl.add(() => _barHeightTween(nodes.barElement, height), "start+=.4");
 
   return tl;
 }

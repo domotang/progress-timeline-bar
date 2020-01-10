@@ -5,7 +5,7 @@ import * as animations from "./pTBMaterialAnimations";
 import * as components from "./pTBMaterialComponents";
 
 gsap.registerPlugin(MorphSVGPlugin);
-gsap.globalTimeline.timeScale(0.5);
+gsap.globalTimeline.timeScale(1);
 
 export default StyledTemplate;
 
@@ -143,15 +143,15 @@ function StyledTemplate(styleOptions) {
         }
 
         let { x, y, width } = event.getBBox();
-        var upCoords = { x: width / 2 + x - 40, y: y + 90 };
-
+        let upCoords = { x: width / 2 + x - 40, y: y + 90 };
+        let { eventDetails, barElement, upButton } = bar.getNodes();
         let AniOpts = {
           type,
           controlNodes: {
             ...controlNodes,
-            eventDetails: bar.getNodes().eventDetails,
-            barElement: bar.getNodes().barElement,
-            upButton: bar.getNodes().upButton
+            eventDetails,
+            barElement,
+            upButton
           },
           expandedHeight,
           barHeight: modes["detail"].barHeight + (expandedHeight + 130),
@@ -164,12 +164,7 @@ function StyledTemplate(styleOptions) {
         animation.play();
       }
 
-      function close(onResolve) {
-        // if (onResolve) {
-        // animation.vars.onReverseComplete = () => {
-        //   onResolve();
-        // };
-        // }
+      function close() {
         animation.reverse();
         openedElements.event = null;
       }
@@ -185,6 +180,12 @@ function StyledTemplate(styleOptions) {
     //*************public methods*****************
 
     function setMode(mode, opts, onResolve) {
+      if (openedElements.event) openedElements.event.close();
+      if (openedElements.modal) {
+        openedElements.modal.reverse();
+        openedElements.modal = null;
+      }
+
       switch (mode) {
         case "small":
           _setModeSmall(onResolve);
@@ -204,9 +205,10 @@ function StyledTemplate(styleOptions) {
     function init(mode) {
       gsap.to(bar.getNodes().barContainer, 0, {
         marginTop: mode === "small" ? "3px" : "10px",
+        height: modes[mode]._containerHeight(),
         position: "relative",
-        marginLeft: "10px",
-        backgroundColor: "blue"
+        marginLeft: "10px"
+        // backgroundColor: "blue"
       });
 
       gsap.to(bar.getNodes().barDiv, 0, {
@@ -243,8 +245,7 @@ function StyledTemplate(styleOptions) {
         xFactorSm,
         elementCount,
         status,
-        modes,
-        getContainerHeight
+        modes
       };
       barModeAnimations = animations.BarAniTl(opts);
       barModeAnimations.seek(mode);
@@ -256,70 +257,120 @@ function StyledTemplate(styleOptions) {
     }
 
     function closeEvents() {
-      if (openedElements.event) openedElements.event.close();
+      if (openedElements.event) {
+        let opts = {
+          nodes: bar.getNodes(),
+          height: modes["detail"].barHeight + 100,
+          eventClose: openedElements.event.close
+        };
+        var closeEventsAnimation = animations.EventsCloseTl(opts);
+        closeEventsAnimation.play();
+      }
     }
 
     //*************local methods*****************
 
     function _setModeLarge(onResolve) {
       mode = "large";
-      if (openedElements.event) openedElements.event.close();
-      if (openedElements.header) openedElements.header.close();
-      changeMode();
-
-      function changeMode() {
-        barModeAnimations.tweenTo("large", {
-          overwrite: true,
-          onComplete: onResolve()
-        });
-      }
+      gsap.to(
+        bar.getNodes().barContainer,
+        0.3,
+        {
+          height: modes[mode]._containerHeight(),
+          marginTop: "10px",
+          ease: "none"
+        },
+        "shrink"
+      );
+      gsap.to(
+        bar.getNodes().barDiv,
+        0.3,
+        {
+          padding: "5px",
+          ease: "none"
+        },
+        "shrink"
+      );
+      barModeAnimations.tweenTo("large", {
+        overwrite: true,
+        onComplete: onResolve()
+      });
     }
 
     function _setModeSmall(onResolve) {
+      var set = mode != "small";
+      var set2 = mode === "detail";
       mode = "small";
-      if (openedElements.event) openedElements.event.close();
-      if (openedElements.modal) {
-        openedElements.modal.reverse();
-        openedElements.modal = null;
+      gsap.to(
+        bar.getNodes().barContainer,
+        0.3,
+        {
+          height: modes[mode]._containerHeight(),
+          marginTop: "3px",
+          ease: "none"
+        },
+        "shrink"
+      );
+      gsap.to(
+        bar.getNodes().barDiv,
+        0.3,
+        {
+          padding: "3px",
+          ease: "none"
+        },
+        "shrink"
+      );
+      if (set) {
+        if (set2) barModeAnimations.timeScale(2);
+        else barModeAnimations.timeScale(1);
+        barModeAnimations.tweenTo("small", {
+          overwrite: true,
+          onComplete: () => {
+            barModeAnimations.timeScale(1);
+            onResolve();
+          }
+        });
       }
-
-      // changeMode();
-      // function changeMode() {
-      //   yHeight = 0;
-      //   barModeAnimations.tweenTo("small", {
-      //     overwrite: true,
-      //     onComplete: onResolve()
-      //   });
-      // }
     }
 
     function _setModeDetail(onResolve) {
       mode = "detail";
 
-      if (openedElements.event) openedElements.event.close();
-      if (openedElements.modal) {
-        openedElements.modal.reverse();
-        openedElements.modal = null;
-      }
-      changeMode();
-
-      function changeMode() {
-        barModeAnimations.tweenTo("detail", {
-          overwrite: true,
-          onComplete: onResolve
-        });
-      }
+      gsap.to(
+        bar.getNodes().barContainer,
+        0.3,
+        {
+          height: modes[mode]._containerHeight(),
+          marginTop: "10px",
+          ease: "none"
+        },
+        "shrink"
+      );
+      gsap.to(
+        bar.getNodes().barDiv,
+        0.3,
+        {
+          padding: "5px",
+          ease: "none"
+        },
+        "shrink"
+      );
+      barModeAnimations.tweenTo("detail", {
+        overwrite: true,
+        onComplete: onResolve
+      });
     }
 
     function _setModeModal(opts) {
       let AnimationOpts = {
-        ...opts,
+        barTop: opts.barTop,
         nodes: bar.getNodes(),
         styleOptions,
+        eventDrop: !!opts.expandedHeight,
         height:
           modes["detail"].barHeight +
           (opts.expandedHeight ? opts.expandedHeight + 130 : 100),
-        barContainerHeight: modes[mode].barHeight,
+        barHeight: modes["detail"].barHeight,
         barModeAnimations
       };
       var barModalAnimation =
@@ -367,11 +418,6 @@ function StyledTemplate(styleOptions) {
 
     function _containerHeight() {
       return this.barHeight + this.barPadding * 2;
-    }
-
-    function getContainerHeight() {
-      console.log("mode", mode);
-      return modes[mode]._containerHeight();
     }
   }
 }

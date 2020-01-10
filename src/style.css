@@ -16,9 +16,14 @@ h2 {
 }
 
 .controls {
+  z-index: 12;
   padding: 20px;
   /* border: 1px solid #000; */
   width: 1080px;
+}
+
+#root {
+  z-index: 100;
 }
 
 #modal {
@@ -39,7 +44,8 @@ div {
 }
 
 #modal:empty {
+  top: 100;
   background-color: rgba(255, 255, 255, 0);
   /* display: none; */
-  z-index: 0;
+  z-index: -3;
 }
