@@ -32,8 +32,7 @@ function PTBListBox({ children, mode }) {
   }, [modal]);
 
   useEffect(() => {
-    console.log("mode change");
-    // setSelectedBar(2);
+    setSelectedBar(0);
   }, mode);
 
   var children2 = children

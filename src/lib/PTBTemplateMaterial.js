@@ -1,11 +1,6 @@
 "use strict";
-import gsap from "gsap";
-import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import * as animations from "./pTBMaterialAnimations";
 import * as components from "./pTBMaterialComponents";
-
-gsap.registerPlugin(MorphSVGPlugin);
-gsap.globalTimeline.timeScale(1);
 
 export default StyledTemplate;
 
@@ -202,41 +197,21 @@ function StyledTemplate(styleOptions) {
       }
     }
 
-    function init(mode) {
-      gsap.to(bar.getNodes().barContainer, 0, {
-        marginTop: mode === "small" ? "3px" : "10px",
-        height: modes[mode]._containerHeight(),
-        position: "relative",
-        marginLeft: "10px"
-        // backgroundColor: "blue"
-      });
+    function init(initMode) {
+      mode = initMode;
+      let barNodes = bar.getNodes();
+      let initOpts = {
+        barNodes,
+        mode,
+        containerHeight: modes[mode]._containerHeight(),
+        styleOptions
+      };
 
-      gsap.to(bar.getNodes().barDiv, 0, {
-        backgroundColor: styleOptions.backgroundColor,
-        padding: mode === "small" ? "3px" : "5px",
-        width: styleOptions.barWidth.large,
-        borderRadius: "5px",
-        position: "relative",
-        zIndex: 0
-      });
-
-      gsap.to(bar.getNodes().headerDetails, 0, {
-        top: 10,
-        left: 170,
-        opacity: 0,
-        position: "absolute"
-      });
-
-      gsap.to(bar.getNodes().eventDetails, 0, {
-        top: 100,
-        left: 150,
-        opacity: 0,
-        position: "absolute"
-      });
+      animations.initElementsTween(initOpts);
 
       let opts = {
         eventNodes: _getEventsNodesByType(),
-        bar,
+        barNodes,
         styleOptions,
         timelineBarWidthLg,
         timelineBarWidthSm,
@@ -249,11 +224,10 @@ function StyledTemplate(styleOptions) {
       };
       barModeAnimations = animations.BarAniTl(opts);
       barModeAnimations.seek(mode);
-      gsap.to(bar.getNodes().barElement, 0, {
-        attr: {
-          visibility: 1
-        }
-      });
+      var showBarOpts = {
+        barElement: bar.getNodes().barElement
+      };
+      animations.showBarTween(showBarOpts);
     }
 
     function closeEvents() {
@@ -272,25 +246,12 @@ function StyledTemplate(styleOptions) {
 
     function _setModeLarge(onResolve) {
       mode = "large";
-      gsap.to(
-        bar.getNodes().barContainer,
-        0.3,
-        {
-          height: modes[mode]._containerHeight(),
-          marginTop: "10px",
-          ease: "none"
-        },
-        "shrink"
-      );
-      gsap.to(
-        bar.getNodes().barDiv,
-        0.3,
-        {
-          padding: "5px",
-          ease: "none"
-        },
-        "shrink"
-      );
+      let opts = {
+        barContainer: bar.getNodes().barContainer,
+        height: modes[mode]._containerHeight(),
+        marginTop: "10px"
+      };
+      animations.containerTween(opts);
       barModeAnimations.tweenTo("large", {
         overwrite: true,
         onComplete: onResolve()
@@ -301,25 +262,13 @@ function StyledTemplate(styleOptions) {
       var set = mode != "small";
       var set2 = mode === "detail";
       mode = "small";
-      gsap.to(
-        bar.getNodes().barContainer,
-        0.3,
-        {
-          height: modes[mode]._containerHeight(),
-          marginTop: "3px",
-          ease: "none"
-        },
-        "shrink"
-      );
-      gsap.to(
-        bar.getNodes().barDiv,
-        0.3,
-        {
-          padding: "3px",
-          ease: "none"
-        },
-        "shrink"
-      );
+      let opts = {
+        barContainer: bar.getNodes().barContainer,
+        height: modes[mode]._containerHeight(),
+        marginTop: "3px"
+      };
+      animations.containerTween(opts);
+
       if (set) {
         if (set2) barModeAnimations.timeScale(2);
         else barModeAnimations.timeScale(1);
@@ -335,26 +284,13 @@ function StyledTemplate(styleOptions) {
 
     function _setModeDetail(onResolve) {
       mode = "detail";
+      let opts = {
+        barContainer: bar.getNodes().barContainer,
+        height: modes[mode]._containerHeight(),
+        marginTop: "10px"
+      };
+      animations.containerTween(opts);
 
-      gsap.to(
-        bar.getNodes().barContainer,
-        0.3,
-        {
-          height: modes[mode]._containerHeight(),
-          marginTop: "10px",
-          ease: "none"
-        },
-        "shrink"
-      );
-      gsap.to(
-        bar.getNodes().barDiv,
-        0.3,
-        {
-          padding: "5px",
-          ease: "none"
-        },
-        "shrink"
-      );
       barModeAnimations.tweenTo("detail", {
         overwrite: true,
         onComplete: onResolve

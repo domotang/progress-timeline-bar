@@ -51,6 +51,7 @@ function App() {
         </select>
       </div>
 
+      {/* <div className="list"> */}
       <PTBTemplateContext
         template={PTBTemplateMaterial}
         styleOptions={barStyleOptions}
@@ -119,6 +120,7 @@ function App() {
           ))}
         </PTBListBox>
       </PTBTemplateContext>
+      {/* </div> */}
     </div>
   );
 }
