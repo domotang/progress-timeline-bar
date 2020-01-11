@@ -7,12 +7,12 @@ export default StyledTemplate;
 function StyledTemplate(styleOptions) {
   return Template;
 
-  function Template(elementCount, status) {
-    var xFactorLg = Math.round(
-        (styleOptions.barWidth.large - 166) / elementCount
-      ),
+  function Template(elementCount, status, eventWidth) {
+    var xFactorLg = eventWidth
+        ? eventWidth + 15
+        : Math.round((styleOptions.barWidth.large - 166) / elementCount),
       xFactorSm = Math.round((styleOptions.barWidth.small - 97) / elementCount),
-      eventWidthLg = xFactorLg - 15,
+      eventWidthLg = eventWidth ? eventWidth : xFactorLg - 15,
       eventWidthSm = xFactorSm - 8,
       timelineBarWidthLg = status > 0 ? 194 + xFactorLg * (status - 1) : 164,
       timelineBarWidthSm = status > 0 ? 194 + xFactorSm * (status - 1) : 164,
@@ -24,6 +24,7 @@ function StyledTemplate(styleOptions) {
       bar = {},
       events = [],
       barModeAnimations = null,
+      eventScrollAnimations = null,
       openedElements = { event: null, header: null, modal: null },
       mode = "detail";
 
@@ -37,7 +38,8 @@ function StyledTemplate(styleOptions) {
       Event: components.getEventTmplt({
         xFactorLg,
         eventWidthLg,
-        styleOptions
+        styleOptions,
+        dragEventHandler: _dragEventHandler
       }),
       barHeights: _getBarHeights(),
       getStyles: _getStyles
@@ -227,6 +229,12 @@ function StyledTemplate(styleOptions) {
       var showBarOpts = {
         barElement: bar.getNodes().barElement
       };
+
+      let eventScrollOpts = {
+        eventNodes: _getEventsNodesByType()
+      };
+      eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
+
       animations.showBarTween(showBarOpts);
     }
 
@@ -354,6 +362,15 @@ function StyledTemplate(styleOptions) {
 
     function _containerHeight() {
       return this.barHeight + this.barPadding * 2;
+    }
+
+    function _dragEventHandler(event) {
+      console.log("dragging", event.clientX);
+      eventScrollAnimations.progress(event.clientX / 1000);
+    }
+
+    function _touchEventHandler(event) {
+      eventScrollAnimations.progress(event.changedTouches[0].clientX / 1000);
     }
   }
 }

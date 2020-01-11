@@ -310,13 +310,13 @@ export function initElementsTween({
   containerHeight,
   styleOptions
 }) {
-  gsap.to(barNodes.barContainer, 0, {
+  gsap.set(barNodes.barContainer, {
     marginTop: mode === "small" ? "3px" : "10px",
     height: containerHeight,
     position: "relative",
     marginLeft: "10px"
   });
-  gsap.to(barNodes.barDiv, 0, {
+  gsap.set(barNodes.barDiv, {
     backgroundColor: styleOptions.backgroundColor,
     padding: "5px",
     width: styleOptions.barWidth.large,
@@ -324,13 +324,13 @@ export function initElementsTween({
     position: "relative",
     zIndex: 0
   });
-  gsap.to(barNodes.headerDetails, 0, {
+  gsap.set(barNodes.headerDetails, {
     top: 10,
     left: 170,
     opacity: 0,
     position: "absolute"
   });
-  gsap.to(barNodes.eventDetails, 0, {
+  gsap.set(barNodes.eventDetails, {
     top: 100,
     left: 150,
     opacity: 0,
@@ -357,6 +357,14 @@ export function showBarTween({ barElement }) {
       visibility: 1
     }
   });
+}
+
+export function EventScrollAni({ eventNodes }) {
+  var tl = gsap.timeline({ paused: true });
+
+  tl.from(eventNodes.event, { x: "-=400" }, "shrink");
+
+  return tl;
 }
 
 //*************component private animations*****************

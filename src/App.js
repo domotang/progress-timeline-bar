@@ -65,6 +65,8 @@ function App() {
               title="SHIPMENT"
               detail={shipment.shipment}
               mode="large"
+              scrollableEvents="true"
+              eventWidth={131}
               status={shipment.status}
               headerDetails={shipment.headerDetails}
             >
@@ -72,7 +74,7 @@ function App() {
                 title="OPENED"
                 date={shipment.statusDates.opened}
                 color="#7699c2"
-                expandedHeight="280"
+                expandedHeight={280}
                 icon={GoFileSubmodule}
               >
                 <ShipmentPackages />
@@ -81,7 +83,7 @@ function App() {
                 title="RECEIVED"
                 date={shipment.statusDates.received}
                 color="#6583a6"
-                expandedHeight="300"
+                expandedHeight={300}
                 icon={FaTruckLoading}
               >
                 <MaterialReceipt />
@@ -90,28 +92,53 @@ function App() {
                 title="PACKED"
                 date={shipment.statusDates.packed}
                 color="#4a75a1"
-                expandedHeight="400"
+                expandedHeight={400}
                 icon={FaBox}
               />
               <ProcessTimelineBarEvent
                 title="SHIPPED"
                 date={shipment.statusDates.shipped}
                 color="#3f658a"
-                expandedHeight="160"
+                expandedHeight={160}
                 icon={FaTruckMoving}
               />
               <ProcessTimelineBarEvent
                 title="IN TRANSIT"
                 date={shipment.statusDates.inTransit}
                 color="#325373"
-                expandedHeight="200"
+                expandedHeight={200}
                 icon={FaPaperPlane}
               />
               <ProcessTimelineBarEvent
                 title="ARRIVED"
                 date={shipment.statusDates.arrived}
                 color="#1e4566"
-                expandedHeight="270"
+                expandedHeight={270}
+                icon={FaRegCheckCircle}
+              >
+                <ShipmentPackages />
+              </ProcessTimelineBarEvent>
+              <ProcessTimelineBarEvent
+                title="TEST 1"
+                date={shipment.statusDates.inTransit}
+                color="#325373"
+                expandedHeight={200}
+                icon={FaPaperPlane}
+              />
+              <ProcessTimelineBarEvent
+                title="TEST 2"
+                date={shipment.statusDates.arrived}
+                color="#1e4566"
+                expandedHeight={270}
+                icon={FaRegCheckCircle}
+              >
+                <ShipmentPackages />
+              </ProcessTimelineBarEvent>
+              <ProcessTimelineBarEvent
+                title="TEST 3"
+                date={shipment.statusDates.arrived}
+                color="#1e4566"
+                expandedHeight={270}
                 icon={FaRegCheckCircle}
               >
                 <ShipmentPackages />
