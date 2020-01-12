@@ -39,7 +39,8 @@ function StyledTemplate(styleOptions) {
         xFactorLg,
         eventWidthLg,
         styleOptions,
-        dragEventHandler: _dragEventHandler
+        dragEventHandler: _dragEventHandler,
+        touchEventHandler: _touchEventHandler
       }),
       barHeights: _getBarHeights(),
       getStyles: _getStyles
@@ -106,10 +107,12 @@ function StyledTemplate(styleOptions) {
     function regEvent(event, type, id) {
       var controlNodes = {
         event,
+        move: event.querySelector(".move"),
         tag: event.querySelector(".tag"),
         title: event.querySelector(".title"),
         date: event.querySelector(".date"),
         icon: event.querySelector(".icon"),
+        iconMove: event.querySelector(".icon-move"),
         iconGroup: event.querySelector(".icon-group"),
         iconShape: event.querySelector(".icon-shape"),
         iconSvg: event.querySelector(".icon-svg")
@@ -330,10 +333,12 @@ function StyledTemplate(styleOptions) {
     function _getEventsNodesByType() {
       var allNodesByType = {
         event: [],
+        move: [],
         tag: [],
         title: [],
         date: [],
         icon: [],
+        iconMove: [],
         iconGroup: [],
         iconShape: [],
         iconSvg: []
@@ -365,7 +370,6 @@ function StyledTemplate(styleOptions) {
     }
 
     function _dragEventHandler(event) {
-      console.log("dragging", event.clientX);
       eventScrollAnimations.progress(event.clientX / 1000);
     }
 

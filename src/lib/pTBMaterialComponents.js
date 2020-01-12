@@ -35,6 +35,22 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
             transform={`translate(0, 0)`}
             fill="#477578"
           />
+          <defs>
+            <clipPath id="mask">
+              <path
+                className="event-clip"
+                d={`M0,0 h${858} v68 h-${882} Z`}
+                transform={`translate(166, 20)`}
+                fill="black"
+              />
+            </clipPath>
+          </defs>
+          {/* <path
+            className="event-clip"
+            d={`M0,0 h${858} v68 h-${882} Z`}
+            transform={`translate(166, 20)`}
+            fill="black"
+          /> */}
           <text
             className="title"
             x="14"
@@ -171,15 +187,17 @@ export function getEventTmplt({
       <g
         className="top-element-node"
         id={`event-${props.id}`}
+        // clipPath="url(#mask)"
         ref={props.setRef}
         cursor={
           props.currentMode != "large" && !props.opened ? "pointer" : "inherit"
         }
-        visibility={
-          x + eventWidthLg >= styleOptions.barWidth.large - 166
-            ? "hidden"
-            : "visible"
-        }
+        // visibility="hidden"
+        // visibility={
+        //   x + eventWidthLg >= styleOptions.barWidth.large - 166
+        //     ? "hidden"
+        //     : "visible"
+        // }
         onClick={() => {
           if (
             props.currentMode != "large" &&
@@ -195,61 +213,68 @@ export function getEventTmplt({
         onTouchMove={touchEventHandler}
         onTouchEnd={touchEventHandler}
       >
-        <path
-          className="tag"
-          id={`rect-${props.id}`}
-          d={`M6,0 h${eventWidthLg} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthLg} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
-          transform={`translate(${x + 144}, 20)`}
-          fill={props.color}
-        />
-        <text
-          className="title"
-          fontFamily="Verdana"
-          fontSize="12"
-          fontWeight="bold"
-          fill={styleOptions.fontColor}
-          transform={`translate(${x + 190}, 33)`}
-        >
-          {props.title}
-        </text>
-        <text
-          className="date"
-          fontFamily="Verdana"
-          fontSize="9"
-          fontWeight="bold"
-          fill={styleOptions.fontColor}
-          transform={`translate(${x + 190}, 47)`}
-        >
-          {props.date}
-        </text>
-        <svg className="icon" x={x + 132} y="8">
-          <g className="icon-group">
+        <g className="masked" clipPath="url(#mask)">
+          <g className="move">
             <path
-              className="icon-shape"
-              id={`cir-${props.id}`}
-              d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
-              transform="translate(2,2)"
-              fill={
-                props.isOnStatus
-                  ? styleOptions.eventOnStatusColor
-                  : props.isCompleted
-                  ? styleOptions.eventCompletedColor
-                  : props.color
-              }
-              stroke={styleOptions.backgroundColor}
-              style={{ strokeOpacity: 1 }}
-              strokeMiterlimit="10"
-              strokeWidth="2"
-            ></path>
-            <Icon
-              className="icon-svg"
-              fill={styleOptions.fontColor}
-              x="13"
-              y="13"
-              fontSize="28"
+              className="tag"
+              overflow="hidden"
+              id={`rect-${props.id}`}
+              d={`M6,0 h${eventWidthLg} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthLg} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
+              transform={`translate(${x + 144}, 20)`}
+              fill={props.color}
             />
+            <text
+              className="title"
+              fontFamily="Verdana"
+              fontSize="12"
+              fontWeight="bold"
+              fill={styleOptions.fontColor}
+              transform={`translate(${x + 190}, 33)`}
+            >
+              {props.title}
+            </text>
+            <text
+              className="date"
+              fontFamily="Verdana"
+              fontSize="9"
+              fontWeight="bold"
+              fill={styleOptions.fontColor}
+              transform={`translate(${x + 190}, 47)`}
+            >
+              {props.date}
+            </text>
           </g>
-        </svg>
+        </g>
+        <g className="icon-move">
+          <svg className="icon" x={x + 132} y="8">
+            <g className="icon-group">
+              <path
+                className="icon-shape"
+                id={`cir-${props.id}`}
+                d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
+                transform="translate(2,2)"
+                fill={
+                  props.isOnStatus
+                    ? styleOptions.eventOnStatusColor
+                    : props.isCompleted
+                    ? styleOptions.eventCompletedColor
+                    : props.color
+                }
+                stroke={styleOptions.backgroundColor}
+                style={{ strokeOpacity: 1 }}
+                strokeMiterlimit="10"
+                strokeWidth="2"
+              ></path>
+              <Icon
+                className="icon-svg"
+                fill={styleOptions.fontColor}
+                x="13"
+                y="13"
+                fontSize="28"
+              />
+            </g>
+          </svg>
+        </g>
       </g>
     );
   };

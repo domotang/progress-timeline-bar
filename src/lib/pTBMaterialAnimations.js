@@ -362,7 +362,11 @@ export function showBarTween({ barElement }) {
 export function EventScrollAni({ eventNodes }) {
   var tl = gsap.timeline({ paused: true });
 
-  tl.from(eventNodes.event, { x: "-=400" }, "shrink");
+  tl.from(
+    [eventNodes.move, eventNodes.iconMove],
+    { x: "-=400", ease: "none" },
+    "shrink"
+  );
 
   return tl;
 }
