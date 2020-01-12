@@ -207,11 +207,11 @@ export function getEventTmplt({
             props.eventClick(props.id);
           }
         }}
-        draggable="true"
-        onDrag={dragEventHandler}
-        onDragEnd={dragEventHandler}
-        onTouchMove={touchEventHandler}
-        onTouchEnd={touchEventHandler}
+        // draggable="true"
+        // onDrag={dragEventHandler}
+        // onDragEnd={dragEventHandler}
+        // onTouchMove={touchEventHandler}
+        // onTouchEnd={touchEventHandler}
       >
         <g className="masked" clipPath="url(#mask)">
           <g className="move">

@@ -1,8 +1,12 @@
 "use strict";
 import gsap from "gsap";
+import Draggable from "gsap/Draggable";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
 
 gsap.registerPlugin(MorphSVGPlugin);
+gsap.registerPlugin(InertiaPlugin);
+gsap.registerPlugin(Draggable);
 gsap.globalTimeline.timeScale(1);
 console.log(gsap.version);
 
@@ -360,13 +364,29 @@ export function showBarTween({ barElement }) {
 }
 
 export function EventScrollAni({ eventNodes }) {
+  var D = document.createElement("div");
   var tl = gsap.timeline({ paused: true });
 
   tl.from(
     [eventNodes.move, eventNodes.iconMove],
-    { x: "-=400", ease: "none" },
+    { x: "-=450", ease: "none" },
     "shrink"
   );
+
+  Draggable.create(D, {
+    trigger: eventNodes.event,
+    type: "x",
+    throwProps: true,
+    // inertia: true,
+    bounds: { minX: 0, maxX: 450 },
+    snap: [10, 156, 302, 450],
+    onDrag: Update,
+    onThrowUpdate: Update
+  });
+
+  function Update() {
+    tl.progress(Math.abs(this.x / 450));
+  }
 
   return tl;
 }
