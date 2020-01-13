@@ -165,6 +165,7 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
             </svg>
           </g>
         </svg>
+        {/* <g className="events" clipPath="url(#mask)"> */}
         <g className="events">{props.eventDomElements}</g>
       </svg>
     );
@@ -213,6 +214,7 @@ export function getEventTmplt({
         // onTouchMove={touchEventHandler}
         // onTouchEnd={touchEventHandler}
       >
+        {/* <g className="masked"> */}
         <g className="masked" clipPath="url(#mask)">
           <g className="move">
             <path

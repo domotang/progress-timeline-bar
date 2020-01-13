@@ -1,6 +1,7 @@
 "use strict";
 import * as animations from "./pTBMaterialAnimations";
 import * as components from "./pTBMaterialComponents";
+import Draggable from "gsap/Draggable";
 
 export default StyledTemplate;
 
@@ -26,7 +27,11 @@ function StyledTemplate(styleOptions) {
       barModeAnimations = null,
       eventScrollAnimations = null,
       openedElements = { event: null, header: null, modal: null },
-      mode = "detail";
+      mode = "detail",
+      D = document.createElement("div");
+
+    var drag = null;
+    var sysX = 0;
 
     var publicAPI = {
       init,
@@ -109,6 +114,7 @@ function StyledTemplate(styleOptions) {
         event,
         move: event.querySelector(".move"),
         tag: event.querySelector(".tag"),
+        masked: event.querySelector(".masked"),
         title: event.querySelector(".title"),
         date: event.querySelector(".date"),
         icon: event.querySelector(".icon"),
@@ -135,6 +141,34 @@ function StyledTemplate(styleOptions) {
       return eventAPI;
 
       function open(expandedHeight, opts, onResolve) {
+        eventScrollAnimations.progress(0);
+        drag[0].kill();
+        let eventScrollOpts = {
+          eventNodes: _getEventsNodesByType()
+        };
+        eventScrollOpts.eventNodes.move.splice(id, 1);
+        eventScrollOpts.eventNodes.iconMove.splice(id, 1);
+        eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
+        // console.log("x", sysX);
+        eventScrollAnimations.progress(Math.abs(sysX / 450));
+
+        drag = Draggable.create(D, {
+          trigger: eventScrollOpts.eventNodes.event,
+          type: "x",
+          throwProps: true,
+          inertia: true,
+          bounds: { minX: -450, maxX: 0 },
+          snap: [-0, -146, -292, -440],
+          onDrag: Update,
+          onThrowUpdate: Update
+        });
+
+        function Update() {
+          sysX = this.x;
+          // console.log(sysX);
+          eventScrollAnimations.progress(Math.abs(this.x / 450));
+        }
+
         if (openedElements.event) openedElements.event.close();
         openedElements.event = internalEventAPI;
 
@@ -229,15 +263,33 @@ function StyledTemplate(styleOptions) {
       };
       barModeAnimations = animations.BarAniTl(opts);
       barModeAnimations.seek(mode);
-      var showBarOpts = {
-        barElement: bar.getNodes().barElement
-      };
 
       let eventScrollOpts = {
         eventNodes: _getEventsNodesByType()
       };
       eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
+      eventScrollAnimations.progress(0, false);
 
+      drag = Draggable.create(D, {
+        trigger: eventScrollOpts.eventNodes.event,
+        type: "x",
+        throwProps: true,
+        inertia: true,
+        bounds: { minX: -450, maxX: 0 },
+        snap: [-0, -146, -292, -440],
+        onDrag: Update,
+        onThrowUpdate: Update
+      });
+
+      function Update() {
+        sysX = this.x;
+        // console.log(sysX);
+        eventScrollAnimations.progress(Math.abs(this.x / 450));
+      }
+
+      var showBarOpts = {
+        barElement: bar.getNodes().barElement
+      };
       animations.showBarTween(showBarOpts);
     }
 
@@ -335,6 +387,7 @@ function StyledTemplate(styleOptions) {
         event: [],
         move: [],
         tag: [],
+        masked: [],
         title: [],
         date: [],
         icon: [],

@@ -7,7 +7,7 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 gsap.registerPlugin(InertiaPlugin);
 gsap.registerPlugin(Draggable);
-gsap.globalTimeline.timeScale(1);
+gsap.globalTimeline.timeScale(0.1);
 console.log(gsap.version);
 
 //*************component public animations*****************
@@ -364,29 +364,13 @@ export function showBarTween({ barElement }) {
 }
 
 export function EventScrollAni({ eventNodes }) {
-  var D = document.createElement("div");
   var tl = gsap.timeline({ paused: true });
 
-  tl.from(
+  tl.to(
     [eventNodes.move, eventNodes.iconMove],
-    { x: "-=450", ease: "none" },
+    { x: "-450", ease: "none" },
     "shrink"
   );
-
-  Draggable.create(D, {
-    trigger: eventNodes.event,
-    type: "x",
-    throwProps: true,
-    // inertia: true,
-    bounds: { minX: 0, maxX: 450 },
-    snap: [10, 156, 302, 450],
-    onDrag: Update,
-    onThrowUpdate: Update
-  });
-
-  function Update() {
-    tl.progress(Math.abs(this.x / 450));
-  }
 
   return tl;
 }
@@ -469,11 +453,22 @@ function _eventStandardAniOpenTl(
   styleOptions,
   onResolve
 ) {
-  var { event, eventDetails, tag, title, date, icon, iconGroup } = controlNodes;
+  var {
+    event,
+    masked,
+    eventDetails,
+    tag,
+    title,
+    date,
+    icon,
+    iconGroup
+  } = controlNodes;
 
   var tl = gsap.timeline();
   // animate event
   tl.add("shrink")
+    // .to(masked, 0, { className: "-=masked" }, "shrink")
+    .to(masked, 0, { clipPath: "circle(" + 5000 + "% at 50% 50%)" }, "shrink")
     .to([title, date], 0.1, { opacity: 0 }, "shrink", "start")
     .to(
       event,
@@ -486,7 +481,7 @@ function _eventStandardAniOpenTl(
       },
       "shrink"
     )
-    .to(event, 0.3, { y: 86, ease: "Power1.easeInOut" }, 0.1, "shrink")
+    .to(event, 0.3, { y: "86", ease: "Power1.easeInOut" }, 0.1, "shrink")
     .add("spread")
     .to(
       tag,
