@@ -7,7 +7,7 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 gsap.registerPlugin(InertiaPlugin);
 gsap.registerPlugin(Draggable);
-gsap.globalTimeline.timeScale(0.1);
+gsap.globalTimeline.timeScale(0.6);
 console.log(gsap.version);
 
 //*************component public animations*****************
@@ -30,6 +30,7 @@ export function BarAniTl({
 
   tl.add("detail")
     .add("shrink")
+    .to(eventNodes.masked, 0.1, { clipPath: "none" }, "shrink")
     .to(eventNodes.date, 0.2, { opacity: 0 }, "shrink")
     .to(
       barElement,
@@ -363,7 +364,24 @@ export function showBarTween({ barElement }) {
   });
 }
 
-export function EventScrollAni({ eventNodes }) {
+export function EventScrollAni({ eventNodes, scrollDiv }) {
+  Draggable.create(scrollDiv, {
+    trigger: eventNodes.event,
+    type: "x",
+    throwProps: true,
+    inertia: true,
+    bounds: { minX: -450, maxX: 0 },
+    snap: [-0, -146, -292, -440],
+    onDrag: Update,
+    onThrowUpdate: Update
+  });
+
+  var draggable = Draggable.get(scrollDiv);
+
+  function Update() {
+    console.log(draggable.x);
+    tl.progress(Math.abs(this.x / 450));
+  }
   var tl = gsap.timeline({ paused: true });
 
   tl.to(
@@ -371,8 +389,19 @@ export function EventScrollAni({ eventNodes }) {
     { x: "-450", ease: "none" },
     "shrink"
   );
+  tl.add(() => {
+    if (!tl.reversed()) scaleIconTween(eventNodes.iconGroup, 0);
+    else scaleIconTween(eventNodes.iconGroup, 1);
+  }, 0.3);
 
-  return tl;
+  return { tl, draggable };
+}
+
+function scaleIconTween(node, value) {
+  gsap.to(node, 0.1, {
+    scale: value,
+    ease: "none"
+  });
 }
 
 //*************component private animations*****************
@@ -467,8 +496,7 @@ function _eventStandardAniOpenTl(
   var tl = gsap.timeline();
   // animate event
   tl.add("shrink")
-    // .to(masked, 0, { className: "-=masked" }, "shrink")
-    .to(masked, 0, { clipPath: "circle(" + 5000 + "% at 50% 50%)" }, "shrink")
+    .to(masked, 0, { clipPath: "none" })
     .to([title, date], 0.1, { opacity: 0 }, "shrink", "start")
     .to(
       event,
