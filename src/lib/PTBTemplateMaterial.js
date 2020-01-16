@@ -147,6 +147,7 @@ function StyledTemplate(styleOptions) {
         };
         eventScrollOpts.eventNodes.move.splice(id, 1);
         eventScrollOpts.eventNodes.iconMove.splice(id, 1);
+        eventScrollOpts.eventNodes.iconGroup.splice(id, 1);
         eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
         eventScrollAnimations.tl.progress(Math.abs(dragX / 450));
 

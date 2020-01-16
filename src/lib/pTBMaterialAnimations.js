@@ -377,9 +377,13 @@ export function EventScrollAni({ eventNodes, scrollDiv }) {
   });
 
   var draggable = Draggable.get(scrollDiv);
+  var direction = "left";
+  var oldX = 0;
 
   function Update() {
-    console.log(draggable.x);
+    direction = oldX > draggable.x ? "left" : "right";
+    oldX = draggable.x;
+    console.log(draggable.x, direction);
     tl.progress(Math.abs(this.x / 450));
   }
   var tl = gsap.timeline({ paused: true });
@@ -390,7 +394,7 @@ export function EventScrollAni({ eventNodes, scrollDiv }) {
     "shrink"
   );
   tl.add(() => {
-    if (!tl.reversed()) scaleIconTween(eventNodes.iconGroup, 0);
+    if (direction === "left") scaleIconTween(eventNodes.iconGroup, 0);
     else scaleIconTween(eventNodes.iconGroup, 1);
   }, 0.3);
 
@@ -398,6 +402,7 @@ export function EventScrollAni({ eventNodes, scrollDiv }) {
 }
 
 function scaleIconTween(node, value) {
+  // gsap.set(node, { transformOrigin: "center" });
   gsap.to(node, 0.1, {
     scale: value,
     ease: "none"
@@ -546,8 +551,7 @@ function _eventStandardAniOpenTl(
         attr: {
           x: 0,
           y: 80,
-          scale: 2,
-          transformOrigin: "left-top"
+          scale: 2
         },
         ease: "Power1.easeInOut"
       },

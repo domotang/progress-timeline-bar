@@ -249,7 +249,11 @@ export function getEventTmplt({
         </g>
         <g className="icon-move">
           <svg className="icon" x={x + 132} y="8">
-            <g className="icon-group">
+            <g
+              className="icon-group"
+              scale={5}
+              style={{ transformOrigin: "center" }}
+            >
               <path
                 className="icon-shape"
                 id={`cir-${props.id}`}
