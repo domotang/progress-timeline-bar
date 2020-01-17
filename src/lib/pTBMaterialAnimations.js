@@ -310,11 +310,13 @@ export function EventsCloseTl({ nodes, height, eventClose }) {
 }
 
 export function initElementsTween({
+  eventNodes,
   barNodes,
   mode,
   containerHeight,
   styleOptions
 }) {
+  console.log(eventNodes);
   gsap.set(barNodes.barContainer, {
     marginTop: mode === "small" ? "3px" : "10px",
     height: containerHeight,
@@ -365,6 +367,8 @@ export function showBarTween({ barElement }) {
 }
 
 export function EventScrollAni({ eventNodes, scrollDiv }) {
+  var scaledIcons = {};
+
   Draggable.create(scrollDiv, {
     trigger: eventNodes.event,
     type: "x",
@@ -394,19 +398,25 @@ export function EventScrollAni({ eventNodes, scrollDiv }) {
     "shrink"
   );
   tl.add(() => {
-    if (direction === "left") scaleIconTween(eventNodes.iconGroup, 0);
-    else scaleIconTween(eventNodes.iconGroup, 1);
+    if (direction === "left")
+      scaledIcons[4] = scaleIconTl({ node: eventNodes.iconGroup }).play();
+    else scaledIcons[4].reverse();
   }, 0.3);
 
   return { tl, draggable };
-}
 
-function scaleIconTween(node, value) {
-  // gsap.set(node, { transformOrigin: "center" });
-  gsap.to(node, 0.1, {
-    scale: value,
-    ease: "none"
-  });
+  function scaleIconTl({ node }) {
+    var tl = gsap.timeline({ paused: true });
+    tl.set(node, {
+      transformOrigin: "center"
+    });
+    tl.to(node, 0.1, {
+      scale: 0,
+      ease: "none"
+    });
+
+    return tl;
+  }
 }
 
 //*************component private animations*****************
