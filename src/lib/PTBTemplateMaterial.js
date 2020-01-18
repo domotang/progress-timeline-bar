@@ -9,12 +9,17 @@ function StyledTemplate(styleOptions) {
 
   function Template(elementCount, status, eventWidth) {
     var xFactorLg = eventWidth
-        ? eventWidth + 15
-        : Math.round((styleOptions.barWidth.large - 166) / elementCount),
+        ? eventWidth + 14
+        : Math.round((styleOptions.barWidth.large - 170) / elementCount),
+      xFactorLg2 = Math.round(
+        (styleOptions.barWidth.large - 170) / elementCount
+      ),
       xFactorSm = Math.round((styleOptions.barWidth.small - 97) / elementCount),
-      eventWidthLg = eventWidth ? eventWidth : xFactorLg - 15,
+      eventWidthLg = eventWidth ? eventWidth : xFactorLg - 14,
+      eventWidthLg2 = xFactorLg2 - 14,
       eventWidthSm = xFactorSm - 8,
       timelineBarWidthLg = status > 0 ? 194 + xFactorLg * (status - 1) : 164,
+      timelineBarWidthLg2 = status > 0 ? 194 + xFactorLg2 * (status - 1) : 164,
       timelineBarWidthSm = status > 0 ? 194 + xFactorSm * (status - 1) : 164,
       modes = {
         small: { barHeight: 15, barPadding: 3, _containerHeight },
@@ -40,13 +45,24 @@ function StyledTemplate(styleOptions) {
       Event: components.getEventTmplt({
         xFactorLg,
         eventWidthLg,
-        styleOptions,
-        dragEventHandler: _dragEventHandler,
-        touchEventHandler: _touchEventHandler
+        styleOptions
+        // dragEventHandler: _dragEventHandler,
+        // touchEventHandler: _touchEventHandler
       }),
       barHeights: _getBarHeights(),
       getStyles: _getStyles
     };
+
+    // console.log(
+    //   "xFactor:",
+    //   xFactorLg,
+    //   "eventWidth:",
+    //   xFactorLg * 9,
+    //   "barWidth:",
+    //   styleOptions.barWidth.large - 170,
+    //   "eventMove:",
+    //   styleOptions.barWidth.large - 170 - xFactorLg * 9
+    // );
 
     return publicAPI;
 
@@ -138,21 +154,13 @@ function StyledTemplate(styleOptions) {
       return eventAPI;
 
       function open(expandedHeight, opts, onResolve) {
+        if (openedElements.event) openedElements.event.close();
+        openedElements.event = internalEventAPI;
+
         dragX = eventScrollAnimations.draggable.x;
         eventScrollAnimations.draggable.kill();
         eventScrollAnimations.tl.progress(0);
-        let eventScrollOpts = {
-          eventNodes: _getEventsNodesByType(),
-          scrollDiv
-        };
-        eventScrollOpts.eventNodes.move.splice(id, 1);
-        eventScrollOpts.eventNodes.iconMove.splice(id, 1);
-        eventScrollOpts.eventNodes.iconGroup.splice(id, 1);
-        eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
-        eventScrollAnimations.tl.progress(Math.abs(dragX / 450));
-
-        if (openedElements.event) openedElements.event.close();
-        openedElements.event = internalEventAPI;
+        _setEventScroll(id);
 
         if (!openedElements.modal) {
           _setModeModal({ ...opts, expandedHeight });
@@ -238,10 +246,13 @@ function StyledTemplate(styleOptions) {
         barNodes,
         styleOptions,
         timelineBarWidthLg,
+        timelineBarWidthLg2,
         timelineBarWidthSm,
         eventWidthLg,
+        eventWidthLg2,
         eventWidthSm,
         xFactorSm,
+        xFactorLg2,
         elementCount,
         status,
         modes
@@ -250,11 +261,7 @@ function StyledTemplate(styleOptions) {
       barModeAnimations.seek(mode);
 
       if (initMode === "detail") {
-        let eventScrollOpts = {
-          eventNodes: _getEventsNodesByType(),
-          scrollDiv
-        };
-        eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
+        _setEventScroll();
         eventScrollAnimations.tl.progress(0, false);
       }
 
@@ -279,6 +286,11 @@ function StyledTemplate(styleOptions) {
     //*************local methods*****************
 
     function _setModeLarge(onResolve) {
+      if (eventScrollAnimations) {
+        eventScrollAnimations.tl.progress(0);
+        eventScrollAnimations.tl = null;
+        eventScrollAnimations.draggable.kill();
+      }
       mode = "large";
       let opts = {
         barContainer: bar.getNodes().barContainer,
@@ -317,6 +329,7 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeDetail(onResolve) {
+      _setEventScroll();
       mode = "detail";
       let opts = {
         barContainer: bar.getNodes().barContainer,
@@ -393,12 +406,23 @@ function StyledTemplate(styleOptions) {
       return this.barHeight + this.barPadding * 2;
     }
 
-    function _dragEventHandler(event) {
-      eventScrollAnimations.progress(event.clientX / 1000);
-    }
+    // function _dragEventHandler(event) {
+    //   eventScrollAnimations.progress(event.clientX / 1000);
+    // }
 
-    function _touchEventHandler(event) {
-      eventScrollAnimations.progress(event.changedTouches[0].clientX / 1000);
+    // function _touchEventHandler(event) {
+    //   eventScrollAnimations.progress(event.changedTouches[0].clientX / 1000);
+    // }
+
+    function _setEventScroll(eventId) {
+      let eventScrollOpts = {
+        eventNodes: _getEventsNodesByType(),
+        scrollDiv,
+        visibleEventsWidth: styleOptions.barWidth.large - 170,
+        xFactor: xFactorLg,
+        selectedEventId: eventId != null ? eventId : null
+      };
+      eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
     }
   }
 }

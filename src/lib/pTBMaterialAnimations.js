@@ -7,7 +7,7 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 gsap.registerPlugin(InertiaPlugin);
 gsap.registerPlugin(Draggable);
-gsap.globalTimeline.timeScale(0.6);
+gsap.globalTimeline.timeScale(1);
 console.log(gsap.version);
 
 //*************component public animations*****************
@@ -16,10 +16,13 @@ export function BarAniTl({
   barNodes,
   styleOptions,
   timelineBarWidthLg,
+  timelineBarWidthLg2,
   timelineBarWidthSm,
   eventWidthLg,
+  eventWidthLg2,
   eventWidthSm,
   xFactorSm,
+  xFactorLg2,
   elementCount,
   status,
   modes
@@ -38,12 +41,12 @@ export function BarAniTl({
       { height: modes.large.barHeight, ease: "none" },
       "shrink"
     )
-    .to(
-      eventNodes.iconGroup,
-      0.3,
-      { scale: 0.3, x: "+=17", y: "+=14", ease: "Power3.inOut" },
-      "shrink"
-    )
+    // .to(
+    //   eventNodes.iconGroup,
+    //   0.3,
+    //   { scale: 0.3, x: "+=17", y: "+=14", ease: "Power3.inOut" },
+    //   "shrink"
+    // )
     .to(
       eventNodes.iconShape,
       0.3,
@@ -57,7 +60,7 @@ export function BarAniTl({
       barTag,
       0.3,
       {
-        morphSVG: `M0,0 h${timelineBarWidthLg} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidthLg -
+        morphSVG: `M0,0 h${timelineBarWidthLg2} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidthLg2 -
           146} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-25 a6,6,0,0,1,6,-6`,
         ease: "Power3.inOut"
       },
@@ -71,13 +74,32 @@ export function BarAniTl({
       "shrink"
     );
   }
+
+  eventNodes.tag.reduce(_tagNodeLargeReducer, tl);
+  eventNodes.iconGroup.reduce(_iconGroupNodeLargeReducer, tl);
+
+  function _tagNodeLargeReducer(accum, cur, index) {
+    return accum.to(cur, 0.3, { x: index * xFactorLg2 + 143 }, "shrink");
+  }
+  function _iconGroupNodeLargeReducer(accum, cur, index) {
+    return accum.to(
+      cur,
+      0.3,
+      {
+        scale: 0,
+        y: "+=14"
+      },
+      "shrink"
+    );
+  }
+
   tl.to(
     eventNodes.tag[0],
     0.3,
     {
       morphSVG: {
-        shape: `M11,1 h${eventWidthLg +
-          5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidthLg +
+        shape: `M12,1 h${eventWidthLg2 +
+          5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidthLg2 +
           5} a6,6,0,0,1,-6,-6 l2 -6 l3 -6 a6,6,0,0,1,6,-6`,
         shapeIndex: 0,
         map: "complexity"
@@ -91,8 +113,8 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: {
-          shape: `M4,1 h${eventWidthLg + 12} l-5, 12 l-5, 12 h-${eventWidthLg +
-            12} l5, -12 l5, -12`,
+          shape: `M5,1 h${eventWidthLg2 +
+            12} l-5, 12 l-5, 12 h-${eventWidthLg2 + 12} l5, -12 l5, -12`,
           shapeIndex: 0,
           map: "complexity"
         },
@@ -105,8 +127,8 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: {
-          shape: `M-1,1 h${eventWidthLg +
-            5} a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidthLg +
+          shape: `M0,1 h${eventWidthLg2 +
+            5} a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidthLg2 +
             5}  l0, 0 l5, -12 l5, -12 l0, 0`,
           shapeIndex: 0,
           map: "complexity"
@@ -118,7 +140,8 @@ export function BarAniTl({
     .to(eventNodes.event, 0.3, { x: "+=4", y: "-=13" }, "shrink")
     .to(eventNodes.title, 0.2, { opacity: 0 }, "shrink")
     .to(eventNodes.date, 0.3, { x: "-=10", y: "-=13", fontSize: 12 }, "shrink")
-    .to(eventNodes.date, 0.02, { opacity: 1 })
+    // .to(eventNodes.date, 0.02, { opacity: 1 })
+    .to(eventNodes.date, 0.02, { opacity: 0 })
     .add("large")
     .add("shrink2")
     .to(
@@ -316,7 +339,6 @@ export function initElementsTween({
   containerHeight,
   styleOptions
 }) {
-  console.log(eventNodes);
   gsap.set(barNodes.barContainer, {
     marginTop: mode === "small" ? "3px" : "10px",
     height: containerHeight,
@@ -366,46 +388,89 @@ export function showBarTween({ barElement }) {
   });
 }
 
-export function EventScrollAni({ eventNodes, scrollDiv }) {
-  var scaledIcons = {};
+export function EventScrollAni({
+  eventNodes,
+  scrollDiv,
+  visibleEventsWidth,
+  xFactor,
+  selectedEventId
+}) {
+  var scaledIconAnimations = eventNodes.iconGroup.map(cur => _scaleIconTl(cur));
+  var direction = "left";
+  var oldX = 0;
+  var scrollLength = Math.abs(
+    Math.ceil(visibleEventsWidth - xFactor * eventNodes.move.length)
+  );
+
+  gsap.set(scrollDiv, { clearProps: "x,y" });
 
   Draggable.create(scrollDiv, {
     trigger: eventNodes.event,
     type: "x",
     throwProps: true,
     inertia: true,
-    bounds: { minX: -450, maxX: 0 },
-    snap: [-0, -146, -292, -440],
+    bounds: {
+      minX: -scrollLength,
+      maxX: 0
+    },
+    snap: value => Math.round(value / xFactor) * xFactor,
     onDrag: Update,
     onThrowUpdate: Update
   });
 
   var draggable = Draggable.get(scrollDiv);
-  var direction = "left";
-  var oldX = 0;
 
   function Update() {
     direction = oldX > draggable.x ? "left" : "right";
     oldX = draggable.x;
-    console.log(draggable.x, direction);
-    tl.progress(Math.abs(this.x / 450));
+    // console.log(draggable.x, direction);
+    tl.progress(this.x / -scrollLength);
   }
-  var tl = gsap.timeline({ paused: true });
 
-  tl.to(
-    [eventNodes.move, eventNodes.iconMove],
-    { x: "-450", ease: "none" },
-    "shrink"
+  var moveNode = eventNodes.move.filter(
+    (value, index) => index != selectedEventId
   );
-  tl.add(() => {
-    if (direction === "left")
-      scaledIcons[4] = scaleIconTl({ node: eventNodes.iconGroup }).play();
-    else scaledIcons[4].reverse();
-  }, 0.3);
+
+  var tl = gsap
+    .timeline({ paused: true })
+    .to(moveNode, scrollLength, { x: -scrollLength, ease: "none" }, "shrink");
+
+  eventNodes.iconMove.reduce(_iconMoveReducer, tl);
+  eventNodes.iconGroup.reduce(_iconGroupReducer, tl);
 
   return { tl, draggable };
 
-  function scaleIconTl({ node }) {
+  function _iconMoveReducer(accum, cur, index) {
+    let nodebecomesHidden = xFactor * index < scrollLength;
+    return selectedEventId != index
+      ? accum.to(
+          cur,
+          nodebecomesHidden ? xFactor * index : scrollLength,
+          {
+            x: nodebecomesHidden ? -xFactor * index : -scrollLength,
+            ease: "none"
+          },
+          "shrink"
+        )
+      : accum;
+  }
+
+  function _iconGroupReducer(accum, cur, index) {
+    return xFactor * index < scrollLength && selectedEventId != index
+      ? accum.add(
+          () => {
+            if (direction === "left") scaledIconAnimations[index].play();
+            else {
+              scaledIconAnimations[index].reverse();
+            }
+          },
+          xFactor * index + 20,
+          "shrink"
+        )
+      : accum;
+  }
+
+  function _scaleIconTl(node) {
     var tl = gsap.timeline({ paused: true });
     tl.set(node, {
       transformOrigin: "center"

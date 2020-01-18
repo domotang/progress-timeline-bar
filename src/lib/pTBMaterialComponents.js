@@ -31,7 +31,7 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
             className="header-bar"
             id={`rect-`}
             d={`M0,0 h${timelineBarWidthLg} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidthLg -
-              157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
+              157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-129 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
             transform={`translate(0, 0)`}
             fill="#477578"
           />
@@ -40,7 +40,7 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
               <path
                 className="event-clip"
                 d={`M0,0 h${858} v68 h-${882} Z`}
-                transform={`translate(166, 20)`}
+                transform={`translate(165, 20)`}
                 fill="black"
               />
             </clipPath>
@@ -175,9 +175,9 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
 export function getEventTmplt({
   xFactorLg,
   eventWidthLg,
-  styleOptions,
-  dragEventHandler,
-  touchEventHandler
+  styleOptions
+  // dragEventHandler,
+  // touchEventHandler
 }) {
   // eslint-disable-next-line react/display-name
   return props => {
@@ -222,7 +222,7 @@ export function getEventTmplt({
               overflow="hidden"
               id={`rect-${props.id}`}
               d={`M6,0 h${eventWidthLg} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthLg} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
-              transform={`translate(${x + 144}, 20)`}
+              transform={`translate(${x + 143}, 20)`}
               fill={props.color}
             />
             <text
@@ -248,7 +248,7 @@ export function getEventTmplt({
           </g>
         </g>
         <g className="icon-move">
-          <svg className="icon" x={x + 132} y="8">
+          <svg className="icon" x={x + 130} y="8">
             <g className="icon-group">
               <path
                 className="icon-shape"
