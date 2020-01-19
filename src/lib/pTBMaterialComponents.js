@@ -216,7 +216,7 @@ export function getEventTmplt({
       >
         {/* <g className="masked"> */}
         <g className="masked" clipPath="url(#mask)">
-          <g className="move">
+          <g className="tag-move">
             <path
               className="tag"
               overflow="hidden"
@@ -248,34 +248,31 @@ export function getEventTmplt({
           </g>
         </g>
         <g className="icon-move">
-          <svg className="icon" x={x + 130} y="8">
-            <g className="icon-group">
-              <path
-                className="icon-shape"
-                id={`cir-${props.id}`}
-                d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
-                transform="translate(2,2)"
-                fill={
-                  props.isOnStatus
-                    ? styleOptions.eventOnStatusColor
-                    : props.isCompleted
-                    ? styleOptions.eventCompletedColor
-                    : props.color
-                }
-                stroke={styleOptions.backgroundColor}
-                style={{ strokeOpacity: 1 }}
-                strokeMiterlimit="10"
-                strokeWidth="2"
-              ></path>
-              <Icon
-                className="icon-svg"
-                fill={styleOptions.fontColor}
-                x="13"
-                y="13"
-                fontSize="28"
-              />
-            </g>
-          </svg>
+          <g className="icon-group" transform={`translate(${x + 132}, 8)`}>
+            <path
+              className="icon-shape"
+              id={`cir-${props.id}`}
+              d="M0,25 a25,25,0,0,1,50,0 a25,25,0,0,1,-50,0"
+              fill={
+                props.isOnStatus
+                  ? styleOptions.eventOnStatusColor
+                  : props.isCompleted
+                  ? styleOptions.eventCompletedColor
+                  : props.color
+              }
+              stroke={styleOptions.backgroundColor}
+              style={{ strokeOpacity: 1 }}
+              strokeMiterlimit="10"
+              strokeWidth="2"
+            ></path>
+            <Icon
+              className="icon-svg"
+              fill={styleOptions.fontColor}
+              x="11"
+              y="11"
+              fontSize="28"
+            />
+          </g>
         </g>
       </g>
     );

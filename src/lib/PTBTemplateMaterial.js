@@ -125,12 +125,11 @@ function StyledTemplate(styleOptions) {
     function regEvent(event, type, id) {
       var controlNodes = {
         event,
-        move: event.querySelector(".move"),
+        tagMove: event.querySelector(".tag-move"),
         tag: event.querySelector(".tag"),
         masked: event.querySelector(".masked"),
         title: event.querySelector(".title"),
         date: event.querySelector(".date"),
-        icon: event.querySelector(".icon"),
         iconMove: event.querySelector(".icon-move"),
         iconGroup: event.querySelector(".icon-group"),
         iconShape: event.querySelector(".icon-shape"),
@@ -345,6 +344,7 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeModal(opts) {
+      // _setEventScroll();
       let AnimationOpts = {
         barTop: opts.barTop,
         nodes: bar.getNodes(),
@@ -369,12 +369,11 @@ function StyledTemplate(styleOptions) {
     function _getEventsNodesByType() {
       var allNodesByType = {
         event: [],
-        move: [],
+        tagMove: [],
         tag: [],
         masked: [],
         title: [],
         date: [],
-        icon: [],
         iconMove: [],
         iconGroup: [],
         iconShape: [],

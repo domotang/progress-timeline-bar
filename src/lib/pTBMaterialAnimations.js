@@ -28,7 +28,6 @@ export function BarAniTl({
   modes
 }) {
   var { barDiv, barElement, tag: barTag, title, detail } = barNodes;
-
   var tl = gsap.timeline({ paused: true });
 
   tl.add("detail")
@@ -41,12 +40,6 @@ export function BarAniTl({
       { height: modes.large.barHeight, ease: "none" },
       "shrink"
     )
-    // .to(
-    //   eventNodes.iconGroup,
-    //   0.3,
-    //   { scale: 0.3, x: "+=17", y: "+=14", ease: "Power3.inOut" },
-    //   "shrink"
-    // )
     .to(
       eventNodes.iconShape,
       0.3,
@@ -77,21 +70,7 @@ export function BarAniTl({
 
   eventNodes.tag.reduce(_tagNodeLargeReducer, tl);
   eventNodes.iconGroup.reduce(_iconGroupNodeLargeReducer, tl);
-
-  function _tagNodeLargeReducer(accum, cur, index) {
-    return accum.to(cur, 0.3, { x: index * xFactorLg2 + 143 }, "shrink");
-  }
-  function _iconGroupNodeLargeReducer(accum, cur, index) {
-    return accum.to(
-      cur,
-      0.3,
-      {
-        scale: 0,
-        y: "+=14"
-      },
-      "shrink"
-    );
-  }
+  eventNodes.date.reduce(_dateNodeLargeReducer, tl);
 
   tl.to(
     eventNodes.tag[0],
@@ -139,9 +118,7 @@ export function BarAniTl({
     )
     .to(eventNodes.event, 0.3, { x: "+=4", y: "-=13" }, "shrink")
     .to(eventNodes.title, 0.2, { opacity: 0 }, "shrink")
-    .to(eventNodes.date, 0.3, { x: "-=10", y: "-=13", fontSize: 12 }, "shrink")
-    // .to(eventNodes.date, 0.02, { opacity: 1 })
-    .to(eventNodes.date, 0.02, { opacity: 0 })
+    .to(eventNodes.date, 0.02, { opacity: 1 })
     .add("large")
     .add("shrink2")
     .to(
@@ -226,6 +203,25 @@ export function BarAniTl({
   tl.add("small");
 
   return tl;
+
+  function _tagNodeLargeReducer(accum, cur, index) {
+    return accum.to(cur, 0.3, { x: index * xFactorLg2 + 143 }, "shrink");
+  }
+  function _iconGroupNodeLargeReducer(accum, cur, index) {
+    return accum.to(
+      cur,
+      0.3,
+      {
+        scale: 0.3,
+        x: index * xFactorLg2 + 148,
+        y: "+=17"
+      },
+      "shrink"
+    );
+  }
+  function _dateNodeLargeReducer(accum, cur, index) {
+    return accum.to(cur, 0.3, { x: index * xFactorLg2 + 167, y: 36 }, "shrink");
+  }
 }
 
 export function BarModalDetailTl({
@@ -399,7 +395,7 @@ export function EventScrollAni({
   var direction = "left";
   var oldX = 0;
   var scrollLength = Math.abs(
-    Math.ceil(visibleEventsWidth - xFactor * eventNodes.move.length)
+    Math.ceil(visibleEventsWidth - xFactor * eventNodes.tagMove.length)
   );
 
   gsap.set(scrollDiv, { clearProps: "x,y" });
@@ -427,12 +423,13 @@ export function EventScrollAni({
     tl.progress(this.x / -scrollLength);
   }
 
-  var moveNode = eventNodes.move.filter(
+  var moveNode = eventNodes.tagMove.filter(
     (value, index) => index != selectedEventId
   );
 
   var tl = gsap
     .timeline({ paused: true })
+    .add("shrink")
     .to(moveNode, scrollLength, { x: -scrollLength, ease: "none" }, "shrink");
 
   eventNodes.iconMove.reduce(_iconMoveReducer, tl);
@@ -472,11 +469,9 @@ export function EventScrollAni({
 
   function _scaleIconTl(node) {
     var tl = gsap.timeline({ paused: true });
-    tl.set(node, {
-      transformOrigin: "center"
-    });
     tl.to(node, 0.1, {
       scale: 0,
+      transformOrigin: "center",
       ease: "none"
     });
 
@@ -569,7 +564,6 @@ function _eventStandardAniOpenTl(
     tag,
     title,
     date,
-    icon,
     iconGroup
   } = controlNodes;
 
@@ -611,23 +605,9 @@ function _eventStandardAniOpenTl(
       iconGroup,
       0.2,
       {
-        attr: {
-          scale: 2
-        },
+        x: 0,
+        y: 80,
         scale: 2,
-        ease: "Power1.easeInOut"
-      },
-      "spread"
-    )
-    .to(
-      icon,
-      0.2,
-      {
-        attr: {
-          x: 0,
-          y: 80,
-          scale: 2
-        },
         ease: "Power1.easeInOut"
       },
       "spread"
