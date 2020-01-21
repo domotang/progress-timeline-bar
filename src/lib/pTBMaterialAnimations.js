@@ -234,6 +234,7 @@ export function BarModalDetailTl({
 }) {
   var tl = gsap.timeline({ paused: true });
 
+  tl.add(_barModalLockTl(nodes.barDiv), "move");
   if (eventDrop) {
     tl.add("move");
   } else {
@@ -241,8 +242,7 @@ export function BarModalDetailTl({
       .add(_barDetailWidenTl(nodes.tag, styleOptions), "widen")
       .add("move");
   }
-  tl.add(_barModalLockTl(nodes.barDiv), "move")
-    .add(_barPositionTl(nodes.barDiv, barTop), "move")
+  tl.add(_barPositionTl(nodes.barDiv, barTop), "move")
     .add(() => {
       if (!tl.reversed()) _barHeightTween(nodes.barElement, height);
     }, "move+=.01")
@@ -265,10 +265,10 @@ export function BarModalSmallTl({
   var tl = gsap.timeline({ paused: true });
 
   tl.add("start")
+    .add(_barModalLockTl(nodes.barDiv), "start")
     .add(barModeAnimations.tweenTo("detail", { overwrite: true }), "start")
     .add(_barPositionTl(nodes.barDiv, barTop), "start")
     .add("move")
-    .add(_barModalLockTl(nodes.barDiv), "move")
     .add(() => {
       if (!tl.reversed()) _barHeightTween(nodes.barElement, height);
     }, "move")
@@ -377,9 +377,9 @@ export function containerTween({ barContainer, height, marginTop }) {
 }
 
 export function showBarTween({ barElement }) {
-  gsap.to(barElement, 0, {
+  gsap.set(barElement, {
     attr: {
-      visibility: 1
+      visibility: "visible"
     }
   });
 }
@@ -400,8 +400,15 @@ export function EventScrollAni({
 
   gsap.set(scrollDiv, { clearProps: "x,y" });
 
+  var eventNode = eventNodes.event.filter(
+    (value, index) => index != selectedEventId
+  );
+  var moveNode = eventNodes.tagMove.filter(
+    (value, index) => index != selectedEventId
+  );
+
   Draggable.create(scrollDiv, {
-    trigger: eventNodes.event,
+    trigger: eventNode,
     type: "x",
     throwProps: true,
     inertia: true,
@@ -422,10 +429,6 @@ export function EventScrollAni({
     // console.log(draggable.x, direction);
     tl.progress(this.x / -scrollLength);
   }
-
-  var moveNode = eventNodes.tagMove.filter(
-    (value, index) => index != selectedEventId
-  );
 
   var tl = gsap
     .timeline({ paused: true })
@@ -469,12 +472,18 @@ export function EventScrollAni({
 
   function _scaleIconTl(node) {
     var tl = gsap.timeline({ paused: true });
-    tl.to(node, 0.1, {
-      scale: 0,
-      transformOrigin: "center",
-      ease: "none"
-    });
-
+    tl.add("beer");
+    // tl.set(node, { transformOrigin: "center" }, "beer");
+    tl.to(
+      node,
+      0.1,
+      {
+        scale: 0,
+        transformOrigin: "center",
+        ease: "none"
+      },
+      "beer"
+    );
     return tl;
   }
 }
@@ -704,6 +713,9 @@ function _barPositionTl(barDiv, top) {
     "start"
   );
 
+  // tl.vars.onComplete = () => console.log("bar play");
+  // tl.vars.onReverseComplete = () => console.log("bar reverse");
+
   return tl;
 }
 
@@ -720,18 +732,20 @@ function _barHeightTween(node, height) {
 function _barModalLockTl(barDiv) {
   var tl = gsap.timeline();
 
-  tl.to(barDiv, 0, {
-    zIndex: 0
-  })
-    .add("start")
-    .to(
-      barDiv,
-      0,
-      {
-        zIndex: 100
-      },
-      "start"
-    );
+  // tl.to(barDiv, 0, {
+  //   zIndex: 0
+  // })
+  tl.add("start").to(
+    barDiv,
+    0.01,
+    {
+      zIndex: 100
+    },
+    "start"
+  );
+
+  // tl.vars.onComplete = () => console.log("zind play");
+  // tl.vars.onReverseComplete = () => console.log("zind reverse");
 
   return tl;
 }
