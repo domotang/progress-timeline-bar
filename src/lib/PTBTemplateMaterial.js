@@ -1,6 +1,7 @@
 "use strict";
 import * as animations from "./pTBMaterialAnimations";
 import * as components from "./pTBMaterialComponents";
+import StateMachine from "./stateMachine";
 
 export default StyledTemplate;
 
@@ -31,9 +32,142 @@ function StyledTemplate(styleOptions) {
       barModeAnimations = null,
       eventScrollAnimations = null,
       openedElements = { event: null, header: null, modal: null },
-      mode = "detail",
+      // mode = "detail",
       dragX = 0,
       scrollDiv = document.createElement("div");
+
+    var modeStateMachineDef = {
+      initValue: "init",
+      init: {
+        actions: {
+          onEnter() {},
+          onExit() {
+            animations.showBarTween({ barElement: bar.getNodes().barElement });
+          }
+        },
+        transitions: {
+          small: {
+            target: "small",
+            action() {
+              barModeAnimations.seek("small");
+            }
+          },
+          large: {
+            target: "large",
+            action() {
+              barModeAnimations.seek("large");
+            }
+          },
+          detail: {
+            target: "detail",
+            action() {
+              barModeAnimations.seek("detail");
+            }
+          },
+          modal: {
+            target: "modal",
+            action() {}
+          }
+        }
+      },
+      small: {
+        actions: {
+          onEnter() {},
+          onExit() {}
+        },
+        transitions: {
+          large: {
+            target: "large",
+            action() {
+              _setModeLarge();
+            }
+          },
+          modal: {
+            target: "modal",
+            action(opts) {
+              _setModeModal(opts);
+              _setEventScroll();
+              eventScrollAnimations.tl.progress(0, false);
+            }
+          }
+        }
+      },
+      large: {
+        actions: {
+          onEnter() {},
+          onExit() {}
+        },
+        transitions: {
+          small: {
+            target: "small",
+            action() {
+              _setModeSmall();
+            }
+          },
+          detail: {
+            target: "detail",
+            action() {
+              _setModeDetail();
+            }
+          }
+        }
+      },
+      detail: {
+        actions: {
+          onEnter() {
+            _setEventScroll();
+            eventScrollAnimations.tl.progress(0, false);
+          },
+          onExit() {}
+        },
+        transitions: {
+          small: {
+            target: "large",
+            action() {
+              _killEventScrollAnimations();
+              _setModeSmall(true);
+            }
+          },
+          large: {
+            target: "large",
+            action() {
+              _killEventScrollAnimations();
+              _setModeLarge();
+            }
+          },
+          modal: {
+            target: "modal",
+            action(opts) {
+              _setModeModal(opts);
+            }
+          }
+        }
+      },
+      modal: {
+        actions: {
+          onEnter() {},
+          onExit() {
+            if (openedElements.event) openedElements.event.close();
+            openedElements.modal.reverse();
+            openedElements.modal = null;
+          }
+        },
+        transitions: {
+          small: {
+            target: "small",
+            action() {
+              _killEventScrollAnimations();
+            }
+          },
+          detail: {
+            target: "detail",
+            action() {}
+          }
+        }
+      }
+    };
+
+    var modeStateMachine = null;
 
     var publicAPI = {
       init,
@@ -161,9 +295,7 @@ function StyledTemplate(styleOptions) {
         eventScrollAnimations.tl.progress(0);
         _setEventScroll(id);
 
-        if (!openedElements.modal) {
-          _setModeModal({ ...opts, expandedHeight });
-        }
+        modeStateMachine.transition("modal", { ...opts, expandedHeight });
 
         let { x, y, width } = event.getBBox();
         let upCoords = { x: width / 2 + x - 40, y: y + 90 };
@@ -205,36 +337,16 @@ function StyledTemplate(styleOptions) {
     }
     //*************public methods*****************
 
-    function setMode(mode, opts, onResolve) {
-      if (openedElements.event) openedElements.event.close();
-      if (openedElements.modal) {
-        openedElements.modal.reverse();
-        openedElements.modal = null;
-      }
-
-      switch (mode) {
-        case "small":
-          _setModeSmall(onResolve);
-          break;
-        case "large":
-          _setModeLarge(onResolve);
-          break;
-        case "detail":
-          _setModeDetail(onResolve);
-          break;
-        case "modal":
-          _setModeModal(opts, onResolve);
-          break;
-      }
+    function setMode(mode, opts) {
+      modeStateMachine.transition(mode, opts);
     }
 
     function init(initMode) {
-      mode = initMode;
       let barNodes = bar.getNodes();
       let initOpts = {
         barNodes,
-        mode,
-        containerHeight: modes[mode]._containerHeight(),
+        mode: initMode,
+        containerHeight: modes[initMode]._containerHeight(),
         styleOptions
       };
 
@@ -257,17 +369,8 @@ function StyledTemplate(styleOptions) {
         modes
       };
       barModeAnimations = animations.BarAniTl(opts);
-      barModeAnimations.seek(mode);
-
-      if (initMode === "detail") {
-        _setEventScroll();
-        eventScrollAnimations.tl.progress(0, false);
-      }
-
-      var showBarOpts = {
-        barElement: bar.getNodes().barElement
-      };
-      animations.showBarTween(showBarOpts);
+      modeStateMachine = StateMachine(modeStateMachineDef);
+      modeStateMachine.transition(initMode);
     }
 
     function closeEvents() {
@@ -284,67 +387,61 @@ function StyledTemplate(styleOptions) {
 
     //*************local methods*****************
 
-    function _setModeLarge(onResolve) {
+    function _killEventScrollAnimations() {
       if (eventScrollAnimations) {
         eventScrollAnimations.tl.progress(0);
         eventScrollAnimations.tl = null;
         eventScrollAnimations.draggable.kill();
       }
-      mode = "large";
+    }
+
+    function _setModeLarge() {
       let opts = {
         barContainer: bar.getNodes().barContainer,
-        height: modes[mode]._containerHeight(),
+        height: modes[modeStateMachine.is()]._containerHeight(),
         marginTop: "10px"
       };
       animations.containerTween(opts);
       barModeAnimations.tweenTo("large", {
-        overwrite: true,
-        onComplete: onResolve()
+        overwrite: true
+        // onComplete: onResolve()
       });
     }
 
-    function _setModeSmall(onResolve) {
-      var set = mode != "small";
-      var set2 = mode === "detail";
-      mode = "small";
+    function _setModeSmall(fast) {
       let opts = {
         barContainer: bar.getNodes().barContainer,
-        height: modes[mode]._containerHeight(),
+        height: modes["small"]._containerHeight(),
         marginTop: "3px"
       };
       animations.containerTween(opts);
 
-      if (set) {
-        if (set2) barModeAnimations.timeScale(2);
-        else barModeAnimations.timeScale(1);
-        barModeAnimations.tweenTo("small", {
-          overwrite: true,
-          onComplete: () => {
-            barModeAnimations.timeScale(1);
-            onResolve();
-          }
-        });
-      }
+      if (fast) barModeAnimations.timeScale(2);
+      else barModeAnimations.timeScale(1);
+      barModeAnimations.tweenTo("small", {
+        overwrite: true,
+        onComplete: () => {
+          barModeAnimations.timeScale(1);
+          // onResolve();
+        }
+      });
     }
 
-    function _setModeDetail(onResolve) {
-      _setEventScroll();
-      mode = "detail";
+    function _setModeDetail() {
       let opts = {
         barContainer: bar.getNodes().barContainer,
-        height: modes[mode]._containerHeight(),
+        height: modes["detail"]._containerHeight(),
         marginTop: "10px"
       };
       animations.containerTween(opts);
 
       barModeAnimations.tweenTo("detail", {
-        overwrite: true,
-        onComplete: onResolve
+        overwrite: true
+        // onComplete: onResolve
       });
     }
 
     function _setModeModal(opts) {
-      // _setEventScroll();
       let AnimationOpts = {
         barTop: opts.barTop,
         nodes: bar.getNodes(),

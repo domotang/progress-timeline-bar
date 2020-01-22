@@ -118,18 +118,19 @@ function PTBController(templateAPI) {
 
   function setMode(mode, opts) {
     return new Promise(resolve => {
+      opts = { ...opts, resolve };
       switch (mode) {
         case "modal":
-          templateAPI.setMode("modal", opts, resolve);
+          templateAPI.setMode("modal", opts);
           break;
         case "detail":
-          templateAPI.setMode("detail", opts, resolve);
+          templateAPI.setMode("detail", opts);
           break;
         case "large":
-          templateAPI.setMode("large", opts, resolve);
+          templateAPI.setMode("large", opts);
           break;
         case "small":
-          templateAPI.setMode("small", opts, resolve);
+          templateAPI.setMode("small", opts);
           break;
       }
     });
