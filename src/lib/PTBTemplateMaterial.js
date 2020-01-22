@@ -62,6 +62,8 @@ function StyledTemplate(styleOptions) {
             target: "detail",
             action() {
               barModeAnimations.seek("detail");
+              _setEventScroll();
+              eventScrollAnimations.tl.progress(0, false);
             }
           },
           modal: {
@@ -108,16 +110,15 @@ function StyledTemplate(styleOptions) {
             target: "detail",
             action() {
               _setModeDetail();
+              _setEventScroll();
+              eventScrollAnimations.tl.progress(0, false);
             }
           }
         }
       },
       detail: {
         actions: {
-          onEnter() {
-            _setEventScroll();
-            eventScrollAnimations.tl.progress(0, false);
-          },
+          onEnter() {},
           onExit() {}
         },
         transitions: {
