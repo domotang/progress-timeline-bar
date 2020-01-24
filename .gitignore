@@ -5,4 +5,4 @@ dist/
 .vscode/
 extras/
 temp/
-gsap-bonus.tgz
+./gsap-bonus.tgz
