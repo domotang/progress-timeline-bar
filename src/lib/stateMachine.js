@@ -12,8 +12,8 @@ export default function StateMachine(stateMachineDef) {
       stateMachineDef[this.value].actions.onEnter();
       return this.value;
     },
-    is() {
-      return this.value;
+    is(value) {
+      return value === this.value;
     }
   };
 }

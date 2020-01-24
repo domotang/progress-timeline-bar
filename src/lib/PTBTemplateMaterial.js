@@ -23,16 +23,30 @@ function StyledTemplate(styleOptions) {
       timelineBarWidthLg2 = status > 0 ? 194 + xFactorLg2 * (status - 1) : 164,
       timelineBarWidthSm = status > 0 ? 194 + xFactorSm * (status - 1) : 164,
       modes = {
-        small: { barHeight: 15, barPadding: 3, _containerHeight },
-        large: { barHeight: 38, barPadding: 5, _containerHeight },
-        detail: { barHeight: 90, barPadding: 5, _containerHeight }
+        small: {
+          barHeight: 15,
+          barPadding: 3,
+          marginTop: "3px",
+          _containerHeight
+        },
+        large: {
+          barHeight: 38,
+          barPadding: 5,
+          marginTop: "10px",
+          _containerHeight
+        },
+        detail: {
+          barHeight: 90,
+          barPadding: 5,
+          marginTop: "10px",
+          _containerHeight
+        }
       },
       bar = {},
       events = [],
       barModeAnimations = null,
       eventScrollAnimations = null,
       openedElements = { event: null, header: null, modal: null },
-      // mode = "detail",
       dragX = 0,
       scrollDiv = document.createElement("div");
 
@@ -63,7 +77,6 @@ function StyledTemplate(styleOptions) {
             action() {
               barModeAnimations.seek("detail");
               _setEventScroll();
-              eventScrollAnimations.tl.progress(0, false);
             }
           },
           modal: {
@@ -81,7 +94,7 @@ function StyledTemplate(styleOptions) {
           large: {
             target: "large",
             action() {
-              _setModeLarge();
+              _setMode({ mode: "large" });
             }
           },
           modal: {
@@ -89,7 +102,6 @@ function StyledTemplate(styleOptions) {
             action(opts) {
               _setModeModal(opts);
               _setEventScroll();
-              eventScrollAnimations.tl.progress(0, false);
             }
           }
         }
@@ -103,15 +115,14 @@ function StyledTemplate(styleOptions) {
           small: {
             target: "small",
             action() {
-              _setModeSmall();
+              _setMode({ mode: "small" });
             }
           },
           detail: {
             target: "detail",
             action() {
-              _setModeDetail();
+              _setMode({ mode: "detail" });
               _setEventScroll();
-              eventScrollAnimations.tl.progress(0, false);
             }
           }
         }
@@ -126,14 +137,14 @@ function StyledTemplate(styleOptions) {
             target: "large",
             action() {
               _killEventScrollAnimations();
-              _setModeSmall(true);
+              _setMode({ mode: "small" });
             }
           },
           large: {
             target: "large",
             action() {
               _killEventScrollAnimations();
-              _setModeLarge();
+              _setMode({ mode: "large" });
             }
           },
           modal: {
@@ -181,8 +192,6 @@ function StyledTemplate(styleOptions) {
         xFactorLg,
         eventWidthLg,
         styleOptions
-        // dragEventHandler: _dragEventHandler,
-        // touchEventHandler: _touchEventHandler
       }),
       barHeights: _getBarHeights(),
       getStyles: _getStyles
@@ -221,7 +230,7 @@ function StyledTemplate(styleOptions) {
       var animation = null;
 
       var internalBarAPI = {
-        getHeaderState,
+        // getHeaderState,
         getNodes,
         open,
         close
@@ -230,31 +239,30 @@ function StyledTemplate(styleOptions) {
       bar = internalBarAPI;
 
       function open(onResolve) {
-        let opts = { bar, styleOptions, onResolve };
+        // let opts = { bar, styleOptions, onResolve };
         // animation = animations.BarDetailAniTl(opts);
-
-        animation.play();
-        openedElements.header = internalBarAPI;
+        // animation.play();
+        // openedElements.header = internalBarAPI;
       }
 
       function close(onResolve) {
         // if (barPositionAnimation) barPositionAnimation.reverse();
-        if (onResolve) {
-          animation.vars.onReverseComplete = () => {
-            onResolve();
-          };
-        }
-        animation.reverse();
-        openedElements.header = null;
+        // if (onResolve) {
+        //   animation.vars.onReverseComplete = () => {
+        //     onResolve();
+        //   };
+        // }
+        // animation.reverse();
+        // openedElements.header = null;
       }
 
       function getNodes() {
         return controlNodes;
       }
 
-      function getHeaderState() {
-        return animation ? (animation.time() ? true : false) : false;
-      }
+      // function getHeaderState() {
+      //   return animation ? (animation.time() ? true : false) : false;
+      // }
     }
 
     function regEvent(event, type, id) {
@@ -396,49 +404,17 @@ function StyledTemplate(styleOptions) {
       }
     }
 
-    function _setModeLarge() {
+    function _setMode({ mode }) {
+      var modeStyles = modes[mode];
       let opts = {
         barContainer: bar.getNodes().barContainer,
-        height: modes[modeStateMachine.is()]._containerHeight(),
-        marginTop: "10px"
+        height: modeStyles._containerHeight(),
+        marginTop: modeStyles.marginTop
       };
       animations.containerTween(opts);
-      barModeAnimations.tweenTo("large", {
+      barModeAnimations.tweenTo(mode, {
         overwrite: true
         // onComplete: onResolve()
-      });
-    }
-
-    function _setModeSmall(fast) {
-      let opts = {
-        barContainer: bar.getNodes().barContainer,
-        height: modes["small"]._containerHeight(),
-        marginTop: "3px"
-      };
-      animations.containerTween(opts);
-
-      if (fast) barModeAnimations.timeScale(2);
-      else barModeAnimations.timeScale(1);
-      barModeAnimations.tweenTo("small", {
-        overwrite: true,
-        onComplete: () => {
-          barModeAnimations.timeScale(1);
-          // onResolve();
-        }
-      });
-    }
-
-    function _setModeDetail() {
-      let opts = {
-        barContainer: bar.getNodes().barContainer,
-        height: modes["detail"]._containerHeight(),
-        marginTop: "10px"
-      };
-      animations.containerTween(opts);
-
-      barModeAnimations.tweenTo("detail", {
-        overwrite: true
-        // onComplete: onResolve
       });
     }
 
@@ -465,22 +441,12 @@ function StyledTemplate(styleOptions) {
     }
 
     function _getEventsNodesByType() {
-      var allNodesByType = {
-        event: [],
-        tagMove: [],
-        tag: [],
-        masked: [],
-        title: [],
-        date: [],
-        iconMove: [],
-        iconGroup: [],
-        iconShape: [],
-        iconSvg: []
-      };
+      var allNodesByType = {};
 
       for (var i = 0; i < events.length; i++) {
         let currentEventNodes = events[i].getNodes();
         for (let node in currentEventNodes) {
+          if (!allNodesByType[node]) allNodesByType[node] = [];
           allNodesByType[node].push(currentEventNodes[node]);
         }
       }
@@ -502,14 +468,6 @@ function StyledTemplate(styleOptions) {
     function _containerHeight() {
       return this.barHeight + this.barPadding * 2;
     }
-
-    // function _dragEventHandler(event) {
-    //   eventScrollAnimations.progress(event.clientX / 1000);
-    // }
-
-    // function _touchEventHandler(event) {
-    //   eventScrollAnimations.progress(event.changedTouches[0].clientX / 1000);
-    // }
 
     function _setEventScroll(eventId) {
       let eventScrollOpts = {

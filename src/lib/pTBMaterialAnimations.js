@@ -484,6 +484,7 @@ export function EventScrollAni({
       },
       "beer"
     );
+    tl.progress(0, false);
     return tl;
   }
 }
