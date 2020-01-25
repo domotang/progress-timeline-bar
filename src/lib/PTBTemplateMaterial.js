@@ -47,7 +47,6 @@ function StyledTemplate(styleOptions) {
       barModeAnimations = null,
       eventScrollAnimations = null,
       openedElements = { event: null, header: null, modal: null },
-      dragX = 0,
       scrollDiv = document.createElement("div");
 
     var modeStateMachineDef = {
@@ -76,7 +75,7 @@ function StyledTemplate(styleOptions) {
             target: "detail",
             action() {
               barModeAnimations.seek("detail");
-              _setEventScroll();
+              eventScrollAnimations.create();
             }
           },
           modal: {
@@ -97,11 +96,18 @@ function StyledTemplate(styleOptions) {
               _setMode({ mode: "large" });
             }
           },
+          detail: {
+            target: "detail",
+            action() {
+              _setMode({ mode: "detail" });
+              eventScrollAnimations.create();
+            }
+          },
           modal: {
             target: "modal",
             action(opts) {
               _setModeModal(opts);
-              _setEventScroll();
+              eventScrollAnimations.create();
             }
           }
         }
@@ -122,7 +128,7 @@ function StyledTemplate(styleOptions) {
             target: "detail",
             action() {
               _setMode({ mode: "detail" });
-              _setEventScroll();
+              eventScrollAnimations.create();
             }
           }
         }
@@ -134,18 +140,18 @@ function StyledTemplate(styleOptions) {
         },
         transitions: {
           small: {
-            target: "large",
+            target: "small",
             action() {
-              _killEventScrollAnimations();
+              eventScrollAnimations.kill();
               _setMode({ mode: "small" });
             }
           },
           large: {
             target: "large",
             action() {
-              _killEventScrollAnimations().then(() =>
-                _setMode({ mode: "large" })
-              );
+              eventScrollAnimations
+                .kill()
+                .then(() => _setMode({ mode: "large" }));
             }
           },
           modal: {
@@ -169,7 +175,7 @@ function StyledTemplate(styleOptions) {
           small: {
             target: "small",
             action() {
-              _killEventScrollAnimations();
+              eventScrollAnimations.kill();
             }
           },
           detail: {
@@ -228,7 +234,7 @@ function StyledTemplate(styleOptions) {
         upButton: element.querySelector(".up-icon")
       };
 
-      var animation = null;
+      // var animation = null;
 
       var internalBarAPI = {
         // getHeaderState,
@@ -300,9 +306,8 @@ function StyledTemplate(styleOptions) {
         if (openedElements.event) openedElements.event.close();
         openedElements.event = internalEventAPI;
 
-        dragX = eventScrollAnimations.getX;
-        // eventScrollAnimations.kill();
-        // eventScrollAnimations.tl.progress(0);
+        // dragX = eventScrollAnimations.getX;
+        eventScrollAnimations.updateEvent(id);
         // _setEventScroll(id);
 
         modeStateMachine.transition("modal", { ...opts, expandedHeight });
@@ -379,6 +384,12 @@ function StyledTemplate(styleOptions) {
         modes
       };
       barModeAnimations = animations.BarAniTl(opts);
+      eventScrollAnimations = animations.EventScrollAni({
+        eventNodes: _getEventsNodesByType(),
+        scrollDiv,
+        visibleEventsWidth: styleOptions.barWidth.large - 170,
+        xFactor: xFactorLg
+      });
       modeStateMachine = StateMachine(modeStateMachineDef);
       modeStateMachine.transition(initMode);
     }
@@ -396,12 +407,6 @@ function StyledTemplate(styleOptions) {
     }
 
     //*************local methods*****************
-
-    function _killEventScrollAnimations() {
-      return new Promise(resolve => {
-        eventScrollAnimations.kill(resolve);
-      });
-    }
 
     function _setMode({ mode }) {
       var modeStyles = modes[mode];
@@ -466,17 +471,6 @@ function StyledTemplate(styleOptions) {
 
     function _containerHeight() {
       return this.barHeight + this.barPadding * 2;
-    }
-
-    function _setEventScroll(eventId) {
-      let eventScrollOpts = {
-        eventNodes: _getEventsNodesByType(),
-        scrollDiv,
-        visibleEventsWidth: styleOptions.barWidth.large - 170,
-        xFactor: xFactorLg,
-        selectedEventId: eventId != null ? eventId : null
-      };
-      eventScrollAnimations = animations.EventScrollAni(eventScrollOpts);
     }
   }
 }
