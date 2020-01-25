@@ -143,8 +143,9 @@ function StyledTemplate(styleOptions) {
           large: {
             target: "large",
             action() {
-              _killEventScrollAnimations();
-              _setMode({ mode: "large" });
+              _killEventScrollAnimations().then(() =>
+                _setMode({ mode: "large" })
+              );
             }
           },
           modal: {
@@ -299,10 +300,10 @@ function StyledTemplate(styleOptions) {
         if (openedElements.event) openedElements.event.close();
         openedElements.event = internalEventAPI;
 
-        dragX = eventScrollAnimations.draggable.x;
-        eventScrollAnimations.draggable.kill();
-        eventScrollAnimations.tl.progress(0);
-        _setEventScroll(id);
+        dragX = eventScrollAnimations.getX;
+        // eventScrollAnimations.kill();
+        // eventScrollAnimations.tl.progress(0);
+        // _setEventScroll(id);
 
         modeStateMachine.transition("modal", { ...opts, expandedHeight });
 
@@ -397,11 +398,9 @@ function StyledTemplate(styleOptions) {
     //*************local methods*****************
 
     function _killEventScrollAnimations() {
-      if (eventScrollAnimations) {
-        eventScrollAnimations.tl.progress(0);
-        eventScrollAnimations.tl = null;
-        eventScrollAnimations.draggable.kill();
-      }
+      return new Promise(resolve => {
+        eventScrollAnimations.kill(resolve);
+      });
     }
 
     function _setMode({ mode }) {

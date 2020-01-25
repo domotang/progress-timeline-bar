@@ -392,8 +392,6 @@ export function EventScrollAni({
   selectedEventId
 }) {
   var scaledIconAnimations = eventNodes.iconGroup.map(cur => _scaleIconTl(cur));
-  var direction = "left";
-  var oldX = 0;
   var scrollLength = Math.abs(
     Math.ceil(visibleEventsWidth - xFactor * eventNodes.tagMove.length)
   );
@@ -408,25 +406,25 @@ export function EventScrollAni({
   );
 
   Draggable.create(scrollDiv, {
+    throwResistance: 0,
+    maxDuration: 1,
     trigger: eventNode,
     type: "x",
-    throwProps: true,
     inertia: true,
     bounds: {
       minX: -scrollLength,
       maxX: 0
     },
+    zIndexBoost: false,
     snap: value => Math.round(value / xFactor) * xFactor,
-    onDrag: Update,
-    onThrowUpdate: Update
+    onDrag: updateScrollTarget,
+    onThrowUpdate: updateScrollTarget
   });
 
   var draggable = Draggable.get(scrollDiv);
 
-  function Update() {
-    direction = oldX > draggable.x ? "left" : "right";
-    oldX = draggable.x;
-    // console.log(draggable.x, direction);
+  function updateScrollTarget() {
+    // console.log(draggable.x);
     tl.progress(this.x / -scrollLength);
   }
 
@@ -438,7 +436,25 @@ export function EventScrollAni({
   eventNodes.iconMove.reduce(_iconMoveReducer, tl);
   eventNodes.iconGroup.reduce(_iconGroupReducer, tl);
 
-  return { tl, draggable };
+  return { tl, kill, getX };
+
+  function kill(resolve) {
+    draggable.kill();
+    draggable = null;
+
+    if (tl.progress()) {
+      gsap.to(tl, 0.2, {
+        progress: 0,
+        onComplete: () => {
+          resolve();
+        }
+      });
+    } else resolve();
+  }
+
+  function getX() {
+    return draggable.x;
+  }
 
   function _iconMoveReducer(accum, cur, index) {
     let nodebecomesHidden = xFactor * index < scrollLength;
@@ -459,10 +475,11 @@ export function EventScrollAni({
     return xFactor * index < scrollLength && selectedEventId != index
       ? accum.add(
           () => {
-            if (direction === "left") scaledIconAnimations[index].play();
-            else {
+            if (draggable && draggable.getDirection("velocity") === "left")
+              scaledIconAnimations[index].play();
+            else if (draggable) {
               scaledIconAnimations[index].reverse();
-            }
+            } else scaledIconAnimations[index].seek(0).pause();
           },
           xFactor * index + 20,
           "shrink"
@@ -472,18 +489,11 @@ export function EventScrollAni({
 
   function _scaleIconTl(node) {
     var tl = gsap.timeline({ paused: true });
-    tl.add("beer");
-    // tl.set(node, { transformOrigin: "center" }, "beer");
-    tl.to(
-      node,
-      0.1,
-      {
-        scale: 0,
-        transformOrigin: "center",
-        ease: "none"
-      },
-      "beer"
-    );
+    tl.to(node, 0.1, {
+      scale: 0,
+      transformOrigin: "center",
+      ease: "none"
+    });
     tl.progress(0, false);
     return tl;
   }
