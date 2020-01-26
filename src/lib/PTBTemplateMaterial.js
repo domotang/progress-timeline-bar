@@ -401,6 +401,7 @@ function StyledTemplate(styleOptions) {
           height: modes["detail"].barHeight + 100,
           eventClose: openedElements.event.close
         };
+        eventScrollAnimations.updateEvent();
         var closeEventsAnimation = animations.EventsCloseTl(opts);
         closeEventsAnimation.play();
       }
