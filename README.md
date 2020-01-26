@@ -7,7 +7,7 @@ Highly customizable animated progress timeline bar for React which emphasizes du
 current demo
 http://domosavant.com/
 
-1.11.2020 - Adding an event scroller. This solves two issues: (1) Quantity of events no longer limited to bar width. (2) Mobile friendly.
+1.11.2020 - Added an event scroller. This solves two issues: (1) Quantity of events no longer limited to bar width. (2) Mobile friendly.
 
 Currently in development. API documentation pending release\
 Utilizes all SVG graphics/animations\
