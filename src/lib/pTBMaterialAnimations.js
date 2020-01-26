@@ -393,6 +393,8 @@ export function EventScrollAni({
   var draggable = null;
   var dragAni = null;
   var lastXPos = 0;
+  var eventer = null;
+  var mover = null;
   var scrollLength = Math.abs(
     Math.ceil(visibleEventsWidth - xFactor * eventNodes.tagMove.length)
   );
@@ -443,12 +445,19 @@ export function EventScrollAni({
   }
 
   function updateEvent(id) {
-    lastXPos = draggable.x;
-    dragAni.progress(0);
-    draggable.kill();
-    draggable = null;
-    create(id);
-    dragAni.progress(lastXPos / -scrollLength);
+    // lastXPos = draggable.x;u
+    dragAni.add(eventer, "shrink");
+    dragAni.add(mover, "shrink");
+    eventer = gsap.getById(`event-${id}`);
+    mover = gsap.getById(`move-${id}`);
+    dragAni.remove(eventer);
+    dragAni.remove(mover);
+    // dragAni.add(fun);
+    // dragAni.progress(0);
+    // draggable.kill();
+    // draggable = null;
+    // create(id);
+    // dragAni.progress(lastXPos / -scrollLength);
   }
 
   function kill() {
@@ -798,13 +807,22 @@ function _eventDragTl({
 }) {
   var scaledIconAnimations = iconGroupNodes.map(cur => _scaleIconTl(cur));
 
-  var tl = gsap
-    .timeline({ paused: true })
-    .add("shrink")
-    .to(moveNode, scrollLength, { x: -scrollLength, ease: "none" }, "shrink");
+  var tl = gsap.timeline({ paused: true }).add("shrink");
 
+  moveNode.reduce(_eventMoveReducer, tl);
   iconMoveNodes.reduce(_iconMoveReducer, tl);
   iconGroupNodes.reduce(_iconGroupReducer, tl);
+
+  function _eventMoveReducer(accum, cur, index) {
+    return eventId != index
+      ? accum.to(
+          cur,
+          scrollLength,
+          { x: -scrollLength, ease: "none", id: `event-${index}` },
+          "shrink"
+        )
+      : accum;
+  }
 
   function _iconMoveReducer(accum, cur, index) {
     let nodebecomesHidden = xFactor * index < scrollLength;
@@ -814,7 +832,8 @@ function _eventDragTl({
           nodebecomesHidden ? xFactor * index : scrollLength,
           {
             x: nodebecomesHidden ? -xFactor * index : -scrollLength,
-            ease: "none"
+            ease: "none",
+            id: `move-${index}`
           },
           "shrink"
         )
