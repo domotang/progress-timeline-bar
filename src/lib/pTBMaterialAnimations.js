@@ -286,6 +286,8 @@ export function EventOpenTl({
   expandedHeight,
   barHeight,
   upCoords,
+  xFactor,
+  scrollOffset,
   styleOptions,
   onResolve
 }) {
@@ -300,6 +302,8 @@ export function EventOpenTl({
         controlNodes,
         expandedHeight,
         styleOptions,
+        xFactor,
+        scrollOffset,
         onResolve
       ),
       "start"
@@ -396,11 +400,12 @@ export function EventScrollAni({
   var mover = null;
   var iconDiser = null;
   var curId = null;
+  var curEventScrollPos = null;
   var scrollLength = Math.abs(
     Math.ceil(visibleEventsWidth - xFactor * eventNodes.tagMove.length)
   );
 
-  return { create, kill, updateEvent };
+  return { create, kill, updateEvent, scrollPosHasMoved, scrollOffset };
 
   function create() {
     gsap.set(scrollDiv, { clearProps: "x,y" });
@@ -439,9 +444,9 @@ export function EventScrollAni({
   }
 
   function updateEvent(id) {
-    // lastXPos = draggable.x;
-    console.log(dragAni.getChildren());
-    console.log(dragAni.getById(`iconDis-${id}`));
+    curEventScrollPos = draggable.x;
+    // console.log(dragAni.getChildren());
+    // console.log(dragAni.getById(`iconDis-${id}`));
     if (eventer) dragAni.add(eventer, "shrink");
     if (mover) dragAni.add(mover, "shrink");
     if (iconDiser) dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
@@ -468,6 +473,14 @@ export function EventScrollAni({
         });
       } else resolve();
     });
+  }
+
+  function scrollPosHasMoved() {
+    return draggable.x != curEventScrollPos;
+  }
+
+  function scrollOffset() {
+    return Math.abs(draggable.x);
   }
 }
 
@@ -547,6 +560,8 @@ function _eventStandardAniOpenTl(
   controlNodes,
   expandedHeight,
   styleOptions,
+  xFactor,
+  scrollOffset,
   onResolve
 ) {
   var {
@@ -581,7 +596,7 @@ function _eventStandardAniOpenTl(
       tag,
       0.2,
       {
-        x: "20",
+        x: `${scrollOffset + 20}`,
         y: "85",
         opacity: 0.6,
         fill: styleOptions.placeholderColor,
@@ -597,7 +612,7 @@ function _eventStandardAniOpenTl(
       iconGroup,
       0.2,
       {
-        x: 0,
+        x: scrollOffset + 4,
         y: 80,
         scale: 2,
         ease: "Power1.easeInOut"

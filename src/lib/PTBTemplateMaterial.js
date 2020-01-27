@@ -272,7 +272,7 @@ function StyledTemplate(styleOptions) {
       // }
     }
 
-    function regEvent(event, type, id) {
+    function regEvent(event, type, id, expandedHeight) {
       var controlNodes = {
         event,
         tagMove: event.querySelector(".tag-move"),
@@ -302,19 +302,17 @@ function StyledTemplate(styleOptions) {
       };
       return eventAPI;
 
-      function open(expandedHeight, opts, onResolve) {
+      function open(opts, onResolve) {
         if (openedElements.event) openedElements.event.close();
         openedElements.event = internalEventAPI;
-
-        // dragX = eventScrollAnimations.getX;
         eventScrollAnimations.updateEvent(id);
-        // _setEventScroll(id);
 
         modeStateMachine.transition("modal", { ...opts, expandedHeight });
 
         let { x, y, width } = event.getBBox();
         let upCoords = { x: width / 2 + x - 40, y: y + 90 };
         let { eventDetails, barElement, upButton } = bar.getNodes();
+
         let AniOpts = {
           type,
           controlNodes: {
@@ -326,19 +324,44 @@ function StyledTemplate(styleOptions) {
           expandedHeight,
           barHeight: modes["detail"].barHeight + (expandedHeight + 130),
           upCoords,
+          xFactor: xFactorLg,
+          scrollOffset: eventScrollAnimations.scrollOffset(),
           styleOptions,
           onResolve
         };
         animation = animations.EventOpenTl(AniOpts);
-        animation.vars.onComplete = () => {
-          // eventScrollAnimations.tl.progress(Math.abs(sysX / 450));
-        };
-
         animation.play();
       }
 
       function close() {
-        animation.reverse();
+        if (!eventScrollAnimations.scrollPosHasMoved()) {
+          animation.reverse();
+        } else {
+          animation.seek(0).pause();
+          let { x, y, width } = event.getBBox();
+          let upCoords = { x: width / 2 + x - 40, y: y + 90 };
+          let { eventDetails, barElement, upButton } = bar.getNodes();
+
+          let AniOpts = {
+            type,
+            controlNodes: {
+              ...controlNodes,
+              eventDetails,
+              barElement,
+              upButton
+            },
+            expandedHeight,
+            barHeight: modes["detail"].barHeight + (expandedHeight + 130),
+            upCoords,
+            xFactor: xFactorLg,
+            scrollOffset: 0,
+            styleOptions
+          };
+          animation = animations.EventOpenTl(AniOpts);
+          animation.seek(animation.totalDuration());
+          animation.reverse();
+        }
+
         openedElements.event = null;
       }
 

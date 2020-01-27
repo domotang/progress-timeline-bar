@@ -14,14 +14,15 @@ function PTBBar(barData, templateAPI) {
 }
 
 function PTBEvent(eventData, templateAPI) {
+  var eventId = eventData.eventId,
+    detailPages = [eventData.detailPages];
+
   var { open, deregister } = templateAPI.regEvent(
     eventData.element,
     eventData.type ? eventData.type : "standard",
-    eventData.eventId
+    eventData.eventId,
+    parseInt(eventData.expandedHeight)
   );
-  var eventId = eventData.eventId,
-    detailPages = [eventData.detailPages],
-    expandedHeight = parseInt(eventData.expandedHeight);
 
   var publicAPI = {
     setState,
@@ -42,7 +43,7 @@ function PTBEvent(eventData, templateAPI) {
   function setState(toState, opts, onResolve) {
     switch (toState) {
       case "open":
-        open(expandedHeight, opts, onResolve);
+        open(opts, onResolve);
         break;
     }
   }
