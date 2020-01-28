@@ -7,7 +7,7 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 gsap.registerPlugin(InertiaPlugin);
 gsap.registerPlugin(Draggable);
-gsap.globalTimeline.timeScale(1);
+gsap.globalTimeline.timeScale(0.3);
 console.log(gsap.version);
 
 //*************component public animations*****************
@@ -287,6 +287,7 @@ export function EventOpenTl({
   barHeight,
   upCoords,
   xFactor,
+  originOffset,
   scrollOffset,
   styleOptions,
   onResolve
@@ -303,6 +304,7 @@ export function EventOpenTl({
         expandedHeight,
         styleOptions,
         xFactor,
+        originOffset,
         scrollOffset,
         onResolve
       ),
@@ -444,10 +446,14 @@ export function EventScrollAni({
   }
 
   function updateEvent(id) {
+    console.log("eventer", eventer);
     curEventScrollPos = draggable.x;
     // console.log(dragAni.getChildren());
     // console.log(dragAni.getById(`iconDis-${id}`));
-    if (eventer) dragAni.add(eventer, "shrink");
+    // gsap.set(eventNodes.event[curId], { x: `-=${scrollOffset()}` });
+    if (eventer) dragAni.add(eventer, `shrink`);
+    // if (eventer) dragAni.add(eventer, `shrink+=${scrollOffset()}`);
+    // if (eventer) dragAni.add(eventer, `shrink+=${xFactor * curId}`);
     if (mover) dragAni.add(mover, "shrink");
     if (iconDiser) dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
     eventer = dragAni.getById(`event-${id}`);
@@ -561,6 +567,7 @@ function _eventStandardAniOpenTl(
   expandedHeight,
   styleOptions,
   xFactor,
+  originOffset,
   scrollOffset,
   onResolve
 ) {
@@ -573,6 +580,8 @@ function _eventStandardAniOpenTl(
     date,
     iconGroup
   } = controlNodes;
+
+  if (originOffset) gsap.set(event, { x: `-=${originOffset}` });
 
   var tl = gsap.timeline();
   // animate event

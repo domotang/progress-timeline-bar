@@ -167,6 +167,7 @@ function StyledTemplate(styleOptions) {
           onEnter() {},
           onExit() {
             if (openedElements.event) openedElements.event.close();
+            eventScrollAnimations.updateEvent();
             openedElements.modal.reverse();
             openedElements.modal = null;
           }
@@ -325,6 +326,7 @@ function StyledTemplate(styleOptions) {
           barHeight: modes["detail"].barHeight + (expandedHeight + 130),
           upCoords,
           xFactor: xFactorLg,
+          originOffset: 0,
           scrollOffset: eventScrollAnimations.scrollOffset(),
           styleOptions,
           onResolve
@@ -337,7 +339,7 @@ function StyledTemplate(styleOptions) {
         if (!eventScrollAnimations.scrollPosHasMoved()) {
           animation.reverse();
         } else {
-          animation.seek(0).pause();
+          // animation.seek(0).pause();
           let { x, y, width } = event.getBBox();
           let upCoords = { x: width / 2 + x - 40, y: y + 90 };
           let { eventDetails, barElement, upButton } = bar.getNodes();
@@ -354,6 +356,8 @@ function StyledTemplate(styleOptions) {
             barHeight: modes["detail"].barHeight + (expandedHeight + 130),
             upCoords,
             xFactor: xFactorLg,
+            originOffset: 0,
+            // originOffset: eventScrollAnimations.scrollOffset(),
             scrollOffset: 0,
             styleOptions
           };
@@ -361,7 +365,7 @@ function StyledTemplate(styleOptions) {
           animation.seek(animation.totalDuration());
           animation.reverse();
         }
-
+        // animation.reverse();
         openedElements.event = null;
       }
 
