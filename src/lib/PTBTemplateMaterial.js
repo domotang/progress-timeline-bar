@@ -167,7 +167,7 @@ function StyledTemplate(styleOptions) {
           onEnter() {},
           onExit() {
             if (openedElements.event) openedElements.event.close();
-            eventScrollAnimations.updateEvent();
+            eventScrollAnimations.updateEvent(null);
             openedElements.modal.reverse();
             openedElements.modal = null;
           }
@@ -310,28 +310,7 @@ function StyledTemplate(styleOptions) {
 
         modeStateMachine.transition("modal", { ...opts, expandedHeight });
 
-        let { x, y, width } = event.getBBox();
-        let upCoords = { x: width / 2 + x - 40, y: y + 90 };
-        let { eventDetails, barElement, upButton } = bar.getNodes();
-
-        let aniOpts = {
-          type,
-          controlNodes: {
-            ...controlNodes,
-            eventDetails,
-            barElement,
-            upButton
-          },
-          expandedHeight,
-          barHeight: modes["detail"].barHeight + (expandedHeight + 130),
-          upCoords,
-          xFactor: xFactorLg,
-          scrollOffset: eventScrollAnimations.scrollOffset(),
-          scrollIconOffset: 0,
-          styleOptions,
-          onResolve
-        };
-        animation = animations.EventOpenTl(aniOpts);
+        animation = animations.EventOpenTl(_eventAnimationOpts(onResolve, 0));
         animation.play();
       }
 
@@ -340,41 +319,11 @@ function StyledTemplate(styleOptions) {
           eventScrollAnimations.updateEvent(null);
           animation.reverse();
         } else {
-          let { x, y, width } = event.getBBox();
-          let upCoords = { x: width / 2 + x - 40, y: y + 90 };
-          let { eventDetails, barElement, upButton } = bar.getNodes();
+          let iconOffset = eventScrollAnimations.updateEvent(null, animation);
 
-          let aniOpts = {
-            type,
-            controlNodes: {
-              ...controlNodes,
-              eventDetails,
-              barElement,
-              upButton
-            },
-            expandedHeight,
-            barHeight: modes["detail"].barHeight + (expandedHeight + 130),
-            upCoords,
-            xFactor: xFactorLg,
-            scrollOffset: eventScrollAnimations.scrollOffset(),
-            scrollIconOffset: _getEventsNodesByType().iconGroup[
-              id
-            ].getBoundingClientRect(),
-            styleOptions
-          };
-
-          console.log(
-            "offset",
-            id,
-            _getEventsNodesByType().iconGroup[4].getBoundingClientRect().x -
-              eventScrollAnimations.scrollOffset2(),
-            eventScrollAnimations.scrollOffset2(),
-            _getEventsNodesByType().iconGroup[4].getBoundingClientRect()
+          animation = animations.EventOpenTl(
+            _eventAnimationOpts(null, iconOffset)
           );
-
-          eventScrollAnimations.updateEvent(null, animation);
-
-          animation = animations.EventOpenTl(aniOpts);
           animation.seek(animation.totalDuration());
           animation.reverse();
         }
@@ -387,6 +336,32 @@ function StyledTemplate(styleOptions) {
 
       function deregister() {
         events = events.filter(event => event.id != id);
+      }
+
+      function _eventAnimationOpts(onResolve, iconOffset) {
+        let { x, y, width } = event.getBBox();
+        let upCoords = { x: width / 2 + x - 40, y: y + 90 };
+        let { eventDetails, barElement, upButton } = bar.getNodes();
+
+        return {
+          type,
+          controlNodes: {
+            ...controlNodes,
+            eventDetails,
+            barElement,
+            upButton
+          },
+          expandedHeight,
+          barHeight: modes["detail"].barHeight + (expandedHeight + 130),
+          upCoords,
+          xFactor: xFactorLg,
+          scrollOffset: eventScrollAnimations.scrollOffset(),
+          scrollIconOffset:
+            eventScrollAnimations.scrollOffset() -
+            (iconOffset ? iconOffset : 0),
+          styleOptions,
+          onResolve
+        };
       }
     }
     //*************public methods*****************
@@ -425,6 +400,7 @@ function StyledTemplate(styleOptions) {
       barModeAnimations = animations.BarAniTl(opts);
       eventScrollAnimations = animations.EventScrollAni({
         eventNodes: _getEventsNodesByType(),
+        upButton: bar.getNodes().upButton,
         scrollDiv,
         visibleEventsWidth: styleOptions.barWidth.large - 170,
         xFactor: xFactorLg

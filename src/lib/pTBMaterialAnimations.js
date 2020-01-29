@@ -392,6 +392,7 @@ export function showBarTween({ barElement }) {
 
 export function EventScrollAni({
   eventNodes,
+  upButton,
   scrollDiv,
   visibleEventsWidth,
   xFactor
@@ -413,8 +414,7 @@ export function EventScrollAni({
     kill,
     updateEvent,
     scrollPosHasMoved,
-    scrollOffset,
-    scrollOffset2
+    scrollOffset
   };
 
   function create() {
@@ -432,8 +432,8 @@ export function EventScrollAni({
       },
       zIndexBoost: false,
       snap: value => Math.round(value / xFactor) * xFactor,
-      onDrag: updateScrollTarget,
-      onThrowUpdate: updateScrollTarget
+      onDrag: _updateScrollTarget,
+      onThrowUpdate: _updateScrollTarget
     });
 
     draggable = Draggable.get(scrollDiv);
@@ -443,39 +443,60 @@ export function EventScrollAni({
       xFactor,
       moveNode: eventNodes.tagMove,
       iconGroupNodes: eventNodes.iconGroup,
-      iconMoveNodes: eventNodes.iconMove
+      iconMoveNodes: eventNodes.iconMove,
+      upButton
     };
     dragAni = _eventDragTl(opts);
 
-    function updateScrollTarget() {
+    function _updateScrollTarget() {
       // console.log(draggable.x);
       dragAni.progress(this.x / -scrollLength);
     }
   }
 
   function updateEvent(id, animation) {
-    curEventScrollPos = draggable.x;
-    if (id === null && animation) {
-      dragAni.progress(lastEventScrollPos / -scrollLength);
-    }
-    if (eventer && id === null) dragAni.add(eventer, `shrink`);
-    if (mover && id === null) dragAni.add(mover, "shrink");
-    if (iconDiser && id === null) {
-      dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
-    }
-    if (id === null && animation) {
-      animation.seek(0).pause();
-      dragAni.progress(curEventScrollPos / -scrollLength);
-    }
+    var nodeBegin = 0;
+    var nodeEnd = 0;
+    if (draggable) curEventScrollPos = draggable.x;
 
-    if (id != null) eventer = dragAni.getById(`event-${id}`);
-    if (id != null) mover = dragAni.getById(`move-${id}`);
-    if (id != null) iconDiser = dragAni.getById(`iconDis-${id}`);
-    if (id != null) dragAni.remove(eventer);
-    if (id != null) dragAni.remove(mover);
-    if (iconDiser && id != null) dragAni.remove(iconDiser);
-    if (id != null) lastEventScrollPos = draggable.x;
+    if (id === null) {
+      // dragAni.remove(dragAni.getById("upButton"));
+      if (eventer) dragAni.add(eventer, `shrink`);
+      if (mover) dragAni.add(mover, "shrink");
+      if (iconDiser) dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
+      if (animation) {
+        dragAni.progress(lastEventScrollPos / -scrollLength);
+        animation.seek(0).pause();
+        nodeBegin = eventNodes.iconGroup[curId].getBoundingClientRect().x;
+        dragAni.progress(curEventScrollPos / -scrollLength);
+        nodeEnd = eventNodes.iconGroup[curId].getBoundingClientRect().x;
+      }
+    } else {
+      eventer = dragAni.getById(`event-${id}`);
+      mover = dragAni.getById(`move-${id}`);
+      iconDiser = dragAni.getById(`iconDis-${id}`);
+      dragAni.remove(eventer);
+      dragAni.remove(mover);
+      if (iconDiser) dragAni.remove(iconDiser);
+      // dragAni.to(
+      //   upButton,
+      //   scrollLength,
+      //   {
+      //     attr: {
+      //       x: `-=${scrollLength}`
+      //     },
+      //     ease: "none",
+      //     id: "upButton"
+      //   },
+      //   "shrink"
+      // );
+      lastEventScrollPos = draggable.x;
+    }
     curId = id;
+
+    return Math.abs(
+      nodeBegin - nodeEnd + (curEventScrollPos - lastEventScrollPos)
+    );
   }
 
   function kill() {
@@ -495,14 +516,11 @@ export function EventScrollAni({
   }
 
   function scrollPosHasMoved() {
-    return draggable.x != curEventScrollPos;
+    return draggable ? draggable.x != curEventScrollPos : false;
   }
 
   function scrollOffset() {
     return Math.abs(draggable.x);
-  }
-  function scrollOffset2() {
-    return scrollLength - Math.abs(draggable.x);
   }
 }
 
@@ -635,7 +653,7 @@ function _eventStandardAniOpenTl(
       iconGroup,
       0.2,
       {
-        x: `${scrollOffset + 4}`,
+        x: `${scrollIconOffset + 4}`,
         y: 80,
         scale: 2,
         transformOrigin: "top left",
