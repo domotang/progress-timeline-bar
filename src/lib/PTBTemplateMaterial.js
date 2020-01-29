@@ -314,7 +314,7 @@ function StyledTemplate(styleOptions) {
         let upCoords = { x: width / 2 + x - 40, y: y + 90 };
         let { eventDetails, barElement, upButton } = bar.getNodes();
 
-        let AniOpts = {
+        let aniOpts = {
           type,
           controlNodes: {
             ...controlNodes,
@@ -326,25 +326,25 @@ function StyledTemplate(styleOptions) {
           barHeight: modes["detail"].barHeight + (expandedHeight + 130),
           upCoords,
           xFactor: xFactorLg,
-          originOffset: 0,
           scrollOffset: eventScrollAnimations.scrollOffset(),
+          scrollIconOffset: 0,
           styleOptions,
           onResolve
         };
-        animation = animations.EventOpenTl(AniOpts);
+        animation = animations.EventOpenTl(aniOpts);
         animation.play();
       }
 
       function close() {
         if (!eventScrollAnimations.scrollPosHasMoved()) {
+          eventScrollAnimations.updateEvent(null);
           animation.reverse();
         } else {
-          // animation.seek(0).pause();
           let { x, y, width } = event.getBBox();
           let upCoords = { x: width / 2 + x - 40, y: y + 90 };
           let { eventDetails, barElement, upButton } = bar.getNodes();
 
-          let AniOpts = {
+          let aniOpts = {
             type,
             controlNodes: {
               ...controlNodes,
@@ -356,16 +356,28 @@ function StyledTemplate(styleOptions) {
             barHeight: modes["detail"].barHeight + (expandedHeight + 130),
             upCoords,
             xFactor: xFactorLg,
-            originOffset: 0,
-            // originOffset: eventScrollAnimations.scrollOffset(),
-            scrollOffset: 0,
+            scrollOffset: eventScrollAnimations.scrollOffset(),
+            scrollIconOffset: _getEventsNodesByType().iconGroup[
+              id
+            ].getBoundingClientRect(),
             styleOptions
           };
-          animation = animations.EventOpenTl(AniOpts);
+
+          console.log(
+            "offset",
+            id,
+            _getEventsNodesByType().iconGroup[4].getBoundingClientRect().x -
+              eventScrollAnimations.scrollOffset2(),
+            eventScrollAnimations.scrollOffset2(),
+            _getEventsNodesByType().iconGroup[4].getBoundingClientRect()
+          );
+
+          eventScrollAnimations.updateEvent(null, animation);
+
+          animation = animations.EventOpenTl(aniOpts);
           animation.seek(animation.totalDuration());
           animation.reverse();
         }
-        // animation.reverse();
         openedElements.event = null;
       }
 
@@ -428,7 +440,6 @@ function StyledTemplate(styleOptions) {
           height: modes["detail"].barHeight + 100,
           eventClose: openedElements.event.close
         };
-        eventScrollAnimations.updateEvent();
         var closeEventsAnimation = animations.EventsCloseTl(opts);
         closeEventsAnimation.play();
       }
@@ -457,9 +468,9 @@ function StyledTemplate(styleOptions) {
         styleOptions,
         eventDrop: !!opts.expandedHeight,
         height:
-          modes["detail"].barHeight +
+          modes.detail.barHeight +
           (opts.expandedHeight ? opts.expandedHeight + 130 : 100),
-        barHeight: modes["detail"].barHeight,
+        barHeight: modes.detail.barHeight,
         barModeAnimations
       };
       var barModalAnimation =

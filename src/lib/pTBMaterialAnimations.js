@@ -7,7 +7,7 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 gsap.registerPlugin(InertiaPlugin);
 gsap.registerPlugin(Draggable);
-gsap.globalTimeline.timeScale(0.3);
+gsap.globalTimeline.timeScale(1);
 console.log(gsap.version);
 
 //*************component public animations*****************
@@ -287,8 +287,8 @@ export function EventOpenTl({
   barHeight,
   upCoords,
   xFactor,
-  originOffset,
   scrollOffset,
+  scrollIconOffset,
   styleOptions,
   onResolve
 }) {
@@ -304,8 +304,8 @@ export function EventOpenTl({
         expandedHeight,
         styleOptions,
         xFactor,
-        originOffset,
         scrollOffset,
+        scrollIconOffset,
         onResolve
       ),
       "start"
@@ -403,11 +403,19 @@ export function EventScrollAni({
   var iconDiser = null;
   var curId = null;
   var curEventScrollPos = null;
+  var lastEventScrollPos = null;
   var scrollLength = Math.abs(
     Math.ceil(visibleEventsWidth - xFactor * eventNodes.tagMove.length)
   );
 
-  return { create, kill, updateEvent, scrollPosHasMoved, scrollOffset };
+  return {
+    create,
+    kill,
+    updateEvent,
+    scrollPosHasMoved,
+    scrollOffset,
+    scrollOffset2
+  };
 
   function create() {
     gsap.set(scrollDiv, { clearProps: "x,y" });
@@ -445,23 +453,28 @@ export function EventScrollAni({
     }
   }
 
-  function updateEvent(id) {
-    console.log("eventer", eventer);
+  function updateEvent(id, animation) {
     curEventScrollPos = draggable.x;
-    // console.log(dragAni.getChildren());
-    // console.log(dragAni.getById(`iconDis-${id}`));
-    // gsap.set(eventNodes.event[curId], { x: `-=${scrollOffset()}` });
-    if (eventer) dragAni.add(eventer, `shrink`);
-    // if (eventer) dragAni.add(eventer, `shrink+=${scrollOffset()}`);
-    // if (eventer) dragAni.add(eventer, `shrink+=${xFactor * curId}`);
-    if (mover) dragAni.add(mover, "shrink");
-    if (iconDiser) dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
-    eventer = dragAni.getById(`event-${id}`);
-    mover = dragAni.getById(`move-${id}`);
-    iconDiser = dragAni.getById(`iconDis-${id}`);
+    if (id === null && animation) {
+      dragAni.progress(lastEventScrollPos / -scrollLength);
+    }
+    if (eventer && id === null) dragAni.add(eventer, `shrink`);
+    if (mover && id === null) dragAni.add(mover, "shrink");
+    if (iconDiser && id === null) {
+      dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
+    }
+    if (id === null && animation) {
+      animation.seek(0).pause();
+      dragAni.progress(curEventScrollPos / -scrollLength);
+    }
+
+    if (id != null) eventer = dragAni.getById(`event-${id}`);
+    if (id != null) mover = dragAni.getById(`move-${id}`);
+    if (id != null) iconDiser = dragAni.getById(`iconDis-${id}`);
     if (id != null) dragAni.remove(eventer);
     if (id != null) dragAni.remove(mover);
     if (iconDiser && id != null) dragAni.remove(iconDiser);
+    if (id != null) lastEventScrollPos = draggable.x;
     curId = id;
   }
 
@@ -487,6 +500,9 @@ export function EventScrollAni({
 
   function scrollOffset() {
     return Math.abs(draggable.x);
+  }
+  function scrollOffset2() {
+    return scrollLength - Math.abs(draggable.x);
   }
 }
 
@@ -567,8 +583,8 @@ function _eventStandardAniOpenTl(
   expandedHeight,
   styleOptions,
   xFactor,
-  originOffset,
   scrollOffset,
+  scrollIconOffset,
   onResolve
 ) {
   var {
@@ -580,8 +596,6 @@ function _eventStandardAniOpenTl(
     date,
     iconGroup
   } = controlNodes;
-
-  if (originOffset) gsap.set(event, { x: `-=${originOffset}` });
 
   var tl = gsap.timeline();
   // animate event
@@ -621,9 +635,10 @@ function _eventStandardAniOpenTl(
       iconGroup,
       0.2,
       {
-        x: scrollOffset + 4,
+        x: `${scrollOffset + 4}`,
         y: 80,
         scale: 2,
+        transformOrigin: "top left",
         ease: "Power1.easeInOut"
       },
       "spread"
