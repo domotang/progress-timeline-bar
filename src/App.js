@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PTBTemplateContext } from "./components/PTBTemplateContext";
-import PTBTemplateMaterial from "./lib/PTBTemplateMaterial";
+import PTBTemplateMaterial from "./template/PTBTemplateMaterial";
 import PTBListBox from "./components/PTBListBox";
 import ProcessTimelineBar from "./components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "./components/ProcessTimelineEvent";
@@ -66,7 +66,7 @@ function App() {
               detail={shipment.shipment}
               mode="large"
               scrollableEvents="true"
-              eventWidth={131}
+              eventWidth={151}
               status={shipment.status}
               headerDetails={shipment.headerDetails}
             >
