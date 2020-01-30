@@ -173,13 +173,7 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
   };
 }
 
-export function getEventTmplt({
-  xFactorLg,
-  eventWidthLg,
-  styleOptions
-  // dragEventHandler,
-  // touchEventHandler
-}) {
+export function getEventTmplt({ xFactorLg, eventWidthLg, styleOptions }) {
   // eslint-disable-next-line react/display-name
   return props => {
     var x = props.id * xFactorLg;
@@ -194,12 +188,6 @@ export function getEventTmplt({
         cursor={
           props.currentMode != "large" && !props.opened ? "pointer" : "inherit"
         }
-        // visibility="hidden"
-        // visibility={
-        //   x + eventWidthLg >= styleOptions.barWidth.large - 166
-        //     ? "hidden"
-        //     : "visible"
-        // }
         onClick={() => {
           if (
             props.currentMode != "large" &&
@@ -209,13 +197,7 @@ export function getEventTmplt({
             props.eventClick(props.id);
           }
         }}
-        // draggable="true"
-        // onDrag={dragEventHandler}
-        // onDragEnd={dragEventHandler}
-        // onTouchMove={touchEventHandler}
-        // onTouchEnd={touchEventHandler}
       >
-        {/* <g className="masked"> */}
         <g className="masked" clipPath="url(#mask)">
           <g className="tag-move">
             <path

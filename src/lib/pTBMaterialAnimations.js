@@ -405,9 +405,9 @@ export function EventScrollAni({
 }) {
   var draggable = null;
   var dragAni = null;
-  var eventer = null;
-  var mover = null;
-  var iconDiser = null;
+  var eventMoveStore = null;
+  var iconMoveStore = null;
+  var iconVanishStore = null;
   var curId = null;
   var curEventScrollPos = null;
   var lastEventScrollPos = null;
@@ -447,8 +447,8 @@ export function EventScrollAni({
     var opts = {
       scrollLength,
       xFactor,
-      moveNode: eventNodes.tagMove,
-      iconGroupNodes: eventNodes.iconGroup,
+      eventMoveNode: eventNodes.tagMove,
+      iconVanishNodes: eventNodes.iconGroup,
       iconMoveNodes: eventNodes.iconMove,
       upButton
     };
@@ -468,9 +468,10 @@ export function EventScrollAni({
     if (id === null) {
       if (dragAni.getById("upButton"))
         dragAni.remove(dragAni.getById("upButton"));
-      if (eventer) dragAni.add(eventer, `shrink`);
-      if (mover) dragAni.add(mover, "shrink");
-      if (iconDiser) dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
+      if (eventMoveStore) dragAni.add(eventMoveStore, `shrink`);
+      if (iconMoveStore) dragAni.add(iconMoveStore, "shrink");
+      if (iconVanishStore)
+        dragAni.add(iconVanishStore, `shrink+=${xFactor * curId + 20}`);
       if (animation) {
         dragAni.progress(lastEventScrollPos / -scrollLength);
         animation.seek(0).pause();
@@ -479,12 +480,10 @@ export function EventScrollAni({
         nodeEnd = eventNodes.iconGroup[curId].getBoundingClientRect().x;
       }
     } else {
-      eventer = dragAni.getById(`event-${id}`);
-      mover = dragAni.getById(`move-${id}`);
-      iconDiser = dragAni.getById(`iconDis-${id}`);
-      dragAni.remove(eventer);
-      dragAni.remove(mover);
-      if (iconDiser) dragAni.remove(iconDiser);
+      dragAni.remove((eventMoveStore = dragAni.getById(`eventMove-${id}`)));
+      dragAni.remove((iconMoveStore = dragAni.getById(`iconMove-${id}`)));
+      iconVanishStore = dragAni.getById(`iconVanish-${id}`);
+      if (iconVanishStore) dragAni.remove(iconVanishStore);
       let upButtonMove = xFactor * (id + 1) + 30;
       dragAni.fromTo(
         upButton,
@@ -633,12 +632,12 @@ function _eventStandardAniOpenTl(
       {
         transformOrigin: "50% 50%",
         scale: 0.8,
-        ease: "Power1.easeInOut",
-        onComplete: onResolve
+        ease: "Power1.easeInOut"
       },
       "shrink"
     )
     .to(event, 0.3, { y: "86", ease: "Power1.easeInOut" }, 0.1, "shrink")
+    .call(onResolve)
     .add("spread")
     .to(
       tag,
@@ -850,21 +849,21 @@ function _barDetailAniTl(nodes, styleOptions) {
 function _eventDragTl({
   scrollLength,
   xFactor,
-  moveNode,
-  iconGroupNodes,
+  eventMoveNode,
+  iconVanishNodes,
   iconMoveNodes
 }) {
   var tl = gsap.timeline({ paused: true }).add("shrink");
 
-  moveNode.reduce(_eventMoveReducer, tl);
+  eventMoveNode.reduce(_eventMoveReducer, tl);
   iconMoveNodes.reduce(_iconMoveReducer, tl);
-  iconGroupNodes.reduce(_iconGroupReducer, tl);
+  iconVanishNodes.reduce(_iconVanishReducer, tl);
 
   function _eventMoveReducer(accum, cur, index) {
     return accum.to(
       cur,
       scrollLength,
-      { x: -scrollLength, ease: "none", id: `event-${index}` },
+      { x: -scrollLength, ease: "none", id: `eventMove-${index}` },
       "shrink"
     );
   }
@@ -877,13 +876,13 @@ function _eventDragTl({
       {
         x: nodebecomesHidden ? -xFactor * index : -scrollLength,
         ease: "none",
-        id: `move-${index}`
+        id: `iconMove-${index}`
       },
       "shrink"
     );
   }
 
-  function _iconGroupReducer(accum, cur, index) {
+  function _iconVanishReducer(accum, cur, index) {
     return xFactor * index < scrollLength
       ? accum.to(
           cur,
@@ -892,7 +891,7 @@ function _eventDragTl({
             scale: 0,
             transformOrigin: "center",
             ease: "none",
-            id: `iconDis-${index}`
+            id: `iconVanish-${index}`
           },
           xFactor * index + 20,
           "shrink"

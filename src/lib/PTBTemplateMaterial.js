@@ -318,7 +318,6 @@ function StyledTemplate(styleOptions) {
       function close() {
         if (!eventScrollAnimations.scrollPosHasMoved()) {
           eventScrollAnimations.updateEvent(null);
-          animation.reverse();
         } else {
           let iconOffset = eventScrollAnimations.updateEvent(null, animation);
 
@@ -326,8 +325,8 @@ function StyledTemplate(styleOptions) {
             _eventAnimationOpts(null, iconOffset)
           );
           animation.seek(animation.totalDuration());
-          animation.reverse();
         }
+        animation.reverse();
         openedElements.event = null;
       }
 
