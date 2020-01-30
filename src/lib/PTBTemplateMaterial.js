@@ -232,7 +232,8 @@ function StyledTemplate(styleOptions) {
         headerDetails: element.querySelector(".header-details"),
         eventDetails: element.querySelector(".event-details"),
         backButton: element.querySelector(".back-icon"),
-        upButton: element.querySelector(".up-icon")
+        upButton: element.querySelector(".up-group"),
+        upButtonClip: element.querySelector(".up-group-clip")
       };
 
       // var animation = null;
@@ -341,7 +342,12 @@ function StyledTemplate(styleOptions) {
       function _eventAnimationOpts(onResolve, iconOffset) {
         let { x, y, width } = event.getBBox();
         let upCoords = { x: width / 2 + x - 40, y: y + 90 };
-        let { eventDetails, barElement, upButton } = bar.getNodes();
+        let {
+          eventDetails,
+          barElement,
+          upButton,
+          upButtonClip
+        } = bar.getNodes();
 
         return {
           type,
@@ -349,7 +355,8 @@ function StyledTemplate(styleOptions) {
             ...controlNodes,
             eventDetails,
             barElement,
-            upButton
+            upButton,
+            upButtonClip
           },
           expandedHeight,
           barHeight: modes["detail"].barHeight + (expandedHeight + 130),

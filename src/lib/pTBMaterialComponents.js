@@ -48,7 +48,7 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
           {/* <path
             className="event-clip"
             d={`M0,0 h${858} v68 h-${882} Z`}
-            transform={`translate(166, 20)`}
+            transform={`translate(165, 20)`}
             fill="black"
           /> */}
           <text
@@ -122,49 +122,50 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
             </svg>
           </g>
         </svg>
-        <svg
-          className="up-icon"
-          x="30"
-          y="68"
-          visibility="hidden"
-          onClick={() => {
-            props.eventClick(null);
-          }}
-          cursor="pointer"
-        >
+        <g className="up-group-clip" clipPath="url(#mask)">
           <g className="up-group">
-            <path
-              className="up-shape"
-              opacity="0"
-              id={`cir-${props.id}`}
-              d="M0,20 h70 v70 h-70 v-70"
-              transform="translate(2,2)"
-              fill="#4a75a1"
-              stroke={styleOptions.backgroundColor}
-              strokeMiterlimit="10"
-              strokeWidth="0"
-            ></path>
             <svg
-              stroke="currentColor"
-              fill="white"
-              strokeWidth="0"
-              viewBox="0 0 512 512"
-              className="icon-svg"
-              x="28"
-              y="56"
-              fontSize="28"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
+              className="up-icon"
+              onClick={() => {
+                props.eventClick(null);
+              }}
+              cursor="pointer"
             >
               <path
-                d="M256 217.9L383 345c9.4 9.4 24.6 9.4 33.9 0 9.4-9.4 9.3-24.6 0-34L273
+                className="up-shape"
+                opacity="0"
+                id={`cir-${props.id}`}
+                d="M0,20 h70 v70 h-70 v-70"
+                transform="translate(2,2)"
+                fill="#4a75a1"
+                stroke={styleOptions.backgroundColor}
+                strokeMiterlimit="10"
+                strokeWidth="0"
+              ></path>
+              <svg
+                stroke="currentColor"
+                fill="white"
+                strokeWidth="0"
+                viewBox="0 0 512 512"
+                className="icon-svg"
+                x="28"
+                y="56"
+                fontSize="28"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M256 217.9L383 345c9.4 9.4 24.6 9.4 33.9 0 9.4-9.4 9.3-24.6 0-34L273
                   167c-9.1-9.1-23.7-9.3-33.1-.7L95 310.9c-4.7 4.7-7 10.9-7 17s2.3 12.3 7 17c9.4 9.4
                   24.6 9.4 33.9 0l127.1-127z"
-              ></path>
+                >
+                  transform={`translate(200, 200)`}
+                </path>
+              </svg>
             </svg>
           </g>
-        </svg>
+        </g>
         {/* <g className="events" clipPath="url(#mask)"> */}
         <g className="events">{props.eventDomElements}</g>
       </svg>
@@ -219,7 +220,7 @@ export function getEventTmplt({
           <g className="tag-move">
             <path
               className="tag"
-              overflow="hidden"
+              // overflow="hidden"
               id={`rect-${props.id}`}
               d={`M6,0 h${eventWidthLg} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthLg} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
               transform={`translate(${x + 143}, 20)`}

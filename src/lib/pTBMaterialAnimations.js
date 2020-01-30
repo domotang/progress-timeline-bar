@@ -312,12 +312,16 @@ export function EventOpenTl({
     )
     .add(() => {
       if (!tl.reversed()) {
-        _updateEventOpenBackButton(controlNodes.upButton, upCoords);
+        _updateEventOpenUpButtonTl(
+          controlNodes.upButton,
+          upCoords,
+          controlNodes.upButtonClip
+        );
       }
     }, "start+=.4")
     .add(() => {
       if (tl.reversed()) {
-        _updateEventCloseBackButtonTween(controlNodes.upButton);
+        _updateEventCloseUpButtonTween(controlNodes.upButton);
       }
     }, "start+=.8");
 
@@ -335,7 +339,6 @@ export function EventsCloseTl({ nodes, height, eventClose }) {
 }
 
 export function initElementsTween({
-  eventNodes,
   barNodes,
   mode,
   containerHeight,
@@ -366,6 +369,9 @@ export function initElementsTween({
     left: 150,
     opacity: 0,
     position: "absolute"
+  });
+  gsap.set(barNodes.upButton, {
+    opacity: 0
   });
 }
 
@@ -460,7 +466,8 @@ export function EventScrollAni({
     if (draggable) curEventScrollPos = draggable.x;
 
     if (id === null) {
-      // dragAni.remove(dragAni.getById("upButton"));
+      if (dragAni.getById("upButton"))
+        dragAni.remove(dragAni.getById("upButton"));
       if (eventer) dragAni.add(eventer, `shrink`);
       if (mover) dragAni.add(mover, "shrink");
       if (iconDiser) dragAni.add(iconDiser, `shrink+=${xFactor * curId + 20}`);
@@ -478,18 +485,18 @@ export function EventScrollAni({
       dragAni.remove(eventer);
       dragAni.remove(mover);
       if (iconDiser) dragAni.remove(iconDiser);
-      // dragAni.to(
-      //   upButton,
-      //   scrollLength,
-      //   {
-      //     attr: {
-      //       x: `-=${scrollLength}`
-      //     },
-      //     ease: "none",
-      //     id: "upButton"
-      //   },
-      //   "shrink"
-      // );
+      let upButtonMove = xFactor * (id + 1) + 30;
+      dragAni.fromTo(
+        upButton,
+        { x: upButtonMove },
+        {
+          duration: scrollLength,
+          x: `${upButtonMove - scrollLength}`,
+          ease: "none",
+          id: "upButton"
+        },
+        "shrink"
+      );
       lastEventScrollPos = draggable.x;
     }
     curId = id;
@@ -672,18 +679,15 @@ function _eventStandardAniOpenTl(
   return tl;
 }
 
-function _updateEventOpenBackButton(upButton, coords) {
+function _updateEventOpenUpButtonTl(upButton, coords, upButtonClip) {
   var tl = gsap.timeline();
 
   tl.add("set")
     .to(
       upButton,
-      0,
+      0.01,
       {
-        attr: {
-          visibility: 0,
-          opacity: 0
-        }
+        opacity: 0
       },
       "set"
     )
@@ -691,10 +695,15 @@ function _updateEventOpenBackButton(upButton, coords) {
       upButton,
       0,
       {
-        attr: {
-          x: coords.x,
-          y: coords.y + 60
-        }
+        x: coords.x
+      },
+      "set"
+    )
+    .to(
+      upButtonClip,
+      0,
+      {
+        y: coords.y + 30
       },
       "set"
     )
@@ -703,36 +712,27 @@ function _updateEventOpenBackButton(upButton, coords) {
       upButton,
       0.4,
       {
-        attr: {
-          visibility: 1,
-          opacity: 1
-        }
+        opacity: 1
       },
       "move"
     )
     .to(
-      upButton,
+      upButtonClip,
       0.2,
       {
-        attr: {
-          x: coords.x,
-          y: coords.y
-        }
+        y: coords.y
       },
       "move"
     );
   return tl;
 }
 
-function _updateEventCloseBackButtonTween(upButton) {
+function _updateEventCloseUpButtonTween(upButton) {
   gsap.to(
     upButton,
     0.2,
     {
-      attr: {
-        visibility: 0,
-        opacity: 0
-      }
+      opacity: 0
     },
     "set"
   );
