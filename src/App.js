@@ -66,7 +66,7 @@ function App() {
               detail={shipment.shipment}
               mode="large"
               scrollableEvents="true"
-              eventWidth={151}
+              eventWidth={150}
               status={shipment.status}
               headerDetails={shipment.headerDetails}
             >

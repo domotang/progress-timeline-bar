@@ -9,18 +9,25 @@ function StyledTemplate(styleOptions) {
   return Template;
 
   function Template(elementCount, status, eventWidth) {
-    var xFactorLg = eventWidth
+    var xFactorDtl = eventWidth
         ? eventWidth + 14
         : Math.round((styleOptions.barWidth.large - 170) / elementCount),
-      xFactorLg2 = Math.round(
+      xFactorLg = Math.round(
         (styleOptions.barWidth.large - 170) / elementCount
       ),
       xFactorSm = Math.round((styleOptions.barWidth.small - 97) / elementCount),
-      eventWidthLg = eventWidth ? eventWidth : xFactorLg - 14,
-      eventWidthLg2 = xFactorLg2 - 14,
+      eventWidthDtl = eventWidth ? eventWidth : xFactorDtl - 14,
+      eventWidthLg = xFactorLg - 14,
       eventWidthSm = xFactorSm - 8,
+      draggableEnabled =
+        !!eventWidth &&
+        xFactorDtl * elementCount > styleOptions.barWidth.large - 170,
+      timelineBarWidthDtl = draggableEnabled
+        ? styleOptions.barWidth.large - 100
+        : status > 0
+        ? 194 + xFactorDtl * (status - 1)
+        : 164,
       timelineBarWidthLg = status > 0 ? 194 + xFactorLg * (status - 1) : 164,
-      timelineBarWidthLg2 = status > 0 ? 194 + xFactorLg2 * (status - 1) : 164,
       timelineBarWidthSm = status > 0 ? 194 + xFactorSm * (status - 1) : 164,
       modes = {
         small: {
@@ -75,7 +82,7 @@ function StyledTemplate(styleOptions) {
             target: "detail",
             action() {
               barModeAnimations.seek("detail");
-              eventScrollAnimations.create();
+              if (draggableEnabled) eventScrollAnimations.create();
             }
           },
           modal: {
@@ -100,14 +107,14 @@ function StyledTemplate(styleOptions) {
             target: "detail",
             action() {
               _setMode({ mode: "detail" });
-              eventScrollAnimations.create();
+              if (draggableEnabled) eventScrollAnimations.create();
             }
           },
           modal: {
             target: "modal",
             action(opts) {
               _setModeModal(opts);
-              eventScrollAnimations.create();
+              if (draggableEnabled) eventScrollAnimations.create();
             }
           }
         }
@@ -128,7 +135,7 @@ function StyledTemplate(styleOptions) {
             target: "detail",
             action() {
               _setMode({ mode: "detail" });
-              eventScrollAnimations.create();
+              if (draggableEnabled) eventScrollAnimations.create();
             }
           }
         }
@@ -142,16 +149,18 @@ function StyledTemplate(styleOptions) {
           small: {
             target: "small",
             action() {
-              eventScrollAnimations.kill();
+              if (draggableEnabled) eventScrollAnimations.kill();
               _setMode({ mode: "small" });
             }
           },
           large: {
             target: "large",
             action() {
-              eventScrollAnimations
-                .kill()
-                .then(() => _setMode({ mode: "large" }));
+              if (draggableEnabled)
+                return eventScrollAnimations
+                  .kill()
+                  .then(() => _setMode({ mode: "large" }));
+              _setMode({ mode: "large" });
             }
           },
           modal: {
@@ -167,7 +176,7 @@ function StyledTemplate(styleOptions) {
           onEnter() {},
           onExit() {
             if (openedElements.event) openedElements.event.close();
-            eventScrollAnimations.updateEvent(null);
+            if (draggableEnabled) eventScrollAnimations.updateEvent(null);
             openedElements.modal.reverse();
             openedElements.modal = null;
           }
@@ -176,7 +185,7 @@ function StyledTemplate(styleOptions) {
           small: {
             target: "small",
             action() {
-              eventScrollAnimations.kill();
+              if (draggableEnabled) eventScrollAnimations.kill();
             }
           },
           detail: {
@@ -195,10 +204,10 @@ function StyledTemplate(styleOptions) {
       regEvent,
       setMode,
       closeEvents,
-      Bar: components.getBarTmplt({ styleOptions, timelineBarWidthLg }),
+      Bar: components.getBarTmplt({ styleOptions, timelineBarWidthDtl }),
       Event: components.getEventTmplt({
-        xFactorLg,
-        eventWidthLg,
+        xFactorDtl,
+        eventWidthDtl,
         styleOptions
       }),
       barHeights: _getBarHeights(),
@@ -307,7 +316,7 @@ function StyledTemplate(styleOptions) {
       function open(opts, onResolve) {
         if (openedElements.event) openedElements.event.close();
         openedElements.event = internalEventAPI;
-        eventScrollAnimations.updateEvent(id);
+        if (draggableEnabled) eventScrollAnimations.updateEvent(id);
 
         modeStateMachine.transition("modal", { ...opts, expandedHeight });
 
@@ -316,16 +325,19 @@ function StyledTemplate(styleOptions) {
       }
 
       function close() {
-        if (!eventScrollAnimations.scrollPosHasMoved()) {
-          eventScrollAnimations.updateEvent(null);
-        } else {
-          let iconOffset = eventScrollAnimations.updateEvent(null, animation);
+        if (draggableEnabled) {
+          if (!eventScrollAnimations.scrollPosHasMoved()) {
+            eventScrollAnimations.updateEvent(null);
+          } else {
+            let iconOffset = eventScrollAnimations.updateEvent(null, animation);
 
-          animation = animations.EventOpenTl(
-            _eventAnimationOpts(null, iconOffset)
-          );
-          animation.seek(animation.totalDuration());
+            animation = animations.EventOpenTl(
+              _eventAnimationOpts(null, iconOffset)
+            );
+            animation.seek(animation.totalDuration());
+          }
         }
+
         animation.reverse();
         openedElements.event = null;
       }
@@ -361,11 +373,14 @@ function StyledTemplate(styleOptions) {
           expandedHeight,
           barHeight: modes["detail"].barHeight + (expandedHeight + 130),
           upCoords,
-          xFactor: xFactorLg,
-          scrollOffset: eventScrollAnimations.scrollOffset(),
-          scrollIconOffset:
-            eventScrollAnimations.scrollOffset() -
-            (iconOffset ? iconOffset : 0),
+          xFactor: xFactorDtl,
+          scrollOffset: draggableEnabled
+            ? eventScrollAnimations.scrollOffset()
+            : 0,
+          scrollIconOffset: draggableEnabled
+            ? eventScrollAnimations.scrollOffset() -
+              (iconOffset ? iconOffset : 0)
+            : 0,
           styleOptions,
           onResolve
         };
@@ -393,25 +408,25 @@ function StyledTemplate(styleOptions) {
         barNodes,
         styleOptions,
         timelineBarWidthLg,
-        timelineBarWidthLg2,
         timelineBarWidthSm,
         eventWidthLg,
-        eventWidthLg2,
         eventWidthSm,
         xFactorSm,
-        xFactorLg2,
+        xFactorLg,
         elementCount,
         status,
         modes
       };
       barModeAnimations = animations.BarAniTl(opts);
-      eventScrollAnimations = animations.EventScrollAni({
-        eventNodes: _getEventsNodesByType(),
-        upButton: bar.getNodes().upButton,
-        scrollDiv,
-        visibleEventsWidth: styleOptions.barWidth.large - 170,
-        xFactor: xFactorLg
-      });
+      eventScrollAnimations = draggableEnabled
+        ? animations.EventScrollAni({
+            eventNodes: _getEventsNodesByType(),
+            upButton: bar.getNodes().upButton,
+            scrollDiv,
+            visibleEventsWidth: styleOptions.barWidth.large - 170,
+            xFactor: xFactorDtl
+          })
+        : null;
       modeStateMachine = StateMachine(modeStateMachineDef);
       modeStateMachine.transition(initMode);
     }

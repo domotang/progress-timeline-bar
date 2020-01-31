@@ -2,7 +2,7 @@ import React from "react";
 
 //*************component templates*****************
 
-export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
+export function getBarTmplt({ styleOptions, timelineBarWidthDtl }) {
   // eslint-disable-next-line react/display-name
   return props => {
     return (
@@ -30,7 +30,7 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
           <path
             className="header-bar"
             id={`rect-`}
-            d={`M0,0 h${timelineBarWidthLg} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidthLg -
+            d={`M0,0 h${timelineBarWidthDtl} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidthDtl -
               157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-129 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
             transform={`translate(0, 0)`}
             fill="#477578"
@@ -173,10 +173,10 @@ export function getBarTmplt({ styleOptions, timelineBarWidthLg }) {
   };
 }
 
-export function getEventTmplt({ xFactorLg, eventWidthLg, styleOptions }) {
+export function getEventTmplt({ xFactorDtl, eventWidthDtl, styleOptions }) {
   // eslint-disable-next-line react/display-name
   return props => {
-    var x = props.id * xFactorLg;
+    var x = props.id * xFactorDtl;
     var Icon = props.icon;
 
     return (
@@ -204,7 +204,7 @@ export function getEventTmplt({ xFactorLg, eventWidthLg, styleOptions }) {
               className="tag"
               // overflow="hidden"
               id={`rect-${props.id}`}
-              d={`M6,0 h${eventWidthLg} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthLg} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
+              d={`M6,0 h${eventWidthDtl} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthDtl} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
               transform={`translate(${x + 143}, 20)`}
               fill={props.color}
             />

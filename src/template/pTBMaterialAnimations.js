@@ -16,13 +16,11 @@ export function BarAniTl({
   barNodes,
   styleOptions,
   timelineBarWidthLg,
-  timelineBarWidthLg2,
   timelineBarWidthSm,
   eventWidthLg,
-  eventWidthLg2,
   eventWidthSm,
   xFactorSm,
-  xFactorLg2,
+  xFactorLg,
   elementCount,
   status,
   modes
@@ -53,7 +51,7 @@ export function BarAniTl({
       barTag,
       0.3,
       {
-        morphSVG: `M0,0 h${timelineBarWidthLg2} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidthLg2 -
+        morphSVG: `M0,0 h${timelineBarWidthLg} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidthLg -
           146} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-25 a6,6,0,0,1,6,-6`,
         ease: "Power3.inOut"
       },
@@ -77,8 +75,8 @@ export function BarAniTl({
     0.3,
     {
       morphSVG: {
-        shape: `M12,1 h${eventWidthLg2 +
-          5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidthLg2 +
+        shape: `M12,1 h${eventWidthLg +
+          5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidthLg +
           5} a6,6,0,0,1,-6,-6 l2 -6 l3 -6 a6,6,0,0,1,6,-6`,
         shapeIndex: 0,
         map: "complexity"
@@ -92,8 +90,8 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: {
-          shape: `M5,1 h${eventWidthLg2 +
-            12} l-5, 12 l-5, 12 h-${eventWidthLg2 + 12} l5, -12 l5, -12`,
+          shape: `M5,1 h${eventWidthLg + 12} l-5, 12 l-5, 12 h-${eventWidthLg +
+            12} l5, -12 l5, -12`,
           shapeIndex: 0,
           map: "complexity"
         },
@@ -106,8 +104,8 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: {
-          shape: `M0,1 h${eventWidthLg2 +
-            5} a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidthLg2 +
+          shape: `M0,1 h${eventWidthLg +
+            5} a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidthLg +
             5}  l0, 0 l5, -12 l5, -12 l0, 0`,
           shapeIndex: 0,
           map: "complexity"
@@ -205,7 +203,7 @@ export function BarAniTl({
   return tl;
 
   function _tagNodeLargeReducer(accum, cur, index) {
-    return accum.to(cur, 0.3, { x: index * xFactorLg2 + 143 }, "shrink");
+    return accum.to(cur, 0.3, { x: index * xFactorLg + 143 }, "shrink");
   }
   function _iconGroupNodeLargeReducer(accum, cur, index) {
     return accum.to(
@@ -213,14 +211,14 @@ export function BarAniTl({
       0.3,
       {
         scale: 0.3,
-        x: index * xFactorLg2 + 148,
+        x: index * xFactorLg + 148,
         y: "+=17"
       },
       "shrink"
     );
   }
   function _dateNodeLargeReducer(accum, cur, index) {
-    return accum.to(cur, 0.3, { x: index * xFactorLg2 + 167, y: 36 }, "shrink");
+    return accum.to(cur, 0.3, { x: index * xFactorLg + 167, y: 36 }, "shrink");
   }
 }
 
@@ -449,8 +447,7 @@ export function EventScrollAni({
       xFactor,
       eventMoveNode: eventNodes.tagMove,
       iconVanishNodes: eventNodes.iconGroup,
-      iconMoveNodes: eventNodes.iconMove,
-      upButton
+      iconMoveNodes: eventNodes.iconMove
     };
     dragAni = _eventDragTl(opts);
 
