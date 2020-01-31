@@ -49,6 +49,33 @@ function StyledTemplate(styleOptions) {
           _containerHeight
         }
       },
+      modes2 = {
+        small: {
+          bar: {
+            height: 15,
+            timelineWidth: null,
+            padding: 3,
+            marginTop: "3px",
+            _containerHeight
+          },
+          event: {
+            width: null,
+            xFactor: null
+          }
+        },
+        large: {
+          barHeight: 38,
+          barPadding: 5,
+          marginTop: "10px",
+          _containerHeight
+        },
+        detail: {
+          barHeight: 90,
+          barPadding: 5,
+          marginTop: "10px",
+          _containerHeight
+        }
+      },
       bar = {},
       events = [],
       barModeAnimations = null,
