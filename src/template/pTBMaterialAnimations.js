@@ -437,7 +437,7 @@ export function EventScrollAni({
         maxX: 0
       },
       zIndexBoost: false,
-      snap: value => Math.floor(value / xFactor + 1) * xFactor,
+      snap: value => Math.round(value / xFactor) * xFactor,
       onDrag: _updateScrollTarget,
       onThrowUpdate: _updateScrollTarget
     });
