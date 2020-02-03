@@ -204,7 +204,7 @@ export function getEventTmplt({ xFactorDtl, eventWidthDtl, styleOptions }) {
               className="tag"
               // overflow="hidden"
               id={`rect-${props.id}`}
-              d={`M6,0 h${eventWidthDtl} a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthDtl} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
+              d={`M6,0 h${eventWidthDtl} h0 h0 a6,6,0,0,1,6,6 l10, 28 l-10, 28 a6,6,0,0,1,-6,6 h-${eventWidthDtl} a6,6,0,0,1,-6,-6 l10, -28 l-10, -28 a6,6,0,0,1,6,-6`}
               transform={`translate(${x + 143}, 20)`}
               fill={props.color}
             />
@@ -230,7 +230,7 @@ export function getEventTmplt({ xFactorDtl, eventWidthDtl, styleOptions }) {
             </text>
           </g>
         </g>
-        <g className="icon-move">
+        <g className="icon-move" visibility="hidden">
           <g className="icon-group" transform={`translate(${x + 132}, 8)`}>
             <path
               className="icon-shape"

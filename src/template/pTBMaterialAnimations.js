@@ -7,7 +7,7 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 gsap.registerPlugin(InertiaPlugin);
 gsap.registerPlugin(Draggable);
-gsap.globalTimeline.timeScale(0.05);
+gsap.globalTimeline.timeScale(1);
 console.log(gsap.version);
 
 //*************component public animations*****************
@@ -76,7 +76,7 @@ export function BarAniTl({
     {
       morphSVG: {
         shape: `M12,1 h${eventWidthLg +
-          5} l0, 0 l-5, 12 l-5, 12 l0, 0 h-${eventWidthLg +
+          5} h0 h0 h0 l-5, 12 l-5, 12 h0 h-${eventWidthLg +
           5} a6,6,0,0,1,-6,-6 l2 -6 l3 -6 a6,6,0,0,1,6,-6`,
         shapeIndex: 0,
         map: "complexity"
@@ -90,8 +90,9 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: {
-          shape: `M5,1 h${eventWidthLg + 12} l-5, 12 l-5, 12 h-${eventWidthLg +
-            12} l5, -12 l5, -12`,
+          shape: `M5,1 h${eventWidthLg +
+            12} h0 h0 h0 l-5, 12 l-5, 12 h0 h-${eventWidthLg +
+            12} h0 l5, -12 l5, -12 h0`,
           shapeIndex: 0,
           map: "complexity"
         },
@@ -105,8 +106,8 @@ export function BarAniTl({
       {
         morphSVG: {
           shape: `M0,1 h${eventWidthLg +
-            5} a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidthLg +
-            5}  l0, 0 l5, -12 l5, -12 l0, 0`,
+            5} h0 h0 a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidthLg +
+            5}  h0 l5, -12 l5, -12 h0`,
           shapeIndex: 0,
           map: "complexity"
         },
@@ -161,21 +162,23 @@ export function BarAniTl({
           morphSVG: {
             shape:
               index < status - 1
-                ? `M6,0 h${eventWidthSm + 6} l-4, 9 l-1, 2 h-${eventWidthSm +
-                    6} l2 -2 l3 -7`
+                ? `M6,0 h${eventWidthSm +
+                    6} h0 h0 h0 l-5, 11 v0 h-${eventWidthSm +
+                    6} h0 l5 -11 v0 h0`
                 : index === status - 1 && index !== elementCount - 1
                 ? `M6,0 h18 l7,-7 h${eventWidthSm -
-                    16} l-8, 18 h-${eventWidthSm + 6} l4 -11`
+                    16} h0 l-8, 18 v0 h-${eventWidthSm + 6} h0 l4 -12 v0 h0`
                 : index === elementCount - 1 && index != status - 1
                 ? `M7,-4 h${eventWidthSm +
-                    2} a3,3,0,0,1,3,3 v9 a3,3,0,0,1,-3,3 h-${eventWidthSm +
-                    8} l6 -14 l2 -3`
+                    2} h0 h0 a3,3,0,0,1,3,3 v5 v4 a3,3,0,0,1,-3,3 h-${eventWidthSm +
+                    8} h0 l8 -17 v0 h0`
                 : index === elementCount - 1 && index === status - 1
                 ? `M6,0 h18 l4,-4 h${eventWidthSm -
-                    19} a3,3,0,0,1,3,3 v9 a3,3,0,0,1,-3,3 h-${eventWidthSm +
-                    8} l5 -11`
-                : `M8,-4 h${eventWidthSm + 6} l-7, 16 h-${eventWidthSm +
-                    6} l7 -16`
+                    19} a3,3,0,0,1,3,3 v5 v4 a3,3,0,0,1,-3,3 h-${eventWidthSm +
+                    8} h0 l5 -11 v0 h0`
+                : `M8,-4 h${eventWidthSm +
+                    6} h0 h0 h0 l-7, 16 v0 h-${eventWidthSm +
+                    6} h0 l7 -16 v0 h0`
           },
           ease: "Power3.inOut"
         },
@@ -643,7 +646,7 @@ function _eventStandardAniOpenTl(
         opacity: 0.6,
         fill: styleOptions.placeholderColor,
         morphSVG: `M10,10 h${styleOptions.barWidth.large -
-          80} a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${styleOptions
+          80} h0 h0 a6,6,0,0,1,6,6 v${expandedHeight} a6,6,0,0,1,-6,6 h-${styleOptions
           .barWidth.large -
           80} a6,6,0,0,1,-6,-6 v-${expandedHeight} a6,6,0,0,1,6,-6`,
         ease: "Power1.easeInOut"
