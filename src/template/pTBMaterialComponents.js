@@ -230,7 +230,7 @@ export function getEventTmplt({ xFactorDtl, eventWidthDtl, styleOptions }) {
             </text>
           </g>
         </g>
-        <g className="icon-move" visibility="hidden">
+        <g className="icon-move">
           <g className="icon-group" transform={`translate(${x + 132}, 8)`}>
             <path
               className="icon-shape"
