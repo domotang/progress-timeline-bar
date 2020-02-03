@@ -7,7 +7,7 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 gsap.registerPlugin(MorphSVGPlugin);
 gsap.registerPlugin(InertiaPlugin);
 gsap.registerPlugin(Draggable);
-gsap.globalTimeline.timeScale(1);
+gsap.globalTimeline.timeScale(0.05);
 console.log(gsap.version);
 
 //*************component public animations*****************
@@ -143,8 +143,8 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: `M-5,0 h${timelineBarWidthSm -
-          80} l-3, 3 h-${timelineBarWidthSm -
-          176} l-5, 12 h-77 a3,3,0,0,1,-3,-3 v-9 a3,3,0,0,1,3,-3`,
+          80} l-2, 2 l-1, 1 h-${timelineBarWidthSm -
+          176} l-2, 6 l-3, 6 h-2 h-75 a3,3,0,0,1,-3,-3 v-9 a3,3,0,0,1,3,-3`,
         ease: "Power3.inOut"
       },
       "shrink2"
@@ -161,23 +161,21 @@ export function BarAniTl({
           morphSVG: {
             shape:
               index < status - 1
-                ? `M6,0 h${eventWidthSm + 6} l-5, 11 h-${eventWidthSm +
-                    6} l5 -11`
+                ? `M6,0 h${eventWidthSm + 6} l-4, 9 l-1, 2 h-${eventWidthSm +
+                    6} l2 -2 l3 -7`
                 : index === status - 1 && index !== elementCount - 1
                 ? `M6,0 h18 l7,-7 h${eventWidthSm -
                     16} l-8, 18 h-${eventWidthSm + 6} l4 -11`
                 : index === elementCount - 1 && index != status - 1
                 ? `M7,-4 h${eventWidthSm +
                     2} a3,3,0,0,1,3,3 v9 a3,3,0,0,1,-3,3 h-${eventWidthSm +
-                    8} l8 -17`
+                    8} l6 -14 l2 -3`
                 : index === elementCount - 1 && index === status - 1
                 ? `M6,0 h18 l4,-4 h${eventWidthSm -
                     19} a3,3,0,0,1,3,3 v9 a3,3,0,0,1,-3,3 h-${eventWidthSm +
                     8} l5 -11`
                 : `M8,-4 h${eventWidthSm + 6} l-7, 16 h-${eventWidthSm +
-                    6} l7 -16`,
-            shapeIndex: 0,
-            map: "complexity"
+                    6} l7 -16`
           },
           ease: "Power3.inOut"
         },

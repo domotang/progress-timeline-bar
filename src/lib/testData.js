@@ -155,7 +155,7 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40282",
-    status: 5,
+    status: 9,
     headerDetails: {
       destination: "afghanistan",
       port: "bagram",
