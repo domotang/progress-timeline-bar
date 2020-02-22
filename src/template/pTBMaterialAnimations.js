@@ -35,7 +35,7 @@ export function BarAniTl({
     .to(
       barElement,
       0.3,
-      { height: modes.large.barHeight, ease: "none" },
+      { height: modes.large.bar.height, ease: "none" },
       "shrink"
     )
     .to(
@@ -124,7 +124,7 @@ export function BarAniTl({
       barElement,
       0.3,
       {
-        height: modes.small.barHeight,
+        height: modes.small.bar.height,
         ease: "none"
       },
       "shrink2"

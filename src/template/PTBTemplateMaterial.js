@@ -29,59 +29,118 @@ function StyledTemplate(styleOptions) {
         : 164,
       timelineBarWidthLg = status > 0 ? 194 + xFactorLg * (status - 1) : 164,
       timelineBarWidthSm = status > 0 ? 194 + xFactorSm * (status - 1) : 164,
-      modes = {
+      modeDefaults = {
         small: {
           barHeight: 15,
           barPadding: 3,
           marginTop: "3px",
-          _containerHeight
+          calculated() {
+            var xFactor = Math.round(
+              (styleOptions.barWidth.small - 97) / elementCount
+            );
+            var eventWidth = xFactor - 8;
+            var timelineBarWidth =
+              status > 0 ? 194 + xFactor * (status - 1) : 164;
+            return {
+              xFactor,
+              eventWidth,
+              timelineBarWidth
+            };
+          }
         },
         large: {
           barHeight: 38,
           barPadding: 5,
           marginTop: "10px",
-          _containerHeight
+          calculated() {
+            var xFactor = Math.round(
+              (styleOptions.barWidth.large - 170) / elementCount
+            );
+            var eventWidth = xFactor - 14;
+            var timelineBarWidth =
+              status > 0 ? 194 + xFactor * (status - 1) : 164;
+            return {
+              xFactor,
+              eventWidth,
+              timelineBarWidth
+            };
+          }
         },
         detail: {
           barHeight: 90,
           barPadding: 5,
           marginTop: "10px",
-          _containerHeight
+          calculated() {
+            var xFactor = eventWidth
+              ? eventWidth + 14
+              : Math.round((styleOptions.barWidth.large - 170) / elementCount);
+            var eventWidth = eventWidth ? eventWidth : xFactor - 14;
+            var timelineBarWidth = draggableEnabled
+              ? styleOptions.barWidth.large - 100
+              : status > 0
+              ? 194 + xFactor * (status - 1)
+              : 164;
+            return {
+              xFactor,
+              eventWidth,
+              timelineBarWidth
+            };
+          }
         }
       },
       // modes2 = {
-      // small: {
-      //   bar: {
-      //     height: 15,
-      //     timelineWidth: null,
-      //     padding: 3,
-      //     marginTop: "3px",
-      //     _containerHeight
+      //   small: {
+      //     bar: {
+      //       height: 15,
+      //       timelineWidth: null,
+      //       padding: 3,
+      //       marginTop: "3px"
+      //     },
+      //     event: {
+      //       width: null,
+      //       xFactor: null
+      //     }
       //   },
-      //   event: {
-      //     width: null,
-      //     xFactor: null
+      //   large: {
+      //     barHeight: 38,
+      //     barPadding: 5,
+      //     marginTop: "10px"
+      //   },
+      //   detail: {
+      //     barHeight: 90,
+      //     barPadding: 5,
+      //     marginTop: "10px"
       //   }
       // },
-      // large: {
-      //   barHeight: 38,
-      //   barPadding: 5,
-      //   marginTop: "10px",
-      //   _containerHeight
-      // },
-      // detail: {
-      //   barHeight: 90,
-      //   barPadding: 5,
-      //   marginTop: "10px",
-      //   _containerHeight
-      // }
-      // },
+      modes = {},
       bar = {},
       events = [],
       barModeAnimations = null,
       eventScrollAnimations = null,
       openedElements = { event: null, header: null, modal: null },
       scrollDiv = document.createElement("div");
+
+    var Mode = {
+      init({ barHeight, barPadding, marginTop }) {
+        this.bar = {};
+        this.event = {};
+        (this.bar.height = barHeight),
+          (this.bar.padding = barPadding),
+          (this.bar.marginTop = marginTop);
+      },
+      get containerHeight() {
+        return this.bar.height + this.bar.padding * 2;
+      }
+    };
+
+    for (let mode in modeDefaults) {
+      _addMode(mode, modeDefaults[mode]);
+    }
+
+    function _addMode(name, mode) {
+      modes[name] = Object.create(Mode);
+      modes[name].init(mode);
+    }
 
     var modeStateMachineDef = {
       initValue: "init",
@@ -404,7 +463,7 @@ function StyledTemplate(styleOptions) {
             upButtonClip
           },
           expandedHeight,
-          barHeight: modes["detail"].barHeight + (expandedHeight + 130),
+          barHeight: modes.detail.bar.height + (expandedHeight + 130),
           upCoords,
           xFactor: xFactorDtl,
           scrollOffset: draggableEnabled
@@ -426,12 +485,13 @@ function StyledTemplate(styleOptions) {
     }
 
     function init(initMode) {
+      console.log("modes", modes);
       var barNodes = bar.getNodes();
       {
         let initOpts = {
           barNodes,
           mode: initMode,
-          containerHeight: modes[initMode]._containerHeight(),
+          containerHeight: modes[initMode].containerHeight,
           styleOptions
         };
 
@@ -471,7 +531,7 @@ function StyledTemplate(styleOptions) {
       if (openedElements.event) {
         let opts = {
           nodes: bar.getNodes(),
-          height: modes["detail"].barHeight + 100,
+          height: modes["detail"].bar.height + 100,
           eventClose: openedElements.event.close
         };
         var closeEventsAnimation = animations.EventsCloseTl(opts);
@@ -486,8 +546,8 @@ function StyledTemplate(styleOptions) {
       {
         let opts = {
           barContainer: bar.getNodes().barContainer,
-          height: modeStyles._containerHeight(),
-          marginTop: modeStyles.marginTop
+          height: modeStyles.containerHeight,
+          marginTop: modeStyles.bar.marginTop
         };
         animations.containerTween(opts);
       }
@@ -504,9 +564,9 @@ function StyledTemplate(styleOptions) {
         styleOptions,
         eventDrop: !!opts.expandedHeight,
         height:
-          modes.detail.barHeight +
+          modes.detail.bar.height +
           (opts.expandedHeight ? opts.expandedHeight + 130 : 100),
-        barHeight: modes.detail.barHeight,
+        barHeight: modes.detail.bar.height,
         barModeAnimations
       };
       var barModalAnimation =
@@ -535,17 +595,13 @@ function StyledTemplate(styleOptions) {
     function _getBarHeights() {
       var modeHeights = {};
       for (let mode in modes) {
-        modeHeights = { ...modeHeights, [mode]: modes[mode].barHeight };
+        modeHeights = { ...modeHeights, [mode]: modes[mode].bar.height };
       }
       return modeHeights;
     }
 
     function _getStyles() {
       return styleOptions;
-    }
-
-    function _containerHeight() {
-      return this.barHeight + this.barPadding * 2;
     }
   }
 }
