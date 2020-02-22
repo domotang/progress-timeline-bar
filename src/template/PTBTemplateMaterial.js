@@ -49,33 +49,33 @@ function StyledTemplate(styleOptions) {
           _containerHeight
         }
       },
-      modes2 = {
-        small: {
-          bar: {
-            height: 15,
-            timelineWidth: null,
-            padding: 3,
-            marginTop: "3px",
-            _containerHeight
-          },
-          event: {
-            width: null,
-            xFactor: null
-          }
-        },
-        large: {
-          barHeight: 38,
-          barPadding: 5,
-          marginTop: "10px",
-          _containerHeight
-        },
-        detail: {
-          barHeight: 90,
-          barPadding: 5,
-          marginTop: "10px",
-          _containerHeight
-        }
-      },
+      // modes2 = {
+      // small: {
+      //   bar: {
+      //     height: 15,
+      //     timelineWidth: null,
+      //     padding: 3,
+      //     marginTop: "3px",
+      //     _containerHeight
+      //   },
+      //   event: {
+      //     width: null,
+      //     xFactor: null
+      //   }
+      // },
+      // large: {
+      //   barHeight: 38,
+      //   barPadding: 5,
+      //   marginTop: "10px",
+      //   _containerHeight
+      // },
+      // detail: {
+      //   barHeight: 90,
+      //   barPadding: 5,
+      //   marginTop: "10px",
+      //   _containerHeight
+      // }
+      // },
       bar = {},
       events = [],
       barModeAnimations = null,
@@ -225,34 +225,36 @@ function StyledTemplate(styleOptions) {
 
     var modeStateMachine = null;
 
-    var publicAPI = {
-      init,
-      regBar,
-      regEvent,
-      setMode,
-      closeEvents,
-      Bar: components.getBarTmplt({ styleOptions, timelineBarWidthDtl }),
-      Event: components.getEventTmplt({
-        xFactorDtl,
-        eventWidthDtl,
-        styleOptions
-      }),
-      barHeights: _getBarHeights(),
-      getStyles: _getStyles
-    };
+    {
+      let publicAPI = {
+        init,
+        regBar,
+        regEvent,
+        setMode,
+        closeEvents,
+        Bar: components.getBarTmplt({ styleOptions, timelineBarWidthDtl }),
+        Event: components.getEventTmplt({
+          xFactorDtl,
+          eventWidthDtl,
+          styleOptions
+        }),
+        barHeights: _getBarHeights(),
+        getStyles: _getStyles
+      };
 
-    // console.log(
-    //   "xFactor:",
-    //   xFactorLg,
-    //   "eventWidth:",
-    //   xFactorLg * 9,
-    //   "barWidth:",
-    //   styleOptions.barWidth.large - 170,
-    //   "eventMove:",
-    //   styleOptions.barWidth.large - 170 - xFactorLg * 9
-    // );
+      // console.log(
+      //   "xFactor:",
+      //   xFactorLg,
+      //   "eventWidth:",
+      //   xFactorLg * 9,
+      //   "barWidth:",
+      //   styleOptions.barWidth.large - 170,
+      //   "eventMove:",
+      //   styleOptions.barWidth.large - 170 - xFactorLg * 9
+      // );
 
-    return publicAPI;
+      return publicAPI;
+    }
 
     //*************component registrations*****************
 
@@ -334,11 +336,13 @@ function StyledTemplate(styleOptions) {
 
       var animation = null;
 
-      var eventAPI = {
-        open,
-        deregister
-      };
-      return eventAPI;
+      {
+        let eventAPI = {
+          open,
+          deregister
+        };
+        return eventAPI;
+      }
 
       function open(opts, onResolve) {
         if (openedElements.event) openedElements.event.close();
@@ -378,10 +382,12 @@ function StyledTemplate(styleOptions) {
       }
 
       function _eventAnimationOpts(onResolve, iconOffset) {
-        let { x, y, width } = event.getBBox();
-        let upCoords = { x: width / 2 + x - 40, y: y + 90 };
+        {
+          let { x, y, width } = event.getBBox();
+          var upCoords = { x: width / 2 + x - 40, y: y + 90 };
+        }
 
-        let {
+        var {
           eventDetails,
           barElement,
           upButton,
@@ -420,31 +426,34 @@ function StyledTemplate(styleOptions) {
     }
 
     function init(initMode) {
-      let barNodes = bar.getNodes();
-      let initOpts = {
-        barNodes,
-        mode: initMode,
-        containerHeight: modes[initMode]._containerHeight(),
-        styleOptions
-      };
+      var barNodes = bar.getNodes();
+      {
+        let initOpts = {
+          barNodes,
+          mode: initMode,
+          containerHeight: modes[initMode]._containerHeight(),
+          styleOptions
+        };
 
-      animations.initElementsTween(initOpts);
-
-      let opts = {
-        eventNodes: _getEventsNodesByType(),
-        barNodes,
-        styleOptions,
-        timelineBarWidthLg,
-        timelineBarWidthSm,
-        eventWidthLg,
-        eventWidthSm,
-        xFactorSm,
-        xFactorLg,
-        elementCount,
-        status,
-        modes
-      };
-      barModeAnimations = animations.BarAniTl(opts);
+        animations.initElementsTween(initOpts);
+      }
+      {
+        let opts = {
+          eventNodes: _getEventsNodesByType(),
+          barNodes,
+          styleOptions,
+          timelineBarWidthLg,
+          timelineBarWidthSm,
+          eventWidthLg,
+          eventWidthSm,
+          xFactorSm,
+          xFactorLg,
+          elementCount,
+          status,
+          modes
+        };
+        barModeAnimations = animations.BarAniTl(opts);
+      }
       eventScrollAnimations = draggableEnabled
         ? animations.EventScrollAni({
             eventNodes: _getEventsNodesByType(),
@@ -474,12 +483,14 @@ function StyledTemplate(styleOptions) {
 
     function _setMode({ mode }) {
       var modeStyles = modes[mode];
-      let opts = {
-        barContainer: bar.getNodes().barContainer,
-        height: modeStyles._containerHeight(),
-        marginTop: modeStyles.marginTop
-      };
-      animations.containerTween(opts);
+      {
+        let opts = {
+          barContainer: bar.getNodes().barContainer,
+          height: modeStyles._containerHeight(),
+          marginTop: modeStyles.marginTop
+        };
+        animations.containerTween(opts);
+      }
       barModeAnimations.tweenTo(mode, {
         overwrite: true
         // onComplete: onResolve()
@@ -487,7 +498,7 @@ function StyledTemplate(styleOptions) {
     }
 
     function _setModeModal(opts) {
-      let AnimationOpts = {
+      var AnimationOpts = {
         barTop: opts.barTop,
         nodes: bar.getNodes(),
         styleOptions,
@@ -511,7 +522,7 @@ function StyledTemplate(styleOptions) {
     function _getEventsNodesByType() {
       var allNodesByType = {};
 
-      for (var i = 0; i < events.length; i++) {
+      for (let i = 0; i < events.length; i++) {
         let currentEventNodes = events[i].getNodes();
         for (let node in currentEventNodes) {
           if (!allNodesByType[node]) allNodesByType[node] = [];

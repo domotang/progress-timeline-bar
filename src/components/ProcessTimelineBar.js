@@ -104,7 +104,7 @@ function ProcessTimeLineBar({
   function processDomEventComponents() {
     return children
       ? Children.map(children, (child, index) => {
-          let eventAttributes = {
+          var eventAttributes = {
             detailPages: child.props.children,
             expandedHeight: child.props.expandedHeight
           };

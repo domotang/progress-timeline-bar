@@ -3,10 +3,12 @@
 function PTBBar(barData, templateAPI) {
   templateAPI.regBar(barData);
 
-  var publicAPI = {
-    getElement
-  };
-  return publicAPI;
+  {
+    let publicAPI = {
+      getElement
+    };
+    return publicAPI;
+  }
 
   function getElement() {
     return barData.element;
@@ -24,13 +26,15 @@ function PTBEvent(eventData, templateAPI) {
     parseInt(eventData.expandedHeight)
   );
 
-  var publicAPI = {
-    setState,
-    getDetailPages,
-    getId,
-    deregister
-  };
-  return publicAPI;
+  {
+    let publicAPI = {
+      setState,
+      getDetailPages,
+      getId,
+      deregister
+    };
+    return publicAPI;
+  }
 
   function getDetailPages() {
     return detailPages;
@@ -53,20 +57,22 @@ function PTBController(templateAPI) {
   var bar = null,
     events = [];
 
-  var publicAPI = {
-    init,
-    getDetailPages,
-    addBar,
-    addEvent,
-    setEvent,
-    setMode,
-    getBarElement,
-    closeEvents,
-    getStyles,
-    Bar: templateAPI.Bar,
-    Event: templateAPI.Event
-  };
-  return publicAPI;
+  {
+    let publicAPI = {
+      init,
+      getDetailPages,
+      addBar,
+      addEvent,
+      setEvent,
+      setMode,
+      getBarElement,
+      closeEvents,
+      getStyles,
+      Bar: templateAPI.Bar,
+      Event: templateAPI.Event
+    };
+    return publicAPI;
+  }
 
   function init(mode) {
     templateAPI.init(mode);
@@ -94,7 +100,7 @@ function PTBController(templateAPI) {
   function addEvent(eventData) {
     var eventId = eventData.eventId;
     if (eventData.element) {
-      var newEvent = PTBEvent(eventData, templateAPI);
+      let newEvent = PTBEvent(eventData, templateAPI);
       return events.push(newEvent);
     }
 
@@ -108,7 +114,7 @@ function PTBController(templateAPI) {
 
   function setEvent(eventId, opts) {
     return new Promise(resolve => {
-      var event = findEventById(eventId);
+      let event = findEventById(eventId);
       event.setState("open", opts, resolve);
     });
   }
