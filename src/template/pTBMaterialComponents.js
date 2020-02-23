@@ -2,7 +2,7 @@ import React from "react";
 
 //*************component templates*****************
 
-export function getBarTmplt({ styleOptions, timelineBarWidthDtl }) {
+export function getBarTmplt({ styleOptions, width }) {
   // eslint-disable-next-line react/display-name
   return props => {
     return (
@@ -30,7 +30,7 @@ export function getBarTmplt({ styleOptions, timelineBarWidthDtl }) {
           <path
             className="header-bar"
             id={`rect-`}
-            d={`M0,0 h${timelineBarWidthDtl} a6,6,0,0,1,6,5 l5, 13 h-${timelineBarWidthDtl -
+            d={`M0,0 h${width} a6,6,0,0,1,6,5 l5, 13 h-${width -
               157} a8,8,0,0,0,-7,7 l-20, 57 a8,8,0,0,1,-6,6 h-129 a6,6,0,0,1,-6,-6 v-76 a6,6,0,0,1,6,-6`}
             transform={`translate(0, 0)`}
             fill="#477578"
