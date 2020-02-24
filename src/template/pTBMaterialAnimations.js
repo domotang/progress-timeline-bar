@@ -15,15 +15,10 @@ export function BarAniTl({
   eventNodes,
   barNodes,
   styleOptions,
-  timelineBarWidthLg,
-  timelineBarWidthSm,
-  eventWidthLg,
-  eventWidthSm,
-  xFactorSm,
-  xFactorLg,
   elementCount,
   status,
-  modes
+  smallMode,
+  largeMode
 }) {
   var { barDiv, barElement, tag: barTag, title, detail } = barNodes;
   var tl = gsap.timeline({ paused: true });
@@ -35,7 +30,7 @@ export function BarAniTl({
     .to(
       barElement,
       0.3,
-      { height: modes.large.bar.height, ease: "none" },
+      { height: largeMode.bar.height, ease: "none" },
       "shrink"
     )
     .to(
@@ -51,7 +46,9 @@ export function BarAniTl({
       barTag,
       0.3,
       {
-        morphSVG: `M0,0 h${timelineBarWidthLg} a6,6,0,0,1,6,5 l1, 1 h-${timelineBarWidthLg -
+        morphSVG: `M0,0 h${
+          largeMode.bar.width
+        } a6,6,0,0,1,6,5 l1, 1 h-${largeMode.bar.width -
           146} a8,8,0,0,0,-7,7 l-7, 18 a8,8,0,0,1,-6,6 h-127 a6,6,0,0,1,-6,-6 v-25 a6,6,0,0,1,6,-6`,
         ease: "Power3.inOut"
       },
@@ -75,8 +72,8 @@ export function BarAniTl({
     0.3,
     {
       morphSVG: {
-        shape: `M12,1 h${eventWidthLg +
-          5} h0 h0 h0 l-5, 12 l-5, 12 h0 h-${eventWidthLg +
+        shape: `M12,1 h${largeMode.event.width +
+          5} h0 h0 h0 l-5, 12 l-5, 12 h0 h-${largeMode.event.width +
           5} a6,6,0,0,1,-6,-6 l2 -6 l3 -6 a6,6,0,0,1,6,-6`,
         shapeIndex: 0,
         map: "complexity"
@@ -90,8 +87,8 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: {
-          shape: `M5,1 h${eventWidthLg +
-            12} h0 h0 h0 l-5, 12 l-5, 12 h0 h-${eventWidthLg +
+          shape: `M5,1 h${largeMode.event.width +
+            12} h0 h0 h0 l-5, 12 l-5, 12 h0 h-${largeMode.event.width +
             12} h0 l5, -12 l5, -12 h0`,
           shapeIndex: 0,
           map: "complexity"
@@ -105,9 +102,9 @@ export function BarAniTl({
       0.3,
       {
         morphSVG: {
-          shape: `M0,1 h${eventWidthLg +
-            5} h0 h0 a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${eventWidthLg +
-            5}  h0 l5, -12 l5, -12 h0`,
+          shape: `M0,1 h${largeMode.event.width +
+            5} h0 h0 a6,6,0,0,1,6,6 l-2, 6 l-3, 6 a6,6,0,0,1,-6,6 h-${largeMode
+            .event.width + 5}  h0 l5, -12 l5, -12 h0`,
           shapeIndex: 0,
           map: "complexity"
         },
@@ -124,7 +121,7 @@ export function BarAniTl({
       barElement,
       0.3,
       {
-        height: modes.small.bar.height,
+        height: smallMode.bar.height,
         ease: "none"
       },
       "shrink2"
@@ -143,8 +140,8 @@ export function BarAniTl({
       barTag,
       0.3,
       {
-        morphSVG: `M-5,0 h${timelineBarWidthSm -
-          80} l-2, 2 l-1, 1 h-${timelineBarWidthSm -
+        morphSVG: `M-5,0 h${smallMode.bar.width -
+          80} l-2, 2 l-1, 1 h-${smallMode.bar.width -
           176} l-2, 6 l-3, 6 h-2 h-75 a3,3,0,0,1,-3,-3 v-9 a3,3,0,0,1,3,-3`,
         ease: "Power3.inOut"
       },
@@ -157,27 +154,28 @@ export function BarAniTl({
         node,
         0.3,
         {
-          x: index * xFactorSm + 80,
+          x: index * smallMode.event.xFactor + 80,
           y: 17,
           morphSVG: {
             shape:
               index < status - 1
-                ? `M6,0 h${eventWidthSm +
-                    6} h0 h0 h0 l-5, 11 v0 h-${eventWidthSm +
+                ? `M6,0 h${smallMode.event.width +
+                    6} h0 h0 h0 l-5, 11 v0 h-${smallMode.event.width +
                     6} h0 l5 -11 v0 h0`
                 : index === status - 1 && index !== elementCount - 1
-                ? `M6,0 h18 l7,-7 h${eventWidthSm -
-                    16} h0 l-8, 18 v0 h-${eventWidthSm + 6} h0 l4 -12 v0 h0`
+                ? `M6,0 h18 l7,-7 h${smallMode.event.width -
+                    16} h0 l-8, 18 v0 h-${smallMode.event.width +
+                    6} h0 l4 -12 v0 h0`
                 : index === elementCount - 1 && index != status - 1
-                ? `M7,-4 h${eventWidthSm +
-                    2} h0 h0 a3,3,0,0,1,3,3 v5 v4 a3,3,0,0,1,-3,3 h-${eventWidthSm +
-                    8} h0 l8 -17 v0 h0`
+                ? `M7,-4 h${smallMode.event.width +
+                    2} h0 h0 a3,3,0,0,1,3,3 v5 v4 a3,3,0,0,1,-3,3 h-${smallMode
+                    .event.width + 8} h0 l8 -17 v0 h0`
                 : index === elementCount - 1 && index === status - 1
-                ? `M6,0 h18 l4,-4 h${eventWidthSm -
-                    19} a3,3,0,0,1,3,3 v5 v4 a3,3,0,0,1,-3,3 h-${eventWidthSm +
-                    8} h0 l5 -11 v0 h0`
-                : `M8,-4 h${eventWidthSm +
-                    6} h0 h0 h0 l-7, 16 v0 h-${eventWidthSm +
+                ? `M6,0 h18 l4,-4 h${smallMode.event.width -
+                    19} a3,3,0,0,1,3,3 v5 v4 a3,3,0,0,1,-3,3 h-${smallMode.event
+                    .width + 8} h0 l5 -11 v0 h0`
+                : `M8,-4 h${smallMode.event.width +
+                    6} h0 h0 h0 l-7, 16 v0 h-${smallMode.event.width +
                     6} h0 l7 -16 v0 h0`
           },
           ease: "Power3.inOut"
@@ -186,7 +184,7 @@ export function BarAniTl({
       ).to(
         eventNodes.date[index],
         0.3,
-        { x: index * xFactorSm + 86, y: 29, scale: 0.45 },
+        { x: index * smallMode.event.xFactor + 86, y: 29, scale: 0.45 },
         "shrink2"
       );
     };
@@ -204,7 +202,12 @@ export function BarAniTl({
   return tl;
 
   function _tagNodeLargeReducer(accum, cur, index) {
-    return accum.to(cur, 0.3, { x: index * xFactorLg + 143 }, "shrink");
+    return accum.to(
+      cur,
+      0.3,
+      { x: index * largeMode.event.xFactor + 143 },
+      "shrink"
+    );
   }
   function _iconGroupNodeLargeReducer(accum, cur, index) {
     return accum.to(
@@ -212,14 +215,19 @@ export function BarAniTl({
       0.3,
       {
         scale: 0.3,
-        x: index * xFactorLg + 148,
+        x: index * largeMode.event.xFactor + 148,
         y: "+=17"
       },
       "shrink"
     );
   }
   function _dateNodeLargeReducer(accum, cur, index) {
-    return accum.to(cur, 0.3, { x: index * xFactorLg + 167, y: 36 }, "shrink");
+    return accum.to(
+      cur,
+      0.3,
+      { x: index * largeMode.event.xFactor + 167, y: 36 },
+      "shrink"
+    );
   }
 }
 

@@ -477,15 +477,10 @@ function StyledTemplate(styleOptions) {
           eventNodes: _getEventsNodesByType(),
           barNodes,
           styleOptions,
-          timelineBarWidthLg: modes.large.bar.width,
-          timelineBarWidthSm: modes.small.bar.width,
-          eventWidthLg: modes.large.event.width,
-          eventWidthSm: modes.small.event.width,
-          xFactorSm: modes.small.event.xFactor,
-          xFactorLg: modes.large.event.xFactor,
           elementCount,
           status,
-          modes
+          smallMode: modes.small,
+          largeMode: modes.large
         };
         barModeAnimations = animations.BarAniTl(opts);
       }
