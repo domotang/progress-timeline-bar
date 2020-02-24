@@ -293,7 +293,6 @@ export function EventOpenTl({
   expandedHeight,
   barHeight,
   upCoords,
-  xFactor,
   scrollOffset,
   scrollIconOffset,
   styleOptions,
@@ -306,15 +305,14 @@ export function EventOpenTl({
       if (!tl.reversed()) _barHeightTween(controlNodes.barElement, barHeight);
     }, "start")
     .add(
-      _eventStandardAniOpenTl(
+      _eventStandardAniOpenTl({
         controlNodes,
         expandedHeight,
         styleOptions,
-        xFactor,
         scrollOffset,
         scrollIconOffset,
         onResolve
-      ),
+      }),
       "start"
     )
     .add(() => {
@@ -608,15 +606,14 @@ export function EventScrollAni({
 //   return tl;
 // }
 
-function _eventStandardAniOpenTl(
+function _eventStandardAniOpenTl({
   controlNodes,
   expandedHeight,
   styleOptions,
-  xFactor,
   scrollOffset,
   scrollIconOffset,
   onResolve
-) {
+}) {
   var {
     event,
     masked,

@@ -28,12 +28,11 @@ function StyledTemplate(styleOptions) {
             (styleOptions.barWidth.small - 97) / elementCount
           );
           var eventWidth = xFactor - 8;
-          var timelineBarWidth =
-            status > 0 ? 194 + xFactor * (status - 1) : 164;
+          var barWidth = status > 0 ? 194 + xFactor * (status - 1) : 164;
           return {
             xFactor,
             eventWidth,
-            timelineBarWidth
+            barWidth
           };
         }
       },
@@ -46,12 +45,11 @@ function StyledTemplate(styleOptions) {
             (styleOptions.barWidth.large - 170) / elementCount
           );
           var eventWidth = xFactor - 14;
-          var timelineBarWidth =
-            status > 0 ? 194 + xFactor * (status - 1) : 164;
+          var barWidth = status > 0 ? 194 + xFactor * (status - 1) : 164;
           return {
             xFactor,
             eventWidth,
-            timelineBarWidth
+            barWidth
           };
         }
       },
@@ -74,7 +72,7 @@ function StyledTemplate(styleOptions) {
             !!eventWidthAttr &&
             xFactor * elementCount >
               styleOptions.barWidth.large - this.barWidthOffset;
-          var timelineBarWidth = draggableEnabled
+          var barWidth = draggableEnabled
             ? styleOptions.barWidth.large - 100
             : status > 0
             ? 194 + xFactor * (status - 1)
@@ -82,7 +80,7 @@ function StyledTemplate(styleOptions) {
           return {
             xFactor,
             eventWidth,
-            timelineBarWidth,
+            barWidth,
             draggableEnabled
           };
         }
@@ -96,7 +94,7 @@ function StyledTemplate(styleOptions) {
         this.bar.height = defaults.barHeight;
         this.bar.padding = defaults.barPadding;
         this.bar.marginTop = defaults.marginTop;
-        this.bar.width = defaults.timelineBarWidth;
+        this.bar.width = defaults.barWidth;
         this.event.width = defaults.eventWidth;
         this.event.xFactor = defaults.xFactor;
         if (defaults.modalHeightPadding)
@@ -106,11 +104,24 @@ function StyledTemplate(styleOptions) {
             defaults.modalExpandedHeightPadding;
         if (defaults.draggableEnabled)
           this.bar.draggable = defaults.draggableEnabled;
+        if (defaults.barWidthOffset)
+          this.bar.widthOffset = defaults.barWidthOffset;
       },
       get containerHeight() {
         return this.bar.height + this.bar.padding * 2;
       }
     };
+
+    (function buildModes() {
+      for (let mode in modeDefaults) {
+        _addMode(mode, modeDefaults[mode]);
+      }
+      function _addMode(name, mode) {
+        var calculatedDefaults = mode.calculatedDefaults();
+        modes[name] = Object.create(Mode);
+        modes[name].init({ ...mode, ...calculatedDefaults });
+      }
+    })();
 
     var modeStateMachineDef = {
       initValue: "init",
@@ -252,17 +263,6 @@ function StyledTemplate(styleOptions) {
         }
       }
     };
-
-    (function buildModes() {
-      for (let mode in modeDefaults) {
-        _addMode(mode, modeDefaults[mode]);
-      }
-      function _addMode(name, mode) {
-        var calculatedDefaults = mode.calculatedDefaults();
-        modes[name] = Object.create(Mode);
-        modes[name].init({ ...mode, ...calculatedDefaults });
-      }
-    })();
 
     {
       {
@@ -440,7 +440,6 @@ function StyledTemplate(styleOptions) {
             modes.detail.bar.height +
             (expandedHeight + modes.detail.bar.modalExpandedHeightPadding),
           upCoords,
-          xFactor: modes.detail.event.xFactor,
           scrollOffset: modes.detail.bar.draggable
             ? eventScrollAnimations.scrollOffset()
             : 0,
@@ -489,7 +488,8 @@ function StyledTemplate(styleOptions) {
             eventNodes: _getEventsNodesByType(),
             upButton: bar.getNodes().upButton,
             scrollDiv,
-            visibleEventsWidth: styleOptions.barWidth.large - 170,
+            visibleEventsWidth:
+              styleOptions.barWidth.large - modes.detail.bar.widthOffset,
             xFactor: modes.detail.event.xFactor
           })
         : null;
