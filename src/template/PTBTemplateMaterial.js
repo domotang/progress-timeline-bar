@@ -59,7 +59,7 @@ function StyledTemplate(styleOptions) {
       },
       detail: {
         bar: {
-          height: 38,
+          height: 90,
           padding: 5,
           marginTop: "10px",
           modalHeightPadding: 100,
@@ -107,10 +107,12 @@ function StyledTemplate(styleOptions) {
       }
       function _addMode(name, mode) {
         var calculatedDefaults = mode.calculatedDefaults();
-        var bar = { ...mode.bar, ...calculatedDefaults.bar };
-        var event = { ...mode.event, ...calculatedDefaults.event };
         modes[name] = Object.create(Mode);
-        modes[name].init({ bar, event });
+        {
+          let bar = { ...mode.bar, ...calculatedDefaults.bar },
+            event = { ...mode.event, ...calculatedDefaults.event };
+          modes[name].init({ bar, event });
+        }
       }
     })();
 
