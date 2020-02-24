@@ -74,17 +74,17 @@ function StyledTemplate(styleOptions) {
                   elementCount
               );
           var eventWidth = eventWidthAttr ? eventWidthAttr : xFactor - 14;
-          var draggableEnabled =
+          var draggable =
             !!eventWidthAttr &&
             xFactor * elementCount >
               styleOptions.barWidth.large - this.bar.widthOffset;
-          var width = draggableEnabled
+          var width = draggable
             ? styleOptions.barWidth.large - 100
             : status > 0
             ? 194 + xFactor * (status - 1)
             : 164;
           return {
-            bar: { width, draggableEnabled },
+            bar: { width, draggable },
             event: { xFactor, width: eventWidth }
           };
         }
@@ -105,6 +105,7 @@ function StyledTemplate(styleOptions) {
       for (let mode in modeDefaults) {
         _addMode(mode, modeDefaults[mode]);
       }
+
       function _addMode(name, mode) {
         var calculatedDefaults = mode.calculatedDefaults();
         modes[name] = Object.create(Mode);
