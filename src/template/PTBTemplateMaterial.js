@@ -20,68 +20,72 @@ function StyledTemplate(styleOptions) {
 
     var modeDefaults = {
       small: {
-        barHeight: 15,
-        barPadding: 3,
-        marginTop: "3px",
+        bar: {
+          height: 15,
+          padding: 3,
+          marginTop: "3px"
+        },
+        event: {},
         calculatedDefaults() {
           var xFactor = Math.round(
             (styleOptions.barWidth.small - 97) / elementCount
           );
           var eventWidth = xFactor - 8;
-          var barWidth = status > 0 ? 194 + xFactor * (status - 1) : 164;
+          var width = status > 0 ? 194 + xFactor * (status - 1) : 164;
           return {
-            xFactor,
-            eventWidth,
-            barWidth
+            bar: { width },
+            event: { xFactor, width: eventWidth }
           };
         }
       },
       large: {
-        barHeight: 38,
-        barPadding: 5,
-        marginTop: "10px",
+        bar: {
+          height: 38,
+          padding: 5,
+          marginTop: "10px"
+        },
+        event: {},
         calculatedDefaults() {
           var xFactor = Math.round(
             (styleOptions.barWidth.large - 170) / elementCount
           );
           var eventWidth = xFactor - 14;
-          var barWidth = status > 0 ? 194 + xFactor * (status - 1) : 164;
+          var width = status > 0 ? 194 + xFactor * (status - 1) : 164;
           return {
-            xFactor,
-            eventWidth,
-            barWidth
+            bar: { width },
+            event: { xFactor, width: eventWidth }
           };
         }
       },
       detail: {
-        barHeight: 90,
-        barPadding: 5,
-        marginTop: "10px",
-        modalHeightPadding: 100,
-        modalExpandedHeightPadding: 130,
-        barWidthOffset: 170,
+        bar: {
+          height: 38,
+          padding: 5,
+          marginTop: "10px",
+          modalHeightPadding: 100,
+          modalExpandedHeightPadding: 130,
+          widthOffset: 170
+        },
         calculatedDefaults() {
           var xFactor = eventWidthAttr
             ? eventWidthAttr + 14
             : Math.round(
-                (styleOptions.barWidth.large - this.barWidthOffset) /
+                (styleOptions.barWidth.large - this.bar.widthOffset) /
                   elementCount
               );
           var eventWidth = eventWidthAttr ? eventWidthAttr : xFactor - 14;
           var draggableEnabled =
             !!eventWidthAttr &&
             xFactor * elementCount >
-              styleOptions.barWidth.large - this.barWidthOffset;
-          var barWidth = draggableEnabled
+              styleOptions.barWidth.large - this.bar.widthOffset;
+          var width = draggableEnabled
             ? styleOptions.barWidth.large - 100
             : status > 0
             ? 194 + xFactor * (status - 1)
             : 164;
           return {
-            xFactor,
-            eventWidth,
-            barWidth,
-            draggableEnabled
+            bar: { width, draggableEnabled },
+            event: { xFactor, width: eventWidth }
           };
         }
       }
@@ -89,23 +93,8 @@ function StyledTemplate(styleOptions) {
 
     var Mode = {
       init(defaults) {
-        this.bar = {};
-        this.event = {};
-        this.bar.height = defaults.barHeight;
-        this.bar.padding = defaults.barPadding;
-        this.bar.marginTop = defaults.marginTop;
-        this.bar.width = defaults.barWidth;
-        this.event.width = defaults.eventWidth;
-        this.event.xFactor = defaults.xFactor;
-        if (defaults.modalHeightPadding)
-          this.bar.modalHeightPadding = defaults.modalHeightPadding;
-        if (defaults.modalExpandedHeightPadding)
-          this.bar.modalExpandedHeightPadding =
-            defaults.modalExpandedHeightPadding;
-        if (defaults.draggableEnabled)
-          this.bar.draggable = defaults.draggableEnabled;
-        if (defaults.barWidthOffset)
-          this.bar.widthOffset = defaults.barWidthOffset;
+        this.bar = defaults.bar;
+        this.event = defaults.event;
       },
       get containerHeight() {
         return this.bar.height + this.bar.padding * 2;
@@ -118,8 +107,10 @@ function StyledTemplate(styleOptions) {
       }
       function _addMode(name, mode) {
         var calculatedDefaults = mode.calculatedDefaults();
+        var bar = { ...mode.bar, ...calculatedDefaults.bar };
+        var event = { ...mode.event, ...calculatedDefaults.event };
         modes[name] = Object.create(Mode);
-        modes[name].init({ ...mode, ...calculatedDefaults });
+        modes[name].init({ bar, event });
       }
     })();
 
