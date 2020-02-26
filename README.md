@@ -7,7 +7,7 @@ Highly customizable animated progress timeline bar for React which emphasizes du
 current demo
 http://domosavant.com/
 
-2.24.2020 - Adding a 'card' mode in order to utilize in grid environments, handy for showing recipes, etc.
+2.24.2020 - Adding a 'card' mode in order to utilize in grid environments, handy for showing recipes, etc.\
 1.11.2020 - Added an event scroller. This solves two issues: (1) Quantity of events no longer limited to bar width. (2) Mobile friendly.
 
 Currently in development. API documentation pending release\
