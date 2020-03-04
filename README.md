@@ -2,8 +2,8 @@
 
 Highly customizable animated progress timeline bar for React which emphasizes due proccess
 
-![screen cap of demo](https://raw.githubusercontent.com/domotang/progress-timeline-bar/master/ptb.jpg)/
-![screen cap of demo](https://raw.githubusercontent.com/domotang/progress-timeline-bar/master/ptb_det.jpg)/
+![screen cap of demo](https://raw.githubusercontent.com/domotang/progress-timeline-bar/master/ptb.jpg)
+![screen cap of demo](https://raw.githubusercontent.com/domotang/progress-timeline-bar/master/ptb_det.jpg)
 
 current demo
 http://domosavant.com/
