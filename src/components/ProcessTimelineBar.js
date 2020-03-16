@@ -11,7 +11,7 @@ import { PTBController } from "../lib/PTBController";
 
 function ProcessTimeLineBar({
   headerDetailPage: HeaderDetailPage,
-  headerDetails,
+  headerDetailsId,
   listBar,
   children,
   title,
@@ -164,7 +164,7 @@ function ProcessTimeLineBar({
           {currentMode === "modal" ? (
             <HeaderDetailPage
               fontColor={styleOptions.fontColor}
-              headerDetails={headerDetails}
+              headerDetailsId={headerDetailsId}
             />
           ) : null}
         </div>
