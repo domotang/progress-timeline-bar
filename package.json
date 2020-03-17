@@ -5,29 +5,25 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-dev-server --mode development --host 0.0.0.0 --port 3000",
-    "devv": "NODE_ENV=production webpack-dev-server --mode production --host 0.0.0.0 --port 3000",
-    "build": "NODE_ENV=production webpack --mode production",
-    "transpile": "babel src -d dist --copy-files"
+    "dev": "rimraf dist && webpack-dev-server --mode development --host 0.0.0.0 --port 3000",
+    "devv": "rimraf dist && NODE_ENV=production webpack-dev-server --mode production --host 0.0.0.0 --port 3000",
+    "build": "rimraf dist && NODE_ENV=production webpack --mode production",
+    "build-npm": "rimraf dist && babel src -d dist --copy-files"
   },
   "author": "Stephen Reed",
   "license": "ISC",
   "keywords": [],
   "dependencies": {
-    "@material-ui/core": "^4.9.5",
     "gsap": "file:gsap-bonus.tgz",
     "react": "^16.13.0",
-    "react-dom": "^16.13.0",
-    "react-fastclick": "^3.0.2",
-    "react-icons": "^3.9.0",
-    "react-simple-maps": "^1.0.0-beta.0",
-    "styled-components": "^4.4.1"
+    "react-dom": "^16.13.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
+    "@material-ui/core": "^4.9.5",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.2",
@@ -38,7 +34,12 @@
     "eslint-plugin-react-hooks": "^2.5.0",
     "html-webpack-plugin": "^3.2.0",
     "prettier": "^1.19.1",
+    "react-fastclick": "^3.0.2",
+    "react-icons": "^3.9.0",
+    "react-simple-maps": "^1.0.0-beta.0",
+    "rimraf": "^3.0.2",
     "style-loader": "^1.1.3",
+    "styled-components": "^5.0.1",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
