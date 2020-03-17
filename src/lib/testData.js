@@ -1,7 +1,9 @@
 export var shippingData = [
   {
     shipment: "HOU1-40264",
-    status: 3,
+    listDetails: {
+      status: 3
+    },
     headerDetails: {
       destination: "uganda",
       port: "enterbbe",
@@ -23,7 +25,9 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40265",
-    status: 5,
+    listDetails: {
+      status: 5
+    },
     headerDetails: {
       destination: "afghanistan",
       port: "bagram",
@@ -45,7 +49,9 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40267",
-    status: 2,
+    listDetails: {
+      status: 2
+    },
     headerDetails: {
       destination: "Equatorial Guinea",
       port: "malabo",
@@ -67,7 +73,9 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40269",
-    status: 6,
+    listDetails: {
+      status: 6
+    },
     headerDetails: {
       destination: "afghanistan",
       port: "bagram",
@@ -89,7 +97,9 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40271",
-    status: 4,
+    listDetails: {
+      status: 4
+    },
     headerDetails: {
       destination: "uganda",
       port: "enterbbe",
@@ -111,7 +121,9 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40277",
-    status: 1,
+    listDetails: {
+      status: 1
+    },
     headerDetails: {
       destination: "afghanistan",
       port: "bagram",
@@ -133,7 +145,9 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40278",
-    status: 5,
+    listDetails: {
+      status: 5
+    },
     headerDetails: {
       destination: "uganda",
       port: "enterbbe",
@@ -155,7 +169,9 @@ export var shippingData = [
   },
   {
     shipment: "HOU1-40282",
-    status: 9,
+    listDetails: {
+      status: 9
+    },
     headerDetails: {
       destination: "afghanistan",
       port: "bagram",

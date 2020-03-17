@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Map from "./Map";
+import { shippingData } from "../../lib/testData";
 
 const ContainerDiv = styled.div`
   display: flex;
@@ -25,53 +26,29 @@ class HeaderDetails extends React.PureComponent {
   }
 
   componentDidMount() {
-    fetch("http://10.0.0.230:8000/api/" + this.props.headerDetailsId)
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        this.setState({
-          loading: false,
-          dest: data._dest,
-          port: data._port,
-          mot: data._mot,
-          carrier: data._carrier,
-          billNo: data._billno,
-          fromCoord: [
-            data._fromcoord ? data._fromcoord.x : null,
-            data._fromcoord ? data._fromcoord.y : null
-          ],
-          toCoord: [
-            data._tocoord ? data._tocoord.x : null,
-            data._tocoord ? data._tocoord.y : null
-          ],
-          offset: data._billno
-        });
-      });
+    this.setState({ loading: false });
   }
 
   render() {
-    if (this.state.loading) {
-      return <h1>loading … </h1>;
-    }
     return (
       <ContainerDiv>
         <div>
+          {console.log(this.props)}
           <ul style={{ listStyleType: "none" }}>
-            <Li>{`Dest: ${this.state.dest.toUpperCase()}`}</Li>
-            <Li>{`Port: ${this.state.port.toUpperCase()}`}</Li>
-            <Li>{`MOT: ${this.state.mot.toUpperCase()}`}</Li>
-            <Li>{`Carrier: ${this.state.carrier.toUpperCase()}`}</Li>
-            <Li>{`Bill#: ${this.state.billNo.toUpperCase()}`}</Li>
+            <Li>{`Dest: ${this.props.headerDetailsId.destination.toUpperCase()}`}</Li>
+            <Li>{`Port: ${this.props.headerDetailsId.port.toUpperCase()}`}</Li>
+            <Li>{`MOT: ${this.props.headerDetailsId.mot.toUpperCase()}`}</Li>
+            <Li>{`Carrier: ${this.props.headerDetailsId.carrier.toUpperCase()}`}</Li>
+            <Li>{`Bill#: ${this.props.headerDetailsId.billNo.toUpperCase()}`}</Li>
           </ul>
         </div>
         <div style={{ width: 260 }}>
-          {!this.state.toCoord[0] ? null : (
+          {this.state.loading ? null : (
             <Map
-              fromCoord={this.state.fromCoord}
-              toCoord={this.state.toCoord}
-              destination={this.state.dest}
-              offset={this.state.offset}
+              fromCoord={this.props.headerDetailsId.fromCoord}
+              toCoord={this.props.headerDetailsId.toCoord}
+              destination={this.props.headerDetailsId.destination}
+              offset={this.props.headerDetailsId.offset}
             />
           )}
         </div>

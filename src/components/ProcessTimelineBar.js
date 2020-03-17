@@ -161,7 +161,7 @@ function ProcessTimeLineBar({
         cursor="pointer"
       >
         <div className="header-details">
-          {currentMode === "modal" ? (
+          {currentMode === "modal" && HeaderDetailPage ? (
             <HeaderDetailPage
               fontColor={styleOptions.fontColor}
               headerDetailsId={headerDetailsId}

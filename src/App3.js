@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PTBTemplateContext } from "./components/PTBTemplateContext";
 import PTBTemplateMaterial from "./template/PTBTemplateMaterial";
 import PTBListBox from "./components/PTBListBox";
@@ -15,12 +15,19 @@ import {
   FaTruckMoving
 } from "react-icons/fa";
 import { GoFileSubmodule } from "react-icons/go";
-import { shippingData } from "./lib/testData";
 import initReactFastclick from "react-fastclick";
 initReactFastclick();
 
 function App() {
   var [mode, setMode] = useState("large");
+  var [shipData, setShipData] = useState();
+
+  useEffect(() => {
+    getShipData();
+    setInterval(() => {
+      getShipData();
+    }, 5000);
+  }, []);
 
   var barStyleOptions = {
     backgroundColor: "#c3dde0",
@@ -31,6 +38,20 @@ function App() {
     fontColor: "white",
     barWidth: { large: 1040, small: 380 }
   };
+
+  function getShipData() {
+    fetch("http://10.0.0.230:8000/api")
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setShipData(data);
+      });
+  }
+
+  if (!shipData) {
+    return <div>Loading</div>;
+  }
 
   return (
     <div className="parent">
@@ -57,22 +78,21 @@ function App() {
         styleOptions={barStyleOptions}
       >
         <PTBListBox mode={mode}>
-          {shippingData.map((shipment, index) => (
+          {shipData.map((shipment, index) => (
             <ProcessTimelineBar
               headerDetailPage={HeaderDetails}
               key={index}
               id={index}
               title="SHIPMENT"
-              detail={shipment.shipment}
+              detail={shipment._number}
               mode="large"
               scrollableEvents="true"
-              eventWidth={150}
-              status={shipment.status}
-              headerDetails={shipment.headerDetails}
+              status={shipment._status}
+              headerDetailsId={shipment._id}
             >
               <ProcessTimelineBarEvent
                 title="OPENED"
-                date={shipment.statusDates.opened}
+                date={shipment._date_opened}
                 color="#7699c2"
                 expandedHeight={280}
                 icon={GoFileSubmodule}
@@ -81,7 +101,7 @@ function App() {
               </ProcessTimelineBarEvent>
               <ProcessTimelineBarEvent
                 title="RECEIVED"
-                date={shipment.statusDates.received}
+                date={shipment._date_received}
                 color="#6583a6"
                 expandedHeight={300}
                 icon={FaTruckLoading}
@@ -90,53 +110,28 @@ function App() {
               </ProcessTimelineBarEvent>
               <ProcessTimelineBarEvent
                 title="PACKED"
-                date={shipment.statusDates.packed}
+                date={shipment._date_packed}
                 color="#4a75a1"
                 expandedHeight={400}
                 icon={FaBox}
               />
               <ProcessTimelineBarEvent
                 title="SHIPPED"
-                date={shipment.statusDates.shipped}
+                date={shipment._date_shipped}
                 color="#3f658a"
                 expandedHeight={160}
                 icon={FaTruckMoving}
               />
               <ProcessTimelineBarEvent
                 title="IN TRANSIT"
-                date={shipment.statusDates.inTransit}
+                date={shipment._date_intransit}
                 color="#325373"
                 expandedHeight={200}
                 icon={FaPaperPlane}
               />
               <ProcessTimelineBarEvent
                 title="ARRIVED"
-                date={shipment.statusDates.arrived}
-                color="#1e4566"
-                expandedHeight={270}
-                icon={FaRegCheckCircle}
-              >
-                <ShipmentPackages />
-              </ProcessTimelineBarEvent>
-              <ProcessTimelineBarEvent
-                title="TEST 1"
-                date={shipment.statusDates.inTransit}
-                color="#325373"
-                expandedHeight={200}
-                icon={FaPaperPlane}
-              />
-              <ProcessTimelineBarEvent
-                title="TEST 2"
-                date={shipment.statusDates.arrived}
-                color="#1e4566"
-                expandedHeight={270}
-                icon={FaRegCheckCircle}
-              >
-                <ShipmentPackages />
-              </ProcessTimelineBarEvent>
-              <ProcessTimelineBarEvent
-                title="TEST 3"
-                date={shipment.statusDates.arrived}
+                date={shipment._date_arrived}
                 color="#1e4566"
                 expandedHeight={270}
                 icon={FaRegCheckCircle}
