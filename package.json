@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --mode development --host 0.0.0.0 --port 3000",
     "devv": "NODE_ENV=production webpack-dev-server --mode production --host 0.0.0.0 --port 3000",
-    "build": "NODE_ENV=production webpack --mode production"
+    "build": "NODE_ENV=production webpack --mode production",
+    "transpile": "babel src -d dist --copy-files"
   },
   "author": "Stephen Reed",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "styled-components": "^4.4.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
