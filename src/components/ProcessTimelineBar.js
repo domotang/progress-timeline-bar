@@ -129,7 +129,7 @@ function ProcessTimeLineBar({
       : [];
   }
 
-  if (id === 0) console.log("render bar", id, mode);
+  if (id === 0) console.log("render bar component", id, mode);
 
   return (
     <div
