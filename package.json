@@ -4,6 +4,7 @@
   "description": "process timeline bar",
   "main": "dist/index.js",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "rimraf dist && webpack-dev-server --mode development --host 0.0.0.0 --port 3000",
     "devv": "rimraf dist && NODE_ENV=production webpack-dev-server --mode production --host 0.0.0.0 --port 3000",
@@ -15,24 +16,28 @@
   "keywords": [],
   "dependencies": {
     "gsap": "file:gsap-bonus.tgz",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "resolutions": {
+    "minimist": "^1.2.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.7",
-    "@babel/preset-env": "^7.8.7",
-    "@babel/preset-react": "^7.8.3",
-    "@material-ui/core": "^4.9.5",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "@material-ui/core": "^4.9.7",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.0.6",
+    "babel-loader": "^8.1.0",
     "css-loader": "^3.4.2",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.0",
+    "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.19.0",
-    "eslint-plugin-react-hooks": "^2.5.0",
+    "eslint-plugin-react-hooks": "^2.5.1",
     "html-webpack-plugin": "^3.2.0",
+    "minimist": "^1.2.5",
     "prettier": "^1.19.1",
     "react-fastclick": "^3.0.2",
     "react-icons": "^3.9.0",
@@ -40,7 +45,7 @@
     "rimraf": "^3.0.2",
     "style-loader": "^1.1.3",
     "styled-components": "^5.0.1",
-    "webpack": "^4.42.0",
+    "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
     "webpack-visualizer-plugin": "^0.1.11"
