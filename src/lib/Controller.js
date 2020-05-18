@@ -12,17 +12,14 @@ function Controller(args) {
     modeStateMachine = null,
     openedElements = { event: null, header: null, modal: null },
     styleOptions = args.Template.styleOptions,
-    elementCount = args.elementCount,
-    status = args.status,
-    eventWidthAttr = args.eventWidthAttr,
     Template = args.Template,
     scrollDiv = document.createElement("div");
 
   var modeAttr = {
     styleOptions,
-    elementCount,
-    eventWidthAttr,
-    status
+    elementCount: args.elementCount,
+    eventWidthAttr: args.eventWidthAttr,
+    status: args.status
   };
 
   var modeDefaults = Template.Defaults.getModeDefaults(modeAttr);
@@ -404,8 +401,8 @@ function Controller(args) {
         eventNodes: _getEventsNodesByType(),
         barNodes,
         styleOptions,
-        elementCount,
-        status,
+        elementCount: args.elementCount,
+        status: args.status,
         smallMode: modes.small,
         largeMode: modes.large
       };
