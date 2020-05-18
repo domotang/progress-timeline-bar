@@ -53,7 +53,7 @@ function PTBEvent(eventData, templateAPI) {
   }
 }
 
-function PTBController(templateAPI) {
+function PTBInterface(templateAPI) {
   var bar = null,
     events = [];
 
@@ -144,4 +144,4 @@ function PTBController(templateAPI) {
   }
 }
 
-export { PTBController };
+export { PTBInterface };

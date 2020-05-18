@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PTBTemplateContext } from "../../src/components/PTBTemplateContext";
-import PTBTemplateMaterial from "../../src/template/PTBTemplateMaterial";
+import PTBTemplate from "../../src/templates/PTBMaterial";
 import PTBListBox from "../../src/components/PTBListBox";
 import ProcessTimelineBar from "../../src/components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "../../src/components/ProcessTimelineEvent";
@@ -18,6 +18,8 @@ import { GoFileSubmodule } from "react-icons/go";
 import { shippingData } from "./lib/testData";
 import initReactFastclick from "react-fastclick";
 initReactFastclick();
+
+// console.log("template", PTBTemplate);
 
 function App() {
   var [mode, setMode] = useState("large");
@@ -52,10 +54,7 @@ function App() {
       </div>
 
       {/* <div className="list"> */}
-      <PTBTemplateContext
-        template={PTBTemplateMaterial}
-        styleOptions={barStyleOptions}
-      >
+      <PTBTemplateContext template={PTBTemplate} styleOptions={barStyleOptions}>
         <PTBListBox mode={mode}>
           {shippingData.map((shipment, index) => (
             <ProcessTimelineBar

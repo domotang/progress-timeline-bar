@@ -7,7 +7,8 @@ import React, {
   useContext
 } from "react";
 import { TemplateContext } from "./PTBTemplateContext";
-import { PTBController } from "../lib/PTBController";
+import Controller from "../lib/Controller";
+import { PTBInterface } from "../lib/Interface";
 
 function ProcessTimeLineBar({
   headerDetailPage: HeaderDetailPage,
@@ -24,9 +25,14 @@ function ProcessTimeLineBar({
   setSelectedBar,
   setModal
 }) {
-  const Template = useContext(TemplateContext);
+  var controllerAttr = {
+    Template: useContext(TemplateContext),
+    elementCount: children.length,
+    status,
+    eventWidthAttr: eventWidth
+  };
   const [pTBController] = useState(() =>
-    PTBController(Template(children.length, status, eventWidth))
+    PTBInterface(Controller(controllerAttr))
   );
   const [currentMode, setCurrentMode] = useState(mode);
   const [currentEvent, setCurrentEvent] = useState(null);

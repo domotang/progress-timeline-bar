@@ -16,12 +16,12 @@ module.exports = {
   // entry: path.join(__dirname, "src/index.js"),
   entry: {
     index: path.join(__dirname, "examples/src/index.js"),
-    cont: path.join(__dirname, "src/lib/PTBController.js"),
-    template: path.join(__dirname, "src/template/PTBTemplateMaterial.js"),
-    animations: path.join(__dirname, "src/template/pTBMaterialAnimations.js"),
+    cont: path.join(__dirname, "src/lib/Interface.js"),
+    template: path.join(__dirname, "src/lib/Controller.js"),
+    animations: path.join(__dirname, "src/templates/PTBMaterial/animations.js"),
     tmpComponents: path.join(
       __dirname,
-      "src/template/pTBMaterialComponents.js"
+      "src/templates/PTBMaterial/components.js"
     ),
     globe: path.join(__dirname, "examples/src/lib/ne_110m_land.json")
   },
