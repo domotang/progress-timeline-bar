@@ -19,8 +19,9 @@ function ProcessTimeLineBar({
   detail,
   status,
   mode,
-  scrollableEvents,
+  card,
   eventWidth,
+  expandedHeight: barExpandedHeight,
   id,
   setSelectedBar,
   setModal
@@ -29,6 +30,8 @@ function ProcessTimeLineBar({
     Template: useContext(TemplateContext),
     elementCount: children.length,
     status,
+    card,
+    barExpandedHeight,
     eventWidthAttr: eventWidth
   };
   const [pTBController] = useState(() =>
@@ -181,9 +184,8 @@ function ProcessTimeLineBar({
           title={title}
           detail={detail}
           currentMode={currentMode}
-          mode={mode}
-          scrollableEvents={scrollableEvents}
-          eventWidth={eventWidth}
+          // mode={mode}
+          // eventWidth={eventWidth}
         />
         <div className="event-details">{eventPage}</div>
       </div>

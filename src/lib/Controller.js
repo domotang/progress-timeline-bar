@@ -19,6 +19,8 @@ function Controller(args) {
     styleOptions,
     elementCount: args.elementCount,
     eventWidthAttr: args.eventWidthAttr,
+    barExpandedHeight: args.barExpandedHeight,
+    card: args.card,
     status: args.status
   };
 
@@ -79,6 +81,9 @@ function Controller(args) {
           action() {
             barModeAnimations.seek("detail");
             if (modes.detail.bar.draggable) eventScrollAnimations.create();
+            if (args.card) {
+              _setCard();
+            }
           }
         },
         modal: {
@@ -451,6 +456,27 @@ function Controller(args) {
       overwrite: true
       // onComplete: onResolve()
     });
+  }
+
+  function _setCard() {
+    // var modeStyles = modes["detail"];
+    // {
+    //   let opts = {
+    //     barContainer: bar.getNodes().barContainer,
+    //     height: modeStyles.containerHeight,
+    //     marginTop: modeStyles.bar.marginTop
+    //   };
+    //   console.log("optd", opts.height);
+    //   Template.Animations.containerTween(opts);
+    // }
+    var AnimationOpts = {
+      nodes: bar.getNodes(),
+      styleOptions
+    };
+
+    var barCardAnimation = Template.Animations.BarCardTl(AnimationOpts);
+
+    barCardAnimation.seek("final");
   }
 
   function _setModeModal(opts) {

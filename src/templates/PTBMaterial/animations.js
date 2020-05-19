@@ -231,6 +231,13 @@ export function BarAniTl({
   }
 }
 
+export function BarCardTl({ nodes, styleOptions }) {
+  var tl = gsap.timeline({ paused: true });
+  tl.add(_barDetailAniTl(nodes, styleOptions), "move");
+  _barHeightTween(nodes.barElement, 200);
+  return tl;
+}
+
 export function BarModalDetailTl({
   nodes,
   styleOptions,

@@ -40,11 +40,13 @@ export function getModeDefaults(attr) {
     },
     detail: {
       bar: {
-        height: 90,
+        height: attr.card ? attr.barExpandedHeight : 90,
         padding: 5,
         marginTop: "10px",
-        modalHeightPadding: 100,
-        modalExpandedHeightPadding: 130,
+        modalHeightPadding: attr.card ? attr.barExpandedHeight + 10 : 100,
+        modalExpandedHeightPadding: attr.card
+          ? attr.barExpandedHeight + 40
+          : 130,
         widthOffset: 170
       },
       calculatedDefaults() {
