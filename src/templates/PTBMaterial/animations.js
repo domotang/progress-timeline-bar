@@ -234,7 +234,7 @@ export function BarAniTl({
 export function BarCardTl({ nodes, styleOptions }) {
   var tl = gsap.timeline({ paused: true });
   tl.add(_barDetailAniTl(nodes, styleOptions), "move");
-  _barHeightTween(nodes.barElement, 200);
+  _barHeightTween(nodes.barElement, 300);
   return tl;
 }
 
@@ -817,6 +817,9 @@ function _barDetailWidenTl(tag, styleOptions) {
 }
 
 function _barDetailAniTl(nodes, styleOptions) {
+  //Prototyping for card mode
+  const headerHeight = 200;
+  const headerGutter = 130;
   var tl = gsap.timeline();
 
   tl.add("grow")
@@ -826,8 +829,11 @@ function _barDetailAniTl(nodes, styleOptions) {
       {
         opacity: 0.8,
         morphSVG: `M0,0 h${styleOptions.barWidth.large -
-          100} a6,6,0,0,1,6,5 v${100 + 13} h-${styleOptions.barWidth.large -
-          262} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-130 a6,6,0,0,1,-6,-6 v-${100 +
+          100} a6,6,0,0,1,6,5 v${headerHeight + 13} h-${styleOptions.barWidth
+          .large -
+          262 +
+          headerGutter} a6,6,0,0,0,-6,6 l-21, 58 a6,6,0,0,1,-6,6 h-${130 -
+          headerGutter} a6,6,0,0,1,-6,-6 v-${headerHeight +
           76} a6,6,0,0,1,6,-6`,
         ease: "Power1.easeInOut"
       },
@@ -836,7 +842,7 @@ function _barDetailAniTl(nodes, styleOptions) {
     .to(
       [nodes.events, nodes.eventDetails],
       0.3,
-      { y: 100, ease: "Power1.easeInOut" },
+      { x: -headerGutter, y: headerHeight, ease: "Power1.easeInOut" },
       "grow"
     )
     .add("final")

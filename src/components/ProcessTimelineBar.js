@@ -37,7 +37,7 @@ function ProcessTimeLineBar({
   const [pTBController] = useState(() =>
     PTBInterface(Controller(controllerAttr))
   );
-  const [currentMode, setCurrentMode] = useState(mode);
+  const [currentMode, setCurrentMode] = useState(mode ? mode : "detail");
   const [currentEvent, setCurrentEvent] = useState(null);
   const [eventPage, setEventPage] = useState(null);
 

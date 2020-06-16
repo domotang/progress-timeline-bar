@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PTBTemplateContext } from "../../src/components/PTBTemplateContext";
 import PTBTemplate from "../../src/templates/PTBMaterial";
-import PTBListBox from "../../src/components/PTBListBox";
+// import PTBListBox from "../../src/components/PTBListBox";
 import ProcessTimelineBar from "../../src/components/ProcessTimelineBar";
 import ProcessTimelineBarEvent from "../../src/components/ProcessTimelineEvent";
 import MaterialReceipt from "./detailPages/MaterialReceipt";
@@ -54,6 +54,7 @@ function App() {
       {/* <div className="list"> */}
       <PTBTemplateContext template={PTBTemplate} styleOptions={barStyleOptions}>
         {/* <PTBListBox mode={mode}> */}
+
         {shippingData.map((shipment, index) => (
           <ProcessTimelineBar
             headerDetailPage={HeaderDetails}
@@ -63,7 +64,7 @@ function App() {
             detail={shipment.shipment}
             mode="detail"
             card="true"
-            expandedHeight={200}
+            expandedHeight={300}
             eventWidth={150}
             status={shipment.listDetails.status}
             headerDetailsId={shipment.headerDetails}

@@ -473,9 +473,7 @@ function Controller(args) {
       nodes: bar.getNodes(),
       styleOptions
     };
-
     var barCardAnimation = Template.Animations.BarCardTl(AnimationOpts);
-
     barCardAnimation.seek("final");
   }
 
